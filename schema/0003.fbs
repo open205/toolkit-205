@@ -1,0 +1,185 @@
+include "Front.fbs";
+
+namespace RS0003;
+
+table RS0003_Root (
+  title : "Fan Assembly",
+  version : "0.1.0"
+) {
+
+  GeneralDataTable:GeneralData (
+    required,
+    notes: "Common characteristics of fan assembly"
+  );
+
+  AssemblyComponentTable:[AssemblyComponent] (
+    notes: "Description of a component (e.g., coil, filter) within the fan assembly"
+  );
+
+  PerformanceMapTable:PerformanceMap (
+    required,
+    notes: "Fan assembly performance data"
+  );
+
+}
+
+// Enumerations
+enum ImpellerType : ubyte {
+  CentrifugalForwardCurved,
+  CentrifugalBackwardCurved,
+  CentrifugalAirFoil,
+  Axial,
+  Propeller
+}
+
+enum FanControlType : ubyte {
+  Discrete,
+  Continuous,
+  DiscreteFlowControlled
+}
+
+enum ComponentType : ubyte { // TODO: Changed name
+  Coil,
+  Furnace,
+  Filter,
+  HeatExchanger,
+  ElectricResistanceElement,
+  Other
+}
+
+table GeneralData {
+
+  manufacturer:string (
+    description : "Name of the assembly/unit manufacturer",
+    notes: ""
+  );
+
+  modelNumber:string (
+    description : "Model number of the assembly/unit",
+    notes: ""
+  );
+
+  hasMotor:bool (
+    description : "Assembly includes a motor",
+    notes: "True implies input power is electrical power. False implies input power is shaft power driven externally."
+  );
+
+  enclosed:bool (
+    description : "Fan assembly is enclosed",
+    notes: "If true, the performance data reflects the static pressure difference across the enclosure"
+  );
+
+  fanControlType:FanControlType (
+    description : "Defines discrete or continuous flow control",
+    notes : "Cannot be continuous if motor is flow controlled" // TODO is this true any more?
+  );
+
+  impellerType:ImpellerType (
+    description : "Type of impeller in fan assembly",
+    optional,
+    notes : ""
+  );
+
+  directDriveImpeller:bool ( // TODO: Do we need this? Same as "hasMotor"?
+    description : "Motor and impeller are directly coupled",
+    optional,
+    notes: "False if impeller is belt driven or if assembly does not include a motor."
+  );
+
+  nominalVolumetricAirFlowRate:double ( // TODO: Always required? Needed for wet pressure drop of components
+    description: "Nominal air flow rate for fan assembly",
+    units : "m3/s",
+    min : 0.0,
+    sigDigits: 3,
+    notes : "Nominal or rated airflow rate"
+  );
+
+  motorHeatFraction:double (
+    description: "Fraction of motor heat into the air stream",
+    units : "-",
+    min : 0.0,
+    max : 1.0,
+    sigDigits: 2,
+    notes : "Used to determine amount of heat from motor (and drive)"
+  );
+
+  maxInputPower:double (
+    description: "Maximum power input to fan assembly",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Shaft or electric power depending on 'hasMotor'"
+  );
+
+}
+
+table AssemblyComponent {
+
+  componentType:ComponentType (
+    description : "Type of component",
+    notes : ""
+  );
+
+  componentDescription:string (
+    description : "Informative description of the component",
+    notes: ""
+  );
+
+  componentID:string (
+    description : "Identification number of the corresponding Standard 205 representation",
+    stringType : "UUID",
+    notes: "For future use where each component may have their own representation"
+  );
+
+  wetSurfacePressureDrop:double = 0.0 (
+    description: "Additional static pressure drop if component is a cooling coil collecting condensate",
+    units : "Pa",
+    min : 0.0,
+    sigDigits: 3,
+    notes : "Corresponds to pressure drop at nominalVolumetricAirFlowRate"
+  );
+
+}
+
+table PerformanceMap {
+
+  // Independent
+  staticPressureDifference:double (
+    gridDimension,
+    description: "Static pressure across fan assembly at dry coil conditions",
+    units : "Pa",
+    min : 0.0,
+    sigDigits: 3,
+    notes : "Pressure difference across assembly under dry conditions (pressure difference related to wetted surfaces is defined by each assembly component)"
+  );
+
+  // Independent OR Dependent
+  impellerSpeed:double (
+    conditionalGridDimension,
+    description: "Rotational speed of fan impeller",
+    units : "rev/s",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "For fan assemblies where speed is known or specified"
+  );
+
+  volumetricAirFlowRate:double (  // TODO: Should be independent for continous?
+    conditionalGridDimension,
+    description: "Volumetric air flow rate through fan assembly",
+    units : "m3/s",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Volumetric flow rate at SI standard conditions"
+  );
+
+  // Dependent
+  inputPower:double (
+    conditionalGridDimension,
+    description: "Power input to fan assembly",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Shaft or electric power depending on 'hasMotor'"
+  );
+
+}

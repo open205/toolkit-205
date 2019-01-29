@@ -1,0 +1,422 @@
+include "Front.fbs";
+
+namespace RS0001;
+
+
+table RS0001_Root (
+  title : "Liquid-Cooled Chiller",
+  version : "0.1.0"
+) {
+
+  GeneralDataTable:GeneralData (
+    required,
+    notes: "Common characteristics of the liquid chiller"
+  );
+
+  AHRIRatingsTable:AHRIRatings (
+    notes: "AHRI rating infromation for full-load design point"
+  );
+
+  PerformanceMapCoolingTable:PerformanceMapCooling (
+    required,
+    notes: "Cooling mode performance data"
+  );
+
+  PerformanceMapStandbyTable:PerformanceMapStandby (
+    required,
+    notes: "Standby mode performance data"
+  );
+}
+
+// Enumerations
+enum DriveType : byte {
+  NA,
+  constantSpeed,
+  variableSpeed
+}
+
+enum StandardRatingVersion : byte {
+  AHRI_550_590_2015,
+  AHRI_551_591_2015
+}
+
+table GeneralData {
+
+  manufacturer:string (
+    description : "Name of the manufacturer",
+    notes: "Shall be the same as 'unit manufacturer' when referring to AHRI 550/590 or AHRI 551/591"
+  );
+
+  manufacturerSoftwareVersion:string (
+    description : "Version of the software used to generate the performance map",
+    notes: "Example: '15.03'\n\nIf the software version does not exist input 'NA'"
+  );
+
+  modelNumber:string (
+    description : "Model number for this chiller",
+    notes: "Complete model number string for the unit. May contain special characters."
+  );
+
+  nominalVoltage:double (
+    description: "Unit nominal voltage",
+    units : "V",
+    minEx: 0.0,
+    sigDigits: 3,
+    notes : "Example: '460'\n\nIf the unit can operate at multiple voltages the lowest shall be stated"
+  );
+
+  nominalFrequency:double (
+    description: "Unit nominal frequency",
+    units : "Hz",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Example: '60'\n\nPower supply frequency for the indended region of installation"
+  );
+
+  toleranceStandard:string (
+    description : "Name of the testing or certification standard under which the chiller is rated",
+    notes: "Examples: 'AHRI 550/590-2015', 'GEMS 2012', 'EER-2002', 'Eurovent LCP-HP and others'",
+    optional
+  );
+
+  compressorType:CompressorType (
+    description : "Type of compressor",
+    notes: "See Standard 205 Global Enumerations (Table 8.2.3)"
+  );
+
+  driveType:DriveType (
+    description : "Type of electrical motor drive",
+    notes: "See 3.1 Local Enumerations"
+  );
+
+  evaporatorFluidType:FluidType (
+    description : "Type of fluid in evaporator",
+    notes: "See Standard 205 Global Enumerations (Table 8.2.5)"
+  );
+
+  evaporatorFluidConcentration:double (
+    description: "Percentage of non-water fluid by volume in the evaporator",
+    units : "-",
+    min : 0.0,
+    max : 1.0,
+    sigDigits: 2,
+    notes : "Density shall be evaluated at the evaporator fluid inlet temperature"
+  );
+
+  condenserFluidType:FluidType (
+    description : "Type of fluid in condenser",
+    notes: "See Standard 205 Global Enumerations (Table 8.2.5)"
+    );
+
+  condenserFluidConcentration:double (
+    description: "Percentage of non-water fluid by volume in the condenser",
+    units : "-",
+    min : 0.0,
+    max : 1.0,
+    sigDigits: 2,
+    notes : "Density shall be evaluated at the condenser fluid inlet temperature"
+  );
+
+  fluidDataSource:string (
+    description : "Source of the fluid data properties if other than water",
+    optional,
+    notes: "Example: 'ASHRAE Handbook Fundamentals 2013 chapter 31'"
+  );
+
+  refrigerantType:RefrigerantType (
+    description : "Refrigerant used in the chiller",
+    notes: "See Standard 205 Table 8-2"
+  );
+
+  evaporatorFoulingFactor:double (
+    description: "Factor of heat transfer inhibition due to heat exchanger fouling layer",
+    units : "m2-K/W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Evaporator fouling factor at which the performance matrix was created. This may be different from the certification data supplied"
+  );
+
+  condenserFoulingFactor:double (
+    description: "Factor of heat transfer inhibition due to heat exchanger fouling layer",
+    units : "m2-K/W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Condenser fouling factor at which the performance matrix was created. This may be different from the certification data supplied"
+  );
+
+  unitPowerLimit:double = 99999999999 (
+    description: "Maximum unit power input",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 4,
+    optional,
+    notes : "Maximum power input the chiller can operate at reliably and continuously at any condition in the operating envelope"
+  );
+
+  hotgasBypassInstalled:bool = false (
+    description: "Indicates if a hot-gas bypass valve is installed on the chiller.",
+    optional,
+    notes : ""
+  );
+
+}
+
+table AHRIRatings {
+
+  certificationReferenceNumber:string (
+    description : "Certification reference number",
+    notes: "The certification number as stated on the certificate"
+  );
+
+  standardRatingVersion:StandardRatingVersion (
+    description : "Version of the rating standard",
+    notes : ""
+  );
+
+  designNetRefrigeratingCapacity:double (
+    description: "Unit rated refrigeration capacity",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 4,
+    notes : "The available cooling capacity of the evaporator to the thermal load calculated using only the sensible heat transfer at full load rating condition"
+  );
+
+  designInputPower:double (
+    description: "Total unit power",
+    units : "W",
+    min : 0.0,
+    sigDigits: 2,
+    notes : "Total power input to the chiller package. See testing standard for details."
+  );
+
+  designCOP:double (
+    description: "Unit of cooling per unit of power consumed",
+    units : "-",
+    minEx : 0.0,
+    sigDigits: 4,
+    notes : "COP kWc/kWin"
+  );
+
+  designPartLoadValue:double (
+    description: "Rated integrated load profile",
+    units : "-",
+    minEx : 0.0,
+    sigDigits: 4,
+    notes : "Represents the IPLV.SI, IPLV.IP, NPLV.SI, or NPLV.IP as appropriate for the 'ratingStandardVersion'"
+  );
+
+  designEvaporatorFluidVolumetricFlowRate:double (
+    description: "Chilled fluid flow at the full load rating condition",
+    units : "m3/s",
+    minEx : 0.0,
+    sigDigits: 4,
+    notes : "Evaporator fluid volumetric flow rate at the full load rating condition. Density calculations shall be made at the inlet temperature of the heat exchanger at full load rating condition."
+  );
+
+  designEvaporatorFluidLeavingTemperature:double (
+    description: "Leaving evaporator fluid temperature at the full load rating condition",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 4,
+    notes : "Evaporator fluid temperature at the exit flange of the chiller?s evaporator at full load rating condition. See testing standard for details"
+  );
+
+  designEvaporatorFluidEnteringTemperature:double (
+    description: "Entering evaporator fluid temperature at the full load rating condition",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 4,
+    notes : "Evaporator fluid temperature at the entry flange of the chiller?s evaporator at full load rating condition."
+  );
+
+  designEvaporatorFluidDifferentialPressure:double = 0.001 (
+    description: "Pressure drop across the evaporator at the full load rating condition",
+    units : "Pa",
+    minEx : 0.0,
+    sigDigits: 3,
+    optional,
+    notes : ""
+  );
+
+  designCondenserFluidVolumetricFlowRate:double (
+    description: "Condenser fluid flow at the full load rating condition",
+    units : "m3/s",
+    minEx : 0.0,
+    sigDigits: 4,
+    notes : "Condenser fluid volumetric flow rate at the full load rating condition. Density calculations shall be made at the inlet temperature of the heat exchanger."
+  );
+
+  designCondenserFluidEnteringTemperature:double (
+    description: "Entering condenser fluid temperature at the full load rating condition",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 4,
+    notes : "Condenser fluid temperature at the entry flange of the chiller?s condenser at full load rating condition. See testing standard for details."
+  );
+
+  designCondenserFluidLeavingTemperature:double (
+    description: "Leaving condenser fluid temperature at the full load rating condition",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 4,
+    notes : "Condenser fluid temperature at the exit flange of the chiller?s condenser at full load rating condition"
+  );
+
+  designCondenserFluidDifferentialPressure:double = 0.001 (
+    description: "Pressure drop across the condenser at the full load rating condition",
+    units : "Pa",
+    minEx : 0.0,
+    sigDigits: 3,
+    optional,
+    notes : ""
+  );
+
+}
+
+table PerformanceMapCooling {
+  performancePointsCooling:[PerformancePointCooling] (required);
+}
+
+struct PerformancePointCooling {
+
+  // Independent
+
+  evaporatorFluidVolumetricFlowRate:double (
+    gridDimension,
+    description: "Chilled fluid flow",
+    units : "m3/s",
+    minEx : 0.0,
+    sigDigits: 4,
+    notes : "Evaporator fluid volumetric flow rate at the Performance Point"
+  );
+
+  evaporatorFluidLeavingTemperature:double (
+    gridDimension,
+    description: "Leaving evaporator fluid temperature",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 4,
+    notes : "Leaving evaporator fluid temperature at the Performance Point"
+  );
+
+  condenserFluidVolumetricFlowRate:double (
+    gridDimension,
+    description: "Condenser fluid flow",
+    units : "m3/s",
+    minEx : 0.0,
+    sigDigits: 4,
+    notes : "Condenser fluid volumetric flow rate at the Performance Point"
+  );
+
+  condenserFluidEnteringTemperature:double (
+    gridDimension,
+    description: "Entering condenser fluid temperature",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 4,
+    notes : "Entering condenser fluid temperature at the Performance Point"
+  );
+
+  netRefrigeratingCapacityFraction:double (
+    gridDimension,
+    description: "Fraction of maximum net capacity at the same operating conditions.",
+    units : "-",
+    min : 0.0,
+    max : 1.0,
+    sigDigits: 4,
+    notes : "Ratio of netRefrigeratingCapacity to the maximum refrigerating capacity at the same operating conditions"
+  );
+
+  // Dependent
+
+  inputPower:double (
+    description: "Total power input to the packaged chiller",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Shall represent all power consumed by the chiller including controls, motors, variable speed drives, purge units, sump heaters, fans, etc."
+  );
+
+  netRefrigeratingCapacity:double (
+    description: "Unit refrigeration capacity",
+    units : "W",
+    min : 0.0,
+    sigDigits: 4,
+    notes : "The available cooling capacity of the evaporator to the thermal load calculated using only the sensible heat transfer"
+  );
+
+  heatLossFraction:double (
+    description: "Heat loss to the surroundings expressed as a fraction of the total power input value",
+    units : "-",
+    min : 0.0,
+    sigDigits: 3,
+    notes : "If the motor is liquid cooled and no rejection to space occurs value shall be set to zero. If set to zero it is assumed the energy required to cool the device is covered in the input power."
+  );
+
+  evaporatorFluidEnteringTemperature:double (
+    description: "Entering evaporator fluid temperature",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 4,
+    notes : "Entering evaporator fluid temperature at the Performance Point"
+  );
+
+  condenserFluidLeavingTemperature:double (
+    description: "Leaving condenser fluid temperature",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 4,
+    notes : "Leaving condenser fluid temperature at the Performance Point"
+  );
+
+  evaporatorFluidDifferentialPressure:double (
+    description: "Pressure drop across the evaporator",
+    units : "Pa",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Evaporator fluid pressure drop at the Performance Point"
+  );
+
+  condenserFluidDifferentialPressure:double (
+    description: "Pressure drop across the condenser",
+    units : "Pa",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Condenser fluid pressure drop at the Performance Point"
+  );
+
+  numberCompressorsOnline:ubyte = 1 (
+    description: "Number of compressors online",
+    units : "-",
+    min : 0.0,
+    optional,
+    notes : "Number of compressors operating for the data point"
+  );
+
+}
+
+table PerformanceMapStandby {
+  performancePointsStandby:[PerformancePointStandby] (required);
+}
+
+struct PerformancePointStandby {
+
+  // Independent
+  chillerEnvironmentDryBulbTemperature:double (
+    gridDimension,
+    description: "Dry bulb temperature of the air in the environment of the chiller",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 3,
+    notes : ""
+  );
+
+  // Dependent
+  inputPower:double (
+    description: "Total power consumed by the chiller when not running. Value shall include all power sources and all auxiliary equipment provided with the chiller.",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Power consumed by chiller during off cycle. An example is a VSD cooling fan or sump heater."
+  );
+}

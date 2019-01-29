@@ -1,0 +1,61 @@
+include "Front.fbs";
+include "0001.fbs";
+include "0002.fbs";
+include "0003.fbs";
+
+union RS {RS0001.RS0001_Root, RS0002.RS0002_Root, RS0003.RS0003_Root}
+
+table ASHRAE205 {
+
+  RSInstance:RS (
+    description : "*Representation specification* identifier",
+    notes : "Identifies the *representation specification* used to generate this *representation*"
+  );
+
+  RSVersion:string (
+    description : "*Representation specification* version",
+    stringType : "Version",
+    notes : "Identifies the version of the *representation specification* used to generate this *representation*"
+  );
+
+  RSTitle:string (
+    description : "Descriptive name of representation specification",
+    notes : "Copied from the title of the *representation specification* having the RSID and RSVersion."
+  );
+
+  ID:string (
+    description : "Unique equipment identifier",
+    stringType : "UUID",
+    notes : "Assigned by data publisher to identify specific equipment.  ID shall remain unchanged for revised representations for the same equipment."
+  );
+
+  dataTimestamp:string (
+    description : "Date of publication",
+    stringType : "Timestamp",
+    notes : "Date/time of publication of this representation"
+  );
+
+  dataVersion:string (
+    description : "Free-form version identifier for this representation",
+    optional
+  );
+
+  description:string (
+    description : "Free-form description of equipment (suitable for display)",
+    optional
+  );
+
+  dataSource:string (
+    description : "Free-form identification of the source of this data instance",
+    optional
+  );
+
+  notes:string (
+    description : "Additional information",
+    optional
+  );
+}
+
+root_type ASHRAE205;
+file_extension "a205";
+file_identifier "A205";

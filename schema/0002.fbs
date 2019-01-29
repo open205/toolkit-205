@@ -1,0 +1,339 @@
+include "Front.fbs";
+include "0003.fbs";
+
+namespace RS0002;
+
+table RS0002_Root (
+  title : "Unitary Cooling Air-Conditioning Equipment",
+  version : "0.1.0"
+) {
+
+  GeneralDataTable:GeneralData (
+    required,
+    notes: "Common characteristics of unitary air conditioner"
+  );
+
+  AHRI210240RatingsTable:AHRI210240Ratings (
+    notes: "Characteristics of unitary air-conditioner if classified as residential"
+  );
+
+  AHRI340360RatingsTable:AHRI340360Ratings (
+    notes: "Characteristics of unitary air-conditioner if classified as commercial"
+  );
+
+  PerformanceMapCoolingTable:PerformanceMapCooling (
+    required,
+    notes: "Cooling mode performance data"
+  );
+
+  PerformanceMapStandbyTable:PerformanceMapStandby (
+    required,
+    notes: "Standby mode performance data"
+  );
+}
+
+// Enumerations
+enum CompressorControlMethod : ubyte {
+  Staged,
+  Dynamic
+}
+
+enum FanPosition : ubyte {
+  BlowThrough,
+  DrawThrough
+}
+
+table GeneralData {
+
+  compressorControlMethod:CompressorControlMethod (
+    description : "Method used to control different speeds of the compressor",
+    notes : ""
+    );
+
+  fan:RS0003.RS0003_Root (
+    description: "Identification number of the corresponding Standard 205 fan assembly representation",
+    optional,
+    notes: "This is only required if the fan is packaged with the unitary equipment"
+  );
+
+  fanPosition:FanPosition (
+    description : "Position of the fan relative to the indoor coil",
+    notes : ""
+  );
+
+  nominalVolumetricAirFlowRate:double (
+    description: "Volumetric air flow rate over the indoor coil used to scale the flow ratios in the PerformanceMap",
+    units : "m3/s",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Generally, this is the volumetric air flow rate under full load conditions used in AHRI testing"
+  );
+
+  refrigerantType:RefrigerantType = NA (
+    description : "Type of refrigerant used",
+    optional,
+    notes : ""
+  );
+
+  compressorType:CompressorType = NA (
+    description : "Type of compressor",
+    optional,
+    notes : ""
+  );
+
+  cyclingDegradationCoefficient:double (
+    description: "Cycling degradation coefficient (C_D_) as described in AHRI 210/240",
+    units : "-",
+    min : 0.0,
+    max : 1.0,
+    sigDigits: 3,
+    notes : "Used for the lowest stage where the unit cycles to meet a setpoint. *Informative note:* 340/360 specifies a fixed cycling degradation coefficient of approximately 0.12."
+  );
+
+
+}
+
+table AHRI210240Ratings {
+
+  certificationReferenceNumber:string (
+    description : "AHRI Certified Reference Number",
+    notes: "Currently only '2008'"
+  );
+
+  testStandardYear:ushort (
+    description : "AHRI Certified Reference Number",
+    notes: ""
+  );
+
+  manufacturerDataSourceVersion:string (
+    description : "Version of the software used to generate the AHRI rating and the performance maps",
+    notes: ""
+  );
+
+  outdoorUnitManufacturer:string (
+    description : "Name of the outdoor unit manufacturer",
+    notes: ""
+  );
+
+  outdoorUnitModelNumber:string (
+    description : "Model number of the outdoor unit",
+    notes: ""
+  );
+
+  indoorUnitManufacturer:string (
+    description : "Name of the indoor unit manufacturer",
+    notes: ""
+  );
+
+  indoorUnitModelNumber:string (
+    description : "Model number of the indoor unit",
+    notes: ""
+  );
+
+  SEER:double (
+    description: "Seasonal Energy Efficiency Ratio as defined by AHRI 210/240",
+    units : "Btu/W-h",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : ""
+  );
+
+  EER:double (
+    description: "Energy Efficiency Ratio (A) as defined by AHRI 210/240",
+    units : "Btu/W-h",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "The net efficiency (accounting for fan motor heat/power) at the AHRI 'A' operating conditions"
+  );
+
+  capacity:double (
+    description: "Total cooling capacity (A) as defined by AHRI 210/240",
+    units : "Btu/h",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "The net capacity (accounting for fan motor heat) at the AHRI 'A' operating conditions"
+  );
+
+  ratingFanPowerPerFlow:double (
+    description: "Power per air flow rate of the fan used in the AHRI 210/240 calculation of SEER and EER",
+    units : "W/(m3/s)",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Used for verification of the rated SEER value (see SEER calculation procedures in AHRI 210/240)"
+  );
+
+}
+
+table AHRI340360Ratings {
+
+  certificationReferenceNumber:string (
+    description : "AHRI Certified Reference Number",
+    notes: ""
+  );
+
+  testStandardYear:ushort (
+    description : "AHRI Certified Reference Number",
+    notes: "Options: '2007' or '2015'"
+  );
+
+  manufacturerDataSourceVersion:string (
+    description : "Version of the software used to generate the AHRI rating and the performance maps",
+    notes: "Example: '15.03'\n\nIf the software version does not exist input 'NA'."
+  );
+
+  manufacturer:string (
+    description : "Name of the manufacturer",
+    notes: ""
+  );
+
+  modelNumber:string (
+    description : "Model number of the unit",
+    notes: ""
+  );
+
+  IEER:double (
+    description: "Integrated Energy Efficiency Ratio as defined by AHRI 340/360",
+    units : "Btu/W-h",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : ""
+  );
+
+  EER:double (
+    description: "Energy Efficiency Ratio as defined by AHRI 340/360",
+    units : "Btu/W-h",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Net efficiency accounts for fan motor heat/power"
+  );
+
+  capacity:double (
+    description: "Total cooling capacity as defined by AHRI 340/360",
+    units : "Btu/h",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Net capacity accounts for fan motor heat"
+  );
+
+  ratingFanPowerPerFlow:double (
+    description: "Power per air flow rate of the fan used in the AHRI 340/360 calculation of IEER and EER",
+    units : "W/(m3/s)",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Used for verification of the rated IEER value (see IEER calculation procedures in AHRI 340/360)"
+  );
+
+}
+
+table PerformanceMapCooling {
+  performancePointsCooling:[PerformancePointCooling] (required);
+}
+
+table PerformancePointCooling {
+
+  // Independent
+  outdoorCoilEnteringDryBulbTemperature:double (
+    gridDimension,
+    description: "Dry bulb temperature of the air entering the outdoor coil",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 3,
+    notes : ""
+  );
+
+  indoorCoilEnteringWetBulbTemperature:double (
+    gridDimension,
+    description: "Wet bulb temperature of the air entering the indoor coil",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 3,
+    notes : "As measured after any fan heat is added to the air stream"
+  );
+
+  indoorCoilEnteringDryBulbTemperature:double (
+    gridDimension,
+    description: "Dry bulb temperature of the air entering the indoor coil",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 3,
+    notes : "As measured after any fan heat is added to the air stream"
+  );
+
+  indoorCoilVolumetricFlowRatio:double (
+    gridDimension,
+    description: "Ratio of the volumetric air flow rate over the indoor coil to the nominal volumetric air flow rate",
+    units : "-",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Expressed as ratio of actual (not standard) flow rate"
+  );
+
+  compressorSpeedRatio:double (
+    gridDimension,
+    description: "Fraction representing the stage or speed of compressor operation relative to full speed or operation",
+    units : "-",
+    minEx : 0.0,
+    sigDigits: 2,
+    notes : "Expressed as a fraction of total compressor capacity/speed"
+  );
+
+  ambientAbsoluteAirPressure:double (
+    gridDimension,
+    description: "Ambient absolute air pressure",
+    units : "Pa",
+    minEx : 0.0,
+    sigDigits: 2,
+    notes : ""
+  );
+
+  // Dependent
+  grossTotalCoolingCapacity:double (
+    description: "Total heat removed by the indoor coil",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Does not account for heat added by the indoor fan"
+  );
+
+  grossSensibleCoolingCapacity:double (
+    description: "Sensible heat removed by the indoor coil",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Does not account for heat added by the indoor fan"
+  );
+
+  grossCoolingPower:double (
+    description: "Gross power draw (of the outdoor unit)",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Does not account for power drawn from the indoor fan. Includes compressor, outdoor fan, and any auxiliary power used by the unit's controls and any sump heater."
+  );
+
+}
+
+table PerformanceMapStandby {
+  performancePointsStandby:[PerformancePointStandby] (required);
+}
+
+table PerformancePointStandby {
+  // Independent
+  outdoorCoilEnvironmentDryBulbTemperature:double (
+    gridDimension,
+    description: "Dry bulb temperature of the air in the environment of the outdoor coil",
+    units : "C",
+    minEx : -273.15,
+    sigDigits: 3,
+    notes : ""
+  );
+
+  // Dependent
+  grossPower:double (
+    description: "Gross power draw (of the outdoor unit)",
+    units : "W",
+    minEx : 0.0,
+    sigDigits: 3,
+    notes : "Does not account for power drawn from the indoor fan. Includes compressor, outdoor fan, and any auxiliary power used by the unit's controls, and any sump heater."
+  );
+}
