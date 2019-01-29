@@ -1,14 +1,16 @@
-ASHRAE 205 Data Buffers
-=======================
+Toolkit 205
+===========
 
-A FlatBuffers implementation of the ASHRAE Standard 205P data exchange specification.
+A toolkit to facilitate the adoption of the ASHRAE Standard 205P data exchange specification.
+
+**Disclaimer:** While this toolkit is developed in conjunction with the ASHRAE Standard 205 project committee, it is not an official ASHRAE product or a part of the standard.
 
 **Warning!**  As the proposed ASHRAE Standard 205P has no yet been published, the content in this repository is subject to change and should be considered unstable for application development.
 
 About ASHRAE 205
 ----------------
 
-ASHRAE Standard 205P is "Standard Representation of Performance Simulation Data for HVAC&R and Other Facility Equipment". It is available for advisory public review at [ASHRAE's online review portal](https://osr.ashrae.org/default.aspx).
+ASHRAE Standard 205P is "Standard Representation of Performance Simulation Data for HVAC&R and Other Facility Equipment". While the standard is not yet published, public reviews are available at [ASHRAE's online review portal](https://osr.ashrae.org/default.aspx).
 
 The stated purpose of ASHRAE Standard 205 is:
 
@@ -22,7 +24,7 @@ The Standard is intended to support the following use cases:
 
 - **Data Application** Application users use representation specifications to understand and check representation data. Data exchange will generally be automated but the availability of representation specifications facilitates additional data checking when needed.
 
-Generally, a data publisher (e.g., manufacturer) provides a Standard 205 representation of a specific piece of equipment that the application user can load into compliant performance simulation software.
+Generally, a data publisher (e.g., manufacturer) provides an ASHRAE Standard 205 representation of a specific piece of equipment that the application user can load into compliant performance simulation software.
 
 Why FlatBuffers?
 ----------------
@@ -73,7 +75,7 @@ Currently, the build process will produce:
 Example Usage
 -------------
 
-To test the example type `ctest` in the `build` directory.
+To test the example type `ctest -C Release` in the `build` directory.
 
 The provided example demonstrates the ability to generate a FlatBuffer in Python based on spreadsheet data provided by a manufacturer.
 
