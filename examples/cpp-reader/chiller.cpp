@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-int main (int argc, char *argv[]) {
+int main (int, char *argv[]) {
   FILE* file = fopen(argv[1],"rb");
   fseek(file, 0L, SEEK_END);
   int length = ftell(file);
