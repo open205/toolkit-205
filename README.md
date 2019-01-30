@@ -5,7 +5,7 @@ A toolkit to facilitate the adoption of the ASHRAE Standard 205P data exchange s
 
 **Disclaimer:** While this toolkit is developed in conjunction with the ASHRAE Standard 205 project committee, it is not an official ASHRAE product or a part of the standard.
 
-**Warning!**  As the proposed ASHRAE Standard 205P has no yet been published, the content in this repository is subject to change and should be considered unstable for application development.
+**Warning!**  As the proposed ASHRAE Standard 205P has not yet been published, the content in this repository is subject to change and should be considered unstable for application development.
 
 About ASHRAE 205
 ----------------
