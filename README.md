@@ -47,14 +47,16 @@ Finally, there are common definitions included in the *common.fbs* schema file r
 Building
 --------
 
-### Dependencies
+### Compiled Components
+
+#### Dependencies
 
 - CMake
 - Git
 - Anaconda Python 3.x (used in example)
 - C++ compiler (used in example)
 
-### Compile steps:
+#### Compile steps:
 
 From the root directory:
 
@@ -62,6 +64,20 @@ From the root directory:
 2. `cd build`
 3. `cmake ..`
 4. `cmake --build . --config Release`
+
+### Python Toolkit, tk205
+
+1. `python -m venv env`
+2. On Windows, run:
+
+    `env\Scripts\activate.bat`
+
+    On Unix or MacOS, run:
+
+    `source env/bin/activate`
+3. `pip install --editable .`
+4. `deactivate` when finished with development
+
 
 ### Products
 
