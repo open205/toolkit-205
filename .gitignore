@@ -2,3 +2,8 @@
 builds/
 build/
 ~$*.xlsx
+.eggs/
+*.egg-info/
+*/.vscode/
+*/__pycache__
+env/
