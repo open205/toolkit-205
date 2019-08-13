@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://data.ashrae.org/RS0001.schema.json",
+  "title": "ASHRAE 205 RS0001 JSON Schema",
+  "description": "A schema for ASHRAE 205 annex RS0001 Water-Cooled Chillers",
+
+  "$ref": "ASHRAE205.schema.json#/ASHRAE205",
+
+  "RS0001":{
+    "Description":{
+      "product_information":{
+        "type": "object",
+        "properties":{
+          "manufacturer":{
+            "description":"Name of the manufacturer",
+            "type": "string",
+          },
+          "manufacturer_software_version":{
+              "description":"Version of the software used to generate the performance map",
+              "type": "string",
+          },
+          "model_number":{
+              "description":"Model number for this chiller",
+              "type": "string",
+          },
+        },
+      },
+      "rating_AHRI":{}
+    },
+    "Performance":{}
+  }
+
+
+
+
+
+  }
