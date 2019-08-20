@@ -1,0 +1,31 @@
+{
+  "ASHRAE205":{
+    "RSID":"RS0001",
+    "RSVersion":"0.1.0",
+    "RSTitle":"Liquid-Cooler Chillers",
+    "ID":"UID123456789",
+    "data_timestamp":"2/4/2019 12:19",
+    "data_version":"A205DV-1",
+    "description":"Water Cooled Centrifugal Chiller",
+    "data_source":"CWI-ChilSelect",
+    "notes":"This is a JSON version of the sample RS0001 file"
+  },
+  "RS0001":{
+    "Description":{
+      "product_information":{
+        "manufacturer":"ColdWaterInc",
+        "manufacturer_software_version":"Cw.2019.01",
+        "model_number":"CC-500-VS",
+        "nominal_voltage":"460",
+        "nominal_frequency":"60",
+        "tolerance_standard":"AHRI 551/591-2015",
+        "compressor_type":"Centrifugal",
+        "drive_type":"VariableSpeed",
+        "liquid_data_source":"AHRI 551/591-2015",
+        "refrigerant_type":"R134A",
+        "hotgas_bypass_installed":"False"
+      },
+      "rating_AHRI":{}
+    }
+  }
+}

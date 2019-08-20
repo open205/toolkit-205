@@ -3,51 +3,55 @@
   "$id": "http://data.ashrae.org/ASHRAE205.schema.json",
   "title": "ASHRAE 205 JSON Schema",
   "description": "A base schema for ASHRAE 205",
-
-  "ASHRAE205":{
-    "type": "object",
-    "properties":{
-      "RSID":{
-        "description":"Representation specification identifier",
-        "type": "string",
-        "enum": ["RS0001", "RS0002", "RS0003"]
+  "type":"object",
+  "properties" :{
+    "ASHRAE205":{
+      "type": "object",
+      "properties":{
+        "RSID":{
+          "description":"Representation specification identifier",
+          "type": "string",
+          "enum": ["RS0001", "RS0002", "RS0003"],
+          "units": "m",
+          "notes": "Testing whether we can include extra fields"
+        },
+        "RSVersion":{
+          "description":"Representation specification version",
+          "type": "string",
+          "pattern": "[0-9]+\\.[0-9]+\\.[0-9]+"
+        },
+        "RSTitle":{
+          "description":"Descriptive name of Representation specification",
+          "type": "string"
+        },
+        "ID":{
+          "description":"Unique equipment identifier",
+          "type": "string",
+          "pattern": "[0-9,a-f,A-F]{8}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{12}"
+        },
+        "data_timestamp":{
+          "description":"Date of publication",
+          "type": "string",
+          "pattern":"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}Z"
+        },
+        "data_version":{
+          "description":"Free-form version identifier for this representation",
+          "type": "string"
+        },
+        "description":{
+          "description":"Free-form description of equipment (suitable for display)",
+          "type": "string"
+        },
+        "data_source":{
+          "description":"Free-form identification of the source of this data",
+          "type": "string"
+        },
+        "notes":{
+          "description":"Additional Information",
+          "type": "string"
+        }
       },
-      "RSVersion":{
-        "description":"Representation specification version",
-        "type": "string",
-        "pattern": "[0-9]+\\.[0-9]+\\.[0-9]+"
-      },
-      "RSTitle":{
-        "description":"Descriptive name of Representation specification",
-        "type": "string"
-      },
-      "ID":{
-        "description":"Unique equipment identifier",
-        "type": "string",
-        "pattern": "[0-9,a-f,A-F]{8}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{12}"
-      },
-      "data_timestamp":{
-        "description":"Date of publication",
-        "type": "string",
-        "pattern":"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}Z"
-      },
-      "data_version":{
-        "description":"Free-form version identifier for this representation",
-        "type": "string"
-      },
-      "description":{
-        "description":"Free-form description of equipment (suitable for display)",
-        "type": "string"
-      },
-      "data_source":{
-        "description":"Free-form identification of the source of this data",
-        "type": "string"
-      },
-      "notes":{
-        "description":"Additional Information",
-        "type": "string"
-      }
-    },
-    "required":["RSID","RSVersion","RSTitle","ID","data_timestamp"]
+      "required":["RSID","RSVersion","RSTitle","ID","data_timestamp"]
+    }
   }
 }

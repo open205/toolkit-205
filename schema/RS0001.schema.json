@@ -139,7 +139,7 @@
         "required":["certification_reference_number","standard_rating_version","design_net_refrigerating_capacity","design_input_power","design_COP","design_part_load_value",
           "design_evaporator_liquid_volumetric_flow_rate","design_evaporator_liquid_leaving_temperature","design_evaporator_lquid_entering_temperature","design_evaporator_liquid_differential_pressure",
           "design_condenser_liquid_volumetric_flow_rate","design_condenser_liquid_entering_temperature","design_condenser_liquid_leaving_temperature","design_condenser_liquid_dfferential_pressure",
-          "rating_reproducable_from_performance_data"]
+          "rating_reproducible_from_performance_data"]
       }
     },
     "Performance":{

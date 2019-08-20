@@ -78,7 +78,7 @@
             "type":"number",
             "exclusiveMinimum":0
           },
-          "rating_reproducable_from_performance_data":{
+          "rating_reproducible_from_performance_data":{
             "description":"Whether this rating can be reproduced using the performance data in the representation",
             "type":"boolean"
           }
@@ -120,7 +120,7 @@
             "type":"number",
             "exclusiveMinimum":0
           },
-          "rating_reproducable_from_performance_data":{
+          "rating_reproducible_from_performance_data":{
             "description":"Whether this rating can be reproduced using the performance data in the representation",
             "type":"boolean"
           }
