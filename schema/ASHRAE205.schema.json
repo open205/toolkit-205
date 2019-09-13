@@ -13,27 +13,30 @@
           "description":"Representation specification identifier",
           "type": "string",
           "enum": ["RS0001", "RS0002", "RS0003"],
-          "units": "m",
-          "notes": "Testing whether we can include extra fields more "
+          "notes": "Identifies the representation specification used to generate this representation"
         },
         "RSVersion":{
           "description":"Representation specification version",
           "type": "string",
-          "pattern": "[0-9]+\\.[0-9]+\\.[0-9]+"
+          "pattern": "[0-9]+\\.[0-9]+\\.[0-9]+",
+          "notes": "Identifies the version of the representation specification used to generate this representation"
         },
         "RSTitle":{
           "description":"Descriptive name of Representation specification",
-          "type": "string"
+          "type": "string",
+          "notes": "Copied from the title of the representation specification having the RSID and RSVersion."
         },
         "ID":{
           "description":"Unique equipment identifier",
           "type": "string",
-          "pattern": "[0-9,a-f,A-F]{8}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{12}"
+          "pattern": "[0-9,a-f,A-F]{8}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{12}",
+          "notes": "Assigned by data publisher to identify specific equipment.  ID shall remain unchanged for revised representations for the same equipment."
         },
         "data_timestamp":{
           "description":"Date of publication",
           "type": "string",
-          "pattern":"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}Z"
+          "pattern":"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}Z",
+          "notes": "Date/time of publication of this representation."
         },
         "data_version":{
           "description":"Free-form version identifier for this representation",
@@ -56,7 +59,8 @@
             {"$ref": "RS0001.schema.json#/RS0001"},
             {"$ref": "RS0002.schema.json#/RS0002"},
             {"$ref": "RS0003.schema.json#/RS0003"}
-          ]
+          ],
+          "notes": "Data Group defined by specific representation specification. E.g., 'RS0001'."
         }
       },
       "required":["RSID","RSVersion","RSTitle","ID","data_timestamp","RSInstance"]

@@ -60,26 +60,34 @@
             "SEER":{
               "description":"Seasonal Energy Efficiency Ratio as defined by AHRI 210/240",
               "type":"number",
-              "exclusiveMinimum":0
+              "exclusiveMinimum":0,
+              "units": "Btu/W-h"
             },
             "EER":{
               "description":"Energy Efficiency Ratio (A) as defined by AHRI 210/240",
               "type":"number",
-              "exclusiveMinimum":0
+              "exclusiveMinimum":0,
+              "units": "Btu/W-h",
+              "notes": "The net efficiency (accounting for fan motor heat/power) at the AHRI 'A' operating conditions"
             },
             "capacity":{
               "description":"Total cooling capacity (A) as defined by AHRI 210/240",
               "type":"number",
-              "exclusiveMinimum":0
+              "exclusiveMinimum":0,
+              "units": "Btu/h",
+              "notes": "The net capacity (accounting for fan motor heat) at the AHRI 'A' operating conditions"
             },
             "rating_fan_power_per_flow":{
               "description":"Power per air flow rate of the fan used in the AHRI 210/240 calculation of SEER and EER",
               "type":"number",
-              "exclusiveMinimum":0
+              "exclusiveMinimum":0,
+              "units": "W/(m3/s)",
+              "notes": "Used for verification of the rated SEER value (see SEER calculation procedures in AHRI 210/240)"
             },
             "rating_reproducible_from_performance_data":{
               "description":"Whether this rating can be reproduced using the performance data in the representation",
-              "type":"boolean"
+              "type":"boolean",
+              "notes": "Mark this field as yes if the rating values in this table can be reproduced using the performance data in the representation within the tolerance of the rating standard."
             }
           },
           "required":["certified_reference_number","test_standard_year","manufacturer_data_source_version","SEER","EER","capacity","rating_reproducable_from_performance_data"]
@@ -102,26 +110,34 @@
             "IEER":{
               "description":"Integrated Energy Efficiency Ratio as defined by AHRI 340/360",
               "type":"number",
-              "exclusiveMinimum":0
+              "exclusiveMinimum":0,
+              "units": "Btu/W-h"
             },
             "EER":{
               "description":"Energy Efficiency Ratio as defined by AHRI 340/360",
               "type":"number",
-              "exclusiveMinimum":0
+              "exclusiveMinimum":0,
+              "units": "Btu/W-h",
+              "notes": "Net efficiency accounts for fan motor heat/power"
             },
             "capacity":{
               "description":"Total cooling capacity as defined by AHRI 340/360",
               "type":"number",
-              "exclusiveMinimum":0
+              "exclusiveMinimum":0,
+              "units": "Btu/h",
+              "notes": "Net capacity accounts for fan motor heat"
             },
             "rating_fan_power_per_flow":{
               "description":"Power per air flow rate of the indoor fan used in the AHRI 340/360 calculation of IEER and EER",
               "type":"number",
-              "exclusiveMinimum":0
+              "exclusiveMinimum":0,
+              "units": "W/(m3/s)",
+              "notes": "Used for verification of the rated SEER value (see SEER calculation procedures in AHRI 340/360)"
             },
             "rating_reproducible_from_performance_data":{
               "description":"Whether this rating can be reproduced using the performance data in the representation",
-              "type":"boolean"
+              "type":"boolean",
+              "notes": "Mark this field as yes if the rating values in this table can be reproduced using the performance data in the representation within the tolerance of the rating standard."
             }
           },
           "required":["certified_reference_number","test_standard_year","manufacturer_data_source_version","IEER","EER","capacity","rating_reproducable_from_performance_data"]
@@ -136,7 +152,9 @@
           "nominal_volumetric_air_flow_rate":{
             "description":"Volumetric air flow rate leaving the indoor coil used to scale the flow ratios in the PerformanceMap",
             "type":"number",
-            "minimum":0
+            "minimum":0,
+            "units": "m3/s",
+            "notes": "Generally, the volumetric air flow rate under full load conditions used in AHRI testing"
           },
           "cycling_degradation_coefficient":{
             "description":"Cycling degradation coefficient (CD) as described in AHRI 210/240",
@@ -158,7 +176,8 @@
                     "items":{
                       "type":"number",
                       "minimum":0
-                    }
+                    },
+                    "units": "K"
                   },
                   "indoor_coil_entering_wet_bulb_temperature":{
                     "description":"Wet bulb temperature of the air entering the indoor coil",
@@ -166,7 +185,9 @@
                     "items":{
                       "type":"number",
                       "minimum":0
-                    }
+                    },
+                    "units": "K",
+                    "notes": "As measured immediately before entering the coil (i.e., after the fan in a blow-through configuration)."
                   },
                   "indoor_coil_entering_dry_bulb_temperature":{
                     "description":"Dry bulb temperature of the air entering the indoor coil",
@@ -174,7 +195,9 @@
                     "items":{
                       "type":"number",
                       "minimum":0
-                    }
+                    },
+                    "units": "K",
+                    "notes": "As measured immediately before entering the coil (i.e., after the fan in a blow-through configuration)."
                   },
                   "indoor_coil_volumetric_flow_ratio":{
                     "description":"Ratio of the volumetric air flow rate over the indoor coil to the nominal volumetric air flow rate",
@@ -182,7 +205,9 @@
                     "items":{
                       "type":"number",
                       "exclusiveMinimum":0
-                    }
+                    },
+                    "units": "-",
+                    "notes": "Expressed as ratio of actual (not standard) flow rate"
                   },
                   "compressor_sequence_number":{
                     "description":"Index indicating the relative order of the compressor speed/stage",
@@ -190,14 +215,16 @@
                     "items":{
                       "type":"integer",
                       "minimum":0
-                    }
+                    },
+                    "notes": "Expressed in order from initial stage/speed to final stage/speed"
                   },
                   "ambient_absolute_air_pressure":{
                     "description":"Ambient absolute air pressure",
                     "type":"array",
                     "items":{
                       "type":"number"
-                    }
+                    },
+                    "units": "Pa"
                   }
                 },
                 "required":["outdoor_coil_entering_dry_bulb_temperature","indoor_coil_entering_wet_bulb_temperature","indoor_coil_entering_dry_bulb_temperature","indoor_coil_volumetric_flow_ratio","compressor_sequence_number","ambient_absolute_air_pressure"]
@@ -212,7 +239,9 @@
                     "items":{
                       "type":"number",
                       "exclusiveMinimum":0
-                    }
+                    },
+                    "units": "W",
+                    "notes": "Does not account for heat added by the fan"
                   },
                   "gross_sensible_cooling_capacity":{
                     "description":"Sensible heat removed by the indoor coil",
@@ -220,7 +249,9 @@
                     "items":{
                       "type":"number",
                       "exclusiveMinimum":0
-                    }
+                    },
+                    "units": "W",
+                    "notes": "Does not account for heat added by the fan"
                   },
                   "gross_cooling_power":{
                     "description":"Gross power draw (of the outdoor unit)",
@@ -228,7 +259,9 @@
                     "items":{
                       "type":"number",
                       "exclusiveMinimum":0
-                    }
+                    },
+                    "units": "W",
+                    "notes": "Does not include power drawn by the indoor fan. Includes compressor, outdoor fan, and any auxiliary power used by the unit’s controls and any sump heater."
                   }
                 },
                 "required":["gross_total_cooling_capacity","gross_sensible_cooling_capacity","gross_cooling_power"]
@@ -250,7 +283,8 @@
                     "items":{
                       "type":"number",
                       "minimum":0
-                    }
+                    },
+                    "units": "K"
                   }
                 },
                 "required":["outdoor_coil_environment_dry_bulb_temperature"]
@@ -265,7 +299,9 @@
                     "items":{
                       "type":"number",
                       "minimum":0
-                    }
+                    },
+                    "units": "W",
+                    "notes": "Does not account for power drawn from the indoor fan. Includes compressor, outdoor fan, and any auxiliary power used by the unit’s controls, and any sump heater."
                   }
                 },
                 "required":["gross_power"]

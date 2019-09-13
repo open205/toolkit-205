@@ -1,0 +1,58 @@
+{
+  "ASHRAE205":{
+    "RSID":"RS0003",
+    "RSVersion":"0.1.0",
+    "RSTitle":"Fan Assembly",
+    "ID":"bcf8b859-67a3-42f4-8f8d-4e57af1ccf22",
+    "data_timestamp":"2019-09-13T00:00Z",
+    "data_version":"A205DV-1",
+    "description":"Discrete Fan",
+    "data_source":"FanSelect",
+    "notes":"This is a JSON version of the sample RS0003 file. Speeds 1-4 are Heating, 1st stage, settings (low,mlo,norm,hi).  Speeds 5-8 are Heating, 2nd stage, settings (low,mlo,norm,hi), Speeds 9-11 are Cooling, settings (low,norm,hi).",
+    "RSInstance":{
+      "Description":{
+        "product_information":{
+          "manufacturer":"XYZFurnace Co",
+          "model_number":"F060",
+          "has_motor":"true",
+          "enclosed":"true",
+          "impeller_type":"CentrifugalForwardCurved",
+          "direct_drive_impeller":"true",
+          "number_of_impellers":"1"
+        },
+        "assembly_component":{
+          "component_type": "Furnace",
+          "component_description": "Furnance HX"
+        },
+        "assembly_component":{
+          "component_type": "Filter",
+          "component_description": "Filter Section"
+        },
+        "Performance":{
+          "nominal_volumetric_air_flow_rate": "0.366",
+          "wet_surface_pressure_drop": "24.8",
+          "motor_heat_fraction": "1",
+          "power_standby": "8",
+          "performance_map_discrete":{
+            "grid_variables_discrete":{
+              "speed_number": [1,2,3,4,5,6,7,8,9,10,11],
+              "static_pressure_difference":[25,75,120,170,220]
+            },
+            "lookup_variables_discrete":{
+              "volumetric_air_flow_rate":[],
+              "input_power":[]
+            }
+          },
+          "performance_map_standby":{
+            "grid_variables_standby":{
+              "environment_dry_bulb_temperature":[]
+            },
+            "lookup_variables_standby":{
+              "input_power":[]
+            }
+          }
+        }
+      }
+    }
+  }
+}
