@@ -10,7 +10,8 @@
     "data_source":"FanSelect",
     "notes":"This is a JSON version of the sample RS0003 file. Power is shaft power.",
     "RSInstance":{
-      "Description":{
+      "RS0003":{
+        "Description":{
         "product_information":{
           "manufacturer":"ABC HVAC Co",
           "model_number":"RTU-15",
@@ -31,7 +32,8 @@
         "assembly_component":{
           "component_type": "Coil",
           "component_description": "DX Coil"
-        },
+        }
+      },
         "Performance":{
           "nominal_volumetric_air_flow_rate": "2.83",
           "wet_surface_pressure_drop": "50",

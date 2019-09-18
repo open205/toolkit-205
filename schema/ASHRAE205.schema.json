@@ -54,12 +54,7 @@
           "type": "string"
         },
         "RSInstance":{
-          "oneOf":[
-            {"$ref": "RS0001.schema.json#/RS0001"},
-            {"$ref": "RS0002.schema.json#/RS0002"},
-            {"$ref": "RS0003.schema.json#/RS0003"}
-          ],
-          "notes": "Data Group defined by specific representation specification. E.g., 'RS0001'."
+            "$ref": "RS0001.schema.json#/0001"
         }
       },
       "required":["RSID","RSVersion","RSTitle","ID","data_timestamp","RSInstance"]

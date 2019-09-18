@@ -10,7 +10,8 @@
     "data_source":"FanSelect",
     "notes":"This is a JSON version of the sample RS0003 file. Speeds 1-4 are Heating, 1st stage, settings (low,mlo,norm,hi).  Speeds 5-8 are Heating, 2nd stage, settings (low,mlo,norm,hi), Speeds 9-11 are Cooling, settings (low,norm,hi).",
     "RSInstance":{
-      "Description":{
+      "RS0003":{
+        "Description":{
         "product_information":{
           "manufacturer":"XYZFurnace Co",
           "model_number":"F060",
@@ -27,7 +28,8 @@
         "assembly_component":{
           "component_type": "Filter",
           "component_description": "Filter Section"
-        },
+        }
+      },
         "Performance":{
           "nominal_volumetric_air_flow_rate": "0.366",
           "wet_surface_pressure_drop": "24.8",
