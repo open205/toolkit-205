@@ -16,7 +16,7 @@
             "manufacturer":"ColdWaterInc",
             "manufacturer_software_version":"Cw.2019.01",
             "model_number":"CC-500-VS",
-            "nominal_voltage":"test",
+            "nominal_voltage":460,
             "nominal_frequency":60,
             "tolerance_standard":"AHRI 551/591-2015",
             "compressor_type":"centrifugal",
