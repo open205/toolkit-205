@@ -17,7 +17,7 @@
           "indoor_unit_manufacturer":"ColdAirInc",
           "indoor_unit_model_number":"AC.2019.02",
           "refrigerant_type":"R410A",
-          "compressor_type":"Variable Speed Scroll",
+          "compressor_type":"Variable Speed Scroll"
         },
         "rating_AHRI_210_240":{
           "certified_reference_number": "456789",

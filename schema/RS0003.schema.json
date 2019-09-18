@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "file:///c:/toolkit-205/schema/RS0003.schema.json",
   "title": "ASHRAE 205 RS0003 JSON Schema",
   "description": "A schema for ASHRAE 205 annex RS0003 Fan Assembly",
 
