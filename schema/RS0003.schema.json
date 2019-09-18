@@ -14,262 +14,267 @@
       "enum":["Coil","Furnace","Filter","HeatExchanger","ElectricResistanceElement","Other"]
     }
   },
-  "RS0003":{
-    "type":"object",
-    "properties" :{
-      "Description":{
-        "product_information":{
-          "type":"object",
-          "properties":{
-            "manufacturer":{
-              "description":"Name of the assembly/unit manufacturer",
-              "type":"string"
-            },
-            "model_number":{
-              "description":"Model number of the assembly / unit",
-              "type":"string"
-            },
-            "has_motor":{
-              "description":"Assembly includes a motor",
-              "type":"boolean",
-              "notes": "True indicates input power is electrical power. False implies input power is shaft power driven externally."
-            },
-            "enclosed":{
-              "description":"Fan assembly is enclosed",
-              "type":"boolean",
-              "notes": "If true, the performance data reflects the static pressure difference across the enclosure"
-            },
-            "impeller_type":{"$ref": "#/definitions/ImpellerType"},
-            "direct_drive_impeller":{
-              "description":"Motor and impeller are directly coupled",
-              "type":"boolean",
-              "notes": "False if impeller is belt driven or if assembly does not include a motor."
-            },
-            "number_of_impellers":{
-              "description":"Number of impellers included in the fan assembly",
-              "type":"integer"
-            }
-          },
-          "required":["manufacturer","model_number","has_motor","enclosed"]
-        },
-        "assembly_component":{
-          "type":"object",
-          "properties":{
-            "component_type":{"$ref": "#/definitions/ComponentType"},
-            "component_description":{
-              "description":"Informative description of the component",
-              "type":"string"
-            },
-            "component_ID":{
-              "description":"Identification number of the corresponding Standard 205 representation",
-              "type": "string",
-              "notes": "If the component has a Standard 205 representation, otherwise NULL"
-            }
-          },
-          "required":["component_type"]
-        }
-      },
-      "Performance":{
+  "0003":{
+    "type": "object",
+    "properties": {
+      "RS0003":{
         "type":"object",
-        "properties":{
-          "nominal_volumetric_air_flow_rate":{
-            "description":"Nominal air flow rate for fan assembly",
-            "type":"number",
-            "minimum":0,
-            "units": "m3/s",
-            "notes": "Nominal or rated air flow rate"
-          },
-          "wet_surface_pressure_drop":{
-            "description":"Additional static pressure drop if cooling coil component is collecting condensate",
-            "type":"number",
-            "minimum":0,
-            "units": "Pa",
-            "notes": "Corresponds to pressure drop at nominal_volumetric_air_flow_rate"
-          },
-          "motor_heat_fraction":{
-            "description":"Fraction of motor heat into the air stream",
-            "type":"number",
-            "minimum":0,
-            "maximum":1,
-            "units": "-",
-            "notes": "Used to determine amount of heat from motor (and drive)"
-          },
-          "power_standby":{
-            "description":"Assembly power draw when fan is not operating",
-            "type":"number",
-            "minimum":0,
-            "units": "W"
-          },
-          "oneOf":[
-            {
-              "performance_map_continuous":{
-              "description":"Data group describing fan performance in terms of air flow, static pressure, impeller speed, and fan electrical or shaft power",
+        "properties" :{
+          "Description":{
+            "product_information":{
               "type":"object",
               "properties":{
-                "grid_variables_continuous":{
-                  "description":"Data group describing grid variables for continuous fan performance",
-                  "type":"object",
-                  "properties":{
-                    "volumetric_air_flow_rate":{
-                      "description":"Volumetric air flow rate through fan assembly",
-                      "type":"array",
-                      "items":{
-                        "type":"number",
-                        "minimum":0
-                      },
-                      "units": "m3/s"
-                    },
-                    "static_pressure_difference":{
-                      "description":"Static pressure across fan assembly at dry coil conditions",
-                      "type":"array",
-                      "items":{
-                        "type":"number",
-                        "minimum":0
-                      },
-                      "units": "Pa",
-                      "notes": "Or external static"
-                    }
-                  },
-                  "required":["volumetric_air_flow_rate","static_pressure_difference"]
+                "manufacturer":{
+                  "description":"Name of the assembly/unit manufacturer",
+                  "type":"string"
                 },
-                "lookup_variables_continuous":{
-                  "description":"Data group describing lookup variables for continuous fan performance",
-                  "type":"object",
-                  "properties":{
-                    "impeller_speed":{
-                      "description":"Rotational speed of fan impeller",
-                      "type":"array",
-                      "items":{
-                        "type":"number",
-                        "minimum":0
-                      },
-                      "units": "rev/s"
-                    },
-                    "input_power":{
-                      "description":"Power input to fan assembly",
-                      "type":"array",
-                      "items":{
-                        "type":"number",
-                        "minimum":0
-                      },
-                      "units": "W",
-                      "notes": "Shaft or electric power depending on 'has_motor'"
-                    }
-                  },
-                  "required":["lookup_variables_continuous","input_power"]
+                "model_number":{
+                  "description":"Model number of the assembly / unit",
+                  "type":"string"
+                },
+                "has_motor":{
+                  "description":"Assembly includes a motor",
+                  "type":"boolean",
+                  "notes": "True indicates input power is electrical power. False implies input power is shaft power driven externally."
+                },
+                "enclosed":{
+                  "description":"Fan assembly is enclosed",
+                  "type":"boolean",
+                  "notes": "If true, the performance data reflects the static pressure difference across the enclosure"
+                },
+                "impeller_type":{"$ref": "#/definitions/ImpellerType"},
+                "direct_drive_impeller":{
+                  "description":"Motor and impeller are directly coupled",
+                  "type":"boolean",
+                  "notes": "False if impeller is belt driven or if assembly does not include a motor."
+                },
+                "number_of_impellers":{
+                  "description":"Number of impellers included in the fan assembly",
+                  "type":"integer"
                 }
               },
-              "required":["grid_variables_continuous","lookup_variables_continuous"],
-              "notes": "Applies for fan assemblies that can operate continuously over a range of shaft speeds. "
-              }
+              "required":["manufacturer","model_number","has_motor","enclosed"]
             },
-            {
-              "performance_map_discrete":{
-                "description":"Data group describing fan performance in terms of speed setting, static pressure, air flow, and power",
-                "type":"object",
-                "properties":{
-                  "grid_variables_discrete":{
-                    "description":"Data group describing grid variables for discrete fan performance",
-                    "type":"object",
-                    "properties":{
-                      "speed_number":{
-                        "description":"Number indicating discrete speed of fan impeller",
-                        "type":"array",
-                        "items":{
-                          "type":"integer",
-                          "minimum":0
-                        },
-                        "units": "-",
-                        "notes": "In rank order"
-                      },
-                      "static_pressure_difference":{
-                        "description":"Static pressure across fan assembly at dry coil conditions",
-                        "type":"array",
-                        "items":{
-                          "type":"number",
-                          "minimum":0
-                        },
-                        "units": "Pa",
-                        "notes": "Or external static"
-                      }
-                    },
-                    "required":["speed_number","static_pressure_difference"],
-                    "notes": "Applies for fan assemblies that operate at discrete rotational speeds, either with or without flow control feature"
-                  },
-                  "lookup_variables_discrete":{
-                    "discription":"Data group describing lookup variables for discrete fan performance",
-                    "type":"object",
-                    "properties":{
-                      "volumetric_air_flow_rate":{
-                        "description":"Volumetric air flow rate through fan assembly",
-                        "type":"array",
-                        "items":{
-                          "type":"number",
-                          "minimum":0
-                        },
-                        "units": "m3/s"
-                      },
-                      "input_power":{
-                        "description":"Power input to fan assembly",
-                        "type":"array",
-                        "items":{
-                          "type":"number",
-                          "minimum":0
-                        },
-                        "units": "W",
-                        "notes": "Shaft or electric power depending on 'has_motor'"
-                      }
-                    },
-                    "required":["volumetric_air_flow_rate","input_power"]
-                  }
+            "assembly_component":{
+              "type":"object",
+              "properties":{
+                "component_type":{"$ref": "#/definitions/ComponentType"},
+                "component_description":{
+                  "description":"Informative description of the component",
+                  "type":"string"
                 },
-                "required":["grid_variables_discrete","lookup_variables_discrete"]
-              }
+                "component_ID":{
+                  "description":"Identification number of the corresponding Standard 205 representation",
+                  "type": "string",
+                  "notes": "If the component has a Standard 205 representation, otherwise NULL"
+                }
+              },
+              "required":["component_type"]
             }
-          ],
-          "performance_map_standby":{
-            "description":"Data group describing standby performance",
+          },
+          "Performance":{
             "type":"object",
             "properties":{
-              "grid_variables_standby":{
-                "description":"Data group defining the grid variables for standby performance",
-                "type":"object",
-                "properties":{
-                  "environment_dry_bulb_temperature":{
-                    "description":"Dry bulb temperature of the air in the environment",
-                    "type":"array",
-                    "items":{
-                      "type":"number",
-                      "minimum":0
-                    },
-                    "units": "K"
-                  }
-                },
-                "required":["environment_dry_bulb_temperature"]
+              "nominal_volumetric_air_flow_rate":{
+                "description":"Nominal air flow rate for fan assembly",
+                "type":"number",
+                "minimum":0,
+                "units": "m3/s",
+                "notes": "Nominal or rated air flow rate"
               },
-              "lookup_variables_standby":{
-                "description":"Data group defining the grid variables for standby performance",
-                "type":"object",
-                "properties":{
-                  "input_power":{
-                    "description":"Total power consumed by the fan assembly when not running.",
-                    "type":"array",
-                    "items":{
-                      "type":"number",
-                      "minimum":0
+              "wet_surface_pressure_drop":{
+                "description":"Additional static pressure drop if cooling coil component is collecting condensate",
+                "type":"number",
+                "minimum":0,
+                "units": "Pa",
+                "notes": "Corresponds to pressure drop at nominal_volumetric_air_flow_rate"
+              },
+              "motor_heat_fraction":{
+                "description":"Fraction of motor heat into the air stream",
+                "type":"number",
+                "minimum":0,
+                "maximum":1,
+                "units": "-",
+                "notes": "Used to determine amount of heat from motor (and drive)"
+              },
+              "power_standby":{
+                "description":"Assembly power draw when fan is not operating",
+                "type":"number",
+                "minimum":0,
+                "units": "W"
+              },
+              "oneOf":[
+                {
+                  "performance_map_continuous":{
+                  "description":"Data group describing fan performance in terms of air flow, static pressure, impeller speed, and fan electrical or shaft power",
+                  "type":"object",
+                  "properties":{
+                    "grid_variables_continuous":{
+                      "description":"Data group describing grid variables for continuous fan performance",
+                      "type":"object",
+                      "properties":{
+                        "volumetric_air_flow_rate":{
+                          "description":"Volumetric air flow rate through fan assembly",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "minimum":0
+                          },
+                          "units": "m3/s"
+                        },
+                        "static_pressure_difference":{
+                          "description":"Static pressure across fan assembly at dry coil conditions",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "minimum":0
+                          },
+                          "units": "Pa",
+                          "notes": "Or external static"
+                        }
+                      },
+                      "required":["volumetric_air_flow_rate","static_pressure_difference"]
                     },
-                    "units": "W"
+                    "lookup_variables_continuous":{
+                      "description":"Data group describing lookup variables for continuous fan performance",
+                      "type":"object",
+                      "properties":{
+                        "impeller_speed":{
+                          "description":"Rotational speed of fan impeller",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "minimum":0
+                          },
+                          "units": "rev/s"
+                        },
+                        "input_power":{
+                          "description":"Power input to fan assembly",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "minimum":0
+                          },
+                          "units": "W",
+                          "notes": "Shaft or electric power depending on 'has_motor'"
+                        }
+                      },
+                      "required":["lookup_variables_continuous","input_power"]
+                    }
+                  },
+                  "required":["grid_variables_continuous","lookup_variables_continuous"],
+                  "notes": "Applies for fan assemblies that can operate continuously over a range of shaft speeds. "
                   }
                 },
-                "required":["input_power"]
+                {
+                  "performance_map_discrete":{
+                    "description":"Data group describing fan performance in terms of speed setting, static pressure, air flow, and power",
+                    "type":"object",
+                    "properties":{
+                      "grid_variables_discrete":{
+                        "description":"Data group describing grid variables for discrete fan performance",
+                        "type":"object",
+                        "properties":{
+                          "speed_number":{
+                            "description":"Number indicating discrete speed of fan impeller",
+                            "type":"array",
+                            "items":{
+                              "type":"integer",
+                              "minimum":0
+                            },
+                            "units": "-",
+                            "notes": "In rank order"
+                          },
+                          "static_pressure_difference":{
+                            "description":"Static pressure across fan assembly at dry coil conditions",
+                            "type":"array",
+                            "items":{
+                              "type":"number",
+                              "minimum":0
+                            },
+                            "units": "Pa",
+                            "notes": "Or external static"
+                          }
+                        },
+                        "required":["speed_number","static_pressure_difference"],
+                        "notes": "Applies for fan assemblies that operate at discrete rotational speeds, either with or without flow control feature"
+                      },
+                      "lookup_variables_discrete":{
+                        "discription":"Data group describing lookup variables for discrete fan performance",
+                        "type":"object",
+                        "properties":{
+                          "volumetric_air_flow_rate":{
+                            "description":"Volumetric air flow rate through fan assembly",
+                            "type":"array",
+                            "items":{
+                              "type":"number",
+                              "minimum":0
+                            },
+                            "units": "m3/s"
+                          },
+                          "input_power":{
+                            "description":"Power input to fan assembly",
+                            "type":"array",
+                            "items":{
+                              "type":"number",
+                              "minimum":0
+                            },
+                            "units": "W",
+                            "notes": "Shaft or electric power depending on 'has_motor'"
+                          }
+                        },
+                        "required":["volumetric_air_flow_rate","input_power"]
+                      }
+                    },
+                    "required":["grid_variables_discrete","lookup_variables_discrete"]
+                  }
+                }
+              ],
+              "performance_map_standby":{
+                "description":"Data group describing standby performance",
+                "type":"object",
+                "properties":{
+                  "grid_variables_standby":{
+                    "description":"Data group defining the grid variables for standby performance",
+                    "type":"object",
+                    "properties":{
+                      "environment_dry_bulb_temperature":{
+                        "description":"Dry bulb temperature of the air in the environment",
+                        "type":"array",
+                        "items":{
+                          "type":"number",
+                          "minimum":0
+                        },
+                        "units": "K"
+                      }
+                    },
+                    "required":["environment_dry_bulb_temperature"]
+                  },
+                  "lookup_variables_standby":{
+                    "description":"Data group defining the grid variables for standby performance",
+                    "type":"object",
+                    "properties":{
+                      "input_power":{
+                        "description":"Total power consumed by the fan assembly when not running.",
+                        "type":"array",
+                        "items":{
+                          "type":"number",
+                          "minimum":0
+                        },
+                        "units": "W"
+                      }
+                    },
+                    "required":["input_power"]
+                  }
+                },
+                "required":["grid_variables_standby","lookup_variables_standby"]
               }
             },
-            "required":["grid_variables_standby","lookup_variables_standby"]
+            "required":["nominal_volumetric_air_flow_rate","wet_surface_pressure_drop","motor_heat_fraction","power_standby","performance_map_standby"]
           }
         },
-        "required":["nominal_volumetric_air_flow_rate","wet_surface_pressure_drop","motor_heat_fraction","power_standby","performance_map_standby"]
+        "required":["Performance"]
       }
-    },
-    "required":["Performance"]
+    }
   }
 }
