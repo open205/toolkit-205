@@ -1,0 +1,13 @@
+
+language: python
+matrix:
+  include:
+  - os: osx
+    osx_image: xcode10.1
+  - os: linux
+    dist: xenial
+  - os: windows
+
+script:
+- cd schema
+- python TestValidate.py
