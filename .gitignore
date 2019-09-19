@@ -7,3 +7,4 @@ build/
 */.vscode/
 */__pycache__
 env/
+.vscode/
