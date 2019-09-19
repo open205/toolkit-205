@@ -8,6 +8,10 @@ matrix:
     dist: xenial
   - os: windows
 
+install:
+  - pip install -r requiremetns.txt
+  - pip install .
+
 script:
 - cd schema
 - python TestValidate.py
