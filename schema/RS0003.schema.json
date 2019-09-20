@@ -13,15 +13,13 @@
       "enum":["Coil","Furnace","Filter","HeatExchanger","ElectricResistanceElement","Other"]
     }
   },
-  "0003":{
-    "type": "object",
-    "properties": {
-      "RS0003":{
-        "type":"object",
-        "properties" :{
-          "Description":{
-            "product_information":{
-              "type":"object",
+  "RS0003":{
+    "version": "0.1.0",
+    "type":"object",
+    "properties" :{
+      "Description":{
+        "product_information":{
+          "type":"object",
               "properties":{
                 "manufacturer":{
                   "description":"Name of the assembly/unit manufacturer",
@@ -274,6 +272,4 @@
         },
         "required":["Performance"]
       }
-    }
-  }
 }

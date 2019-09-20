@@ -54,7 +54,7 @@
           "type": "string"
         },
         "RSInstance":{
-            "$ref": "RS0001.schema.json#/0001"
+            "$ref": "RS0001.schema.json#/RS0001"
         }
       },
       "required":["RSID","RSVersion","RSTitle","ID","data_timestamp","RSInstance"]

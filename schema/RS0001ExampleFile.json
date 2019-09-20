@@ -10,7 +10,6 @@
     "data_source":"CWI-ChilSelect",
     "notes":"This is a JSON version of the sample RS0001 file",
     "RSInstance":{
-      "RS0001":{
         "Description":{
           "product_information":{
             "manufacturer":"ColdWaterInc",
@@ -43,7 +42,7 @@
             "rating_reproducible_from_performance_data": false
           }
         },
-          "Performance":{
+        "Performance":{
             "evaporator_liquid_type": {
               "liquid_components":["water",1],
               "concentration_type":"byVolume"
@@ -81,11 +80,9 @@
               },
               "lookup_variables_standby":{
                 "input_power":[]
-              }
             }
           }
-
-      }
+        }
     }
   }
 }

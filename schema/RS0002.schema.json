@@ -13,10 +13,8 @@
       "enum":["BlowThrough","DrawThrough"]
     }
   },
- "0002":{
-   "type":"object",
-   "properties":{
-     "RS0002":{
+  "RS0002":{
+        "version": "0.1.0",
         "type":"object",
         "properties" :{
           "Description":{
@@ -317,6 +315,4 @@
         },
         "required":["Performance"]
       }
-    }
-  }
 }

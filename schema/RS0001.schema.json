@@ -15,10 +15,7 @@
       "enum":["AHRI_550_590_2015","AHRI_551_591_2015","AHRI_550_590_2015_Addendum1","AHRI_551_591_2015_Addendum1","AHRI_550_590_2018","AHRI_551_591_2018"]
     }
   },
-  "0001":{
-    "type":"object",
-    "properties":{
-    "RS0001":{
+  "RS0001":{
       "version": "0.1.0",
       "type":"object",
       "properties" :{
@@ -407,6 +404,5 @@
         }
       }
     }
-  }
-  }
+
 }
