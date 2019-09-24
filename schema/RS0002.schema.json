@@ -40,7 +40,8 @@
                 "refrigerant_type":{"$ref": "definitions.schema.json#/definitions/RefrigerantType"},
                 "compressor_type":{"$ref": "definitions.schema.json#/definitions/CompressorType"}
               },
-              "required":["outdoor_unit_manufacturer","outdoor_unit_model_number"]
+              "required":["outdoor_unit_manufacturer","outdoor_unit_model_number"],
+              "additionalProperties":false
             },
             "rating_AHRI_210_240":{
               "type":"object",
@@ -90,7 +91,8 @@
                   "notes": "Mark this field as yes if the rating values in this table can be reproduced using the performance data in the representation within the tolerance of the rating standard."
                 }
               },
-              "required":["certified_reference_number","test_standard_year","manufacturer_data_source_version","SEER","EER","capacity","rating_reproducable_from_performance_data"]
+              "required":["certified_reference_number","test_standard_year","manufacturer_data_source_version","SEER","EER","capacity","rating_reproducable_from_performance_data"],
+              "additionalProperties":false
             },
             "rating_AHRI_340_360":{
               "type":"object",
@@ -140,7 +142,8 @@
                   "notes": "Mark this field as yes if the rating values in this table can be reproduced using the performance data in the representation within the tolerance of the rating standard."
                 }
               },
-              "required":["certified_reference_number","test_standard_year","manufacturer_data_source_version","IEER","EER","capacity","rating_reproducable_from_performance_data"]
+              "required":["certified_reference_number","test_standard_year","manufacturer_data_source_version","IEER","EER","capacity","rating_reproducable_from_performance_data"],
+              "additionalProperties":false
             }
           },
           "Performance":{
@@ -227,7 +230,8 @@
                         "units": "Pa"
                       }
                     },
-                    "required":["outdoor_coil_entering_dry_bulb_temperature","indoor_coil_entering_wet_bulb_temperature","indoor_coil_entering_dry_bulb_temperature","indoor_coil_volumetric_flow_ratio","compressor_sequence_number","ambient_absolute_air_pressure"]
+                    "required":["outdoor_coil_entering_dry_bulb_temperature","indoor_coil_entering_wet_bulb_temperature","indoor_coil_entering_dry_bulb_temperature","indoor_coil_volumetric_flow_ratio","compressor_sequence_number","ambient_absolute_air_pressure"],
+                    "additionalProperties":false
                   },
                   "lookup_variables_cooling":{
                     "description":"Data group defining the lookup variables for cooling performance",
@@ -264,10 +268,12 @@
                         "notes": "Does not include power drawn by the indoor fan. Includes compressor, outdoor fan, and any auxiliary power used by the unit’s controls and any sump heater."
                       }
                     },
-                    "required":["gross_total_cooling_capacity","gross_sensible_cooling_capacity","gross_cooling_power"]
+                    "required":["gross_total_cooling_capacity","gross_sensible_cooling_capacity","gross_cooling_power"],
+                    "additionalProperties":false
                   }
                 },
-                "required":["grid_variables_cooling","lookup_variables_cooling"]
+                "required":["grid_variables_cooling","lookup_variables_cooling"],
+                "additionalProperties":false
               },
               "performance_map_standby":{
                 "description":"Data group describing standby performance",
@@ -287,7 +293,8 @@
                         "units": "K"
                       }
                     },
-                    "required":["outdoor_coil_environment_dry_bulb_temperature"]
+                    "required":["outdoor_coil_environment_dry_bulb_temperature"],
+                    "additionalProperties":false
                   },
                   "lookup_variables_standby":{
                     "description":"Data group defining the grid variables for standby performance",
@@ -304,15 +311,19 @@
                         "notes": "Does not account for power drawn from the indoor fan. Includes compressor, outdoor fan, and any auxiliary power used by the unit’s controls, and any sump heater."
                       }
                     },
-                    "required":["gross_power"]
+                    "required":["gross_power"],
+                    "additionalProperties":false
                   }
                 },
-                "required":["grid_variables_standby","lookup_variables_standby"]
+                "required":["grid_variables_standby","lookup_variables_standby"],
+                "additionalProperties":false
               }
             },
-            "required":["compressor_control_method","fan_position","nominal_volumetric_air_flow_rate","cycling_degradation_coefficient","performance_map_cooling","performance_map_standby"]
+            "required":["compressor_control_method","fan_position","nominal_volumetric_air_flow_rate","cycling_degradation_coefficient","performance_map_cooling","performance_map_standby"],
+            "additionalProperties":false
           }
         },
-        "required":["Performance"]
+        "required":["Performance"],
+        "additionalProperties":false
       }
 }

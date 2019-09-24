@@ -72,7 +72,8 @@
                   "type":"boolean"
                 }
               },
-              "required":["manufacturer","model_number"]
+              "required":["manufacturer","model_number"],
+              "additionalProperties":false
             },
             "rating_AHRI":{
               "type": "object",
@@ -177,7 +178,8 @@
                 "design_condenser_liquid_volumetric_flow_rate","design_condenser_liquid_entering_temperature","design_condenser_liquid_leaving_temperature","design_condenser_liquid_dfferential_pressure",
                 "rating_reproducible_from_performance_data"]
             }
-          }
+          },
+          "additionalProperties":false
         },
         "Performance":{
           "type": "object",
@@ -260,7 +262,8 @@
                       "notes": "Ratio of net_evaporator_capacity to the maximum evaporator capacity at the same operating conditions"
                     }
                   },
-                  "required":["evaporator_liquid_volumetric_flow_rate","evaporator_liquid_leaving_temperature","condenser_liquid_volumetric_flow_rate","condenser_liquid_entering_temperature","net_evaporator_capacity_fraction"]
+                  "required":["evaporator_liquid_volumetric_flow_rate","evaporator_liquid_leaving_temperature","condenser_liquid_volumetric_flow_rate","condenser_liquid_entering_temperature","net_evaporator_capacity_fraction"],
+                  "additionalProperties":false
                 },
                 "lookup_variables_cooling":{
                   "description":"Data group defining the lookup variables for cooling performance",
@@ -354,10 +357,12 @@
                     }
                   },
                   "required":["input_power","net_evaporator_capacity","net_condenser_capacity","evaporator_liquid_entering_temperature","condenser_liquid_leaving_temperature",
-                  "evaporator_liquid_differential_pressure","condenser_liquid_differential_pressure","oil_cooler_heat","motor_controller_heat"]
+                  "evaporator_liquid_differential_pressure","condenser_liquid_differential_pressure","oil_cooler_heat","motor_controller_heat"],
+                  "additionalProperties":false
                 }
               },
-              "required":["grid_variables_cooling","lookup_variables_cooling"]
+              "required":["grid_variables_cooling","lookup_variables_cooling"],
+              "additionalProperties":false
             },
             "performance_map_standby":{
               "description":"Data group describing standby performance",
@@ -377,7 +382,8 @@
                       "units": "K"
                     }
                   },
-                  "required":["chiller_environment_dry_bulb_temperature"]
+                  "required":["chiller_environment_dry_bulb_temperature"],
+                  "additionalProperties":false
                 },
                 "lookup_variables_standby":{
                   "description":"Data group defining the lookup variables for standby performance",
@@ -394,15 +400,19 @@
                       "notes": "Power consumed by chiller during off cycle. An example is a VSD cooling fan or sump heater."
                     }
                   },
-                  "required":["input_power"]
+                  "required":["input_power"],
+                  "additionalProperties":false
                 }
               },
-              "required":["grid_variables_standby","lookup_variables_standby"]
+              "required":["grid_variables_standby","lookup_variables_standby"],
+              "additionalProperties":false
             }
           },
-          "required":["evaporator_liquid_type","condenser_liquid_type","evaporator_fouling_factor","condenser_fouling_factor","performance_map_cooling","performance_map_standby"]
+          "required":["evaporator_liquid_type","condenser_liquid_type","evaporator_fouling_factor","condenser_fouling_factor","performance_map_cooling","performance_map_standby"],
+          "additionalProperties":false
         }
-      }
+      },
+      "additionalProperties":false
     }
 
 }

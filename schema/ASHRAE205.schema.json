@@ -61,7 +61,9 @@
           ]
         }
       },
-      "required":["RSID","RSVersion","RSTitle","ID","data_timestamp","RSInstance"]
+      "required":["RSID","RSVersion","RSTitle","ID","data_timestamp","RSInstance"],
+      "additionalProperties":false
     }
-  }
+  },
+  "additionalProperties":false
 }
