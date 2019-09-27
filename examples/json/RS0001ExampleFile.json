@@ -10,6 +10,7 @@
     "data_source":"CWI-ChilSelect",
     "notes":"This is a JSON version of the sample RS0001 file",
     "RSInstance":{
+      "RS0001":{
         "Description":{
           "product_information":{
             "manufacturer":"ColdWaterInc",
@@ -83,6 +84,7 @@
             }
           }
         }
+      }
     }
   }
 }

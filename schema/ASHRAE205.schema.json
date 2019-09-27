@@ -55,9 +55,9 @@
         },
         "RSInstance":{
           "oneOf":[
-            {"$ref": "RS0001.schema.json#/RS0001"},
-            {"$ref": "RS0002.schema.json#/RS0002"},
-            {"$ref": "RS0003.schema.json#/RS0003"}
+            {"$ref": "RS0001.schema.json#/0001Spec"},
+            {"$ref": "RS0002.schema.json#/0002Spec"},
+            {"$ref": "RS0003.schema.json#/0003Spec"}
           ]
         }
       },
