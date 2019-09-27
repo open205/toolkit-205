@@ -17,7 +17,7 @@
           "indoor_unit_manufacturer":"ColdAirInc",
           "indoor_unit_model_number":"AC.2019.02",
           "refrigerant_type":"R410A",
-          "compressor_type":"Variable Speed Scroll"
+          "compressor_type":"scroll"
         },
         "rating_AHRI_210_240":{
           "certified_reference_number": "456789",
@@ -33,8 +33,8 @@
       "Performance":{
           "compressor_control_method": "Dynamic",
           "fan_position": "BlowThrough",
-          "nominal_volumetric_air_flow_rate": "0.59",
-          "cycling_degradation_coefficient": "0.25",
+          "nominal_volumetric_air_flow_rate": 0.59,
+          "cycling_degradation_coefficient": 0.25,
           "performance_map_cooling":{
             "grid_variables_cooling":{
               "outdoor_coil_entering_dry_bulb_temperature": [297.05,302.55,308.15,313.75,319.25],

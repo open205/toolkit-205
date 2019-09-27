@@ -37,8 +37,8 @@ def docschema(o):
 # Validate
 @cli.command('validate', help="Perform all validation tests and generate text report to stdout.")
 @click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False))
-def validate(i):
-    pass
+def validate(input):
+    tk205.validate(input.name)
 
 # export
 @cli.command('export', help="Generate simulation input models in specific simulation tool syntax (not yet functional).")
