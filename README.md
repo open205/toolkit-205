@@ -26,15 +26,10 @@ The Standard is intended to support the following use cases:
 
 Generally, a data publisher (e.g., manufacturer) provides an ASHRAE Standard 205 representation of a specific piece of equipment that the application user can load into compliant performance simulation software.
 
-Why FlatBuffers?
-----------------
-
-[FlatBuffers](http://google.github.io/flatbuffers/) is a computationally fast and memory efficient cross platform serialization library. It uses a defined schema to generate minimal source code for several languages including: C/C++, Python, Java, and JavaScript.
-
 Supported Equipment
 -------------------
 
-Each type of equipment has a corresponding FlatBuffer schema file (*.fbs):
+Each type of equipment has a corresponding schema file (*.schema.json):
 
 - **RS0001** Liquid-Cooled Chillers
 - **RS0002** Unitary Cooling Air-Conditioning Equipment
@@ -46,24 +41,6 @@ Finally, there are common definitions included in the *common.fbs* schema file r
 
 Building
 --------
-
-### Compiled Components
-
-#### Dependencies
-
-- CMake
-- Git
-- Anaconda Python 3.x (used in example)
-- C++ compiler (used in example)
-
-#### Compile steps:
-
-From the root directory:
-
-1. `mkdir build`
-2. `cd build`
-3. `cmake ..`
-4. `cmake --build . --config Release`
 
 ### Python Toolkit, tk205
 
@@ -81,18 +58,9 @@ From the root directory:
 
 ### Products
 
-Currently, the build process will produce:
-
-- C++ language files for reading/writing ASHRAE 205 FlatBuffer files
-- Python language files for reading/writing ASHRAE 205 FlatBuffer files
-- Binary and JSON versions of the schema
-- An example C++ program to read an RS0001 (i.e., Chiller) representation.
+TODO
 
 Example Usage
 -------------
 
-To test the example type `ctest -C Release` in the `build` directory.
-
-The provided example demonstrates the ability to generate a FlatBuffer in Python based on spreadsheet data provided by a manufacturer.
-
-The FlatBuffer is then read into C++ demonstrating general functionality of the data exchange and use in native C++ structures.
+TODO

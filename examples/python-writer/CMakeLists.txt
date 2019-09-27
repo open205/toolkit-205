@@ -1,4 +1,0 @@
-add_test(NAME python-writer-test
-  COMMAND python chiller.py "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}"
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
