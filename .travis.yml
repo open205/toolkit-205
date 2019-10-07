@@ -33,7 +33,7 @@ matrix:
       - python -m pip install pipenv
 
 install:
-  - pipenv install
+  - pipenv install --dev
 
 script:
 - pipenv run pytest
