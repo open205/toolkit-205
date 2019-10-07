@@ -57,8 +57,8 @@
                   "additionalProperties":false
                 },
                 "assembly_component":{
-                  "type":"object",
-                  "properties":{
+                  "type":"array",
+                  "list":{
                     "component_type":{"$ref": "#/definitions/ComponentType"},
                     "component_description":{
                       "description":"Informative description of the component",
