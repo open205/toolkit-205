@@ -11,6 +11,3 @@ click = "*"
 jsonschema = "*"
 pytest = "*"
 tk205 = {editable = true,path = "."}
-
-[requires]
-python_version = "3.6"
