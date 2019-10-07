@@ -20,9 +20,8 @@ matrix:
         # update: true
         packages: python3
     before_install:
-      - python3 -m pip install --upgrade virtualenv
-      - virtualenv -p python3 --system-site-packages "$HOME/venv"
-      - source "$HOME/venv/bin/activate"
+      - python3 -m pip install pipenv
+      - pipenv shell
   - os: linux
     language: python
     dist: xenial
@@ -34,9 +33,7 @@ matrix:
       - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
 
 install:
-  - pip install -r requirements.txt
-  - pip install .
+  - pipenv install
 
 script:
-- cd schema
-- python TestValidate.py
+- pytest
