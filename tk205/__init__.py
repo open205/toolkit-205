@@ -6,12 +6,12 @@ import os
 import posixpath
 
 def validate(file):
-    abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','schema'))
+    abs_path = uri_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','schema'))
 
     if os.sep != posixpath.sep:
-        abs_path = posixpath.sep + abs_path
+        uri_path = posixpath.sep + uri_path
 
-    resolver = jsonschema.RefResolver(f'file://{abs_path}/', None)
+    resolver = jsonschema.RefResolver(f'file://{uri_path}/', None)
     with open(os.path.join(abs_path,"..","schema","ASHRAE205.schema.json"), "r") as read_file:
         schema = json.load(read_file)
         with open(file, "r") as test_file:
