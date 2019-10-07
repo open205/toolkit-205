@@ -21,7 +21,6 @@ matrix:
         packages: python3
     before_install:
       - python3 -m pip install pipenv
-      - pipenv shell
   - os: linux
     language: python
     dist: xenial
@@ -31,8 +30,7 @@ matrix:
     before_install:
       - choco install python3
       - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
-      - python3 -m pip install pipenv
-      - pipenv shell
+      - python -m pip install pipenv
 
 install:
   - pipenv install
