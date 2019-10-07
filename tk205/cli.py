@@ -18,21 +18,21 @@ def cli():
 @cli.command('translate', help="Translate a representation specification between file formats.")
 @click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False))
 @click.option('-o', '--output', help="Output file with extension.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
-def translate(i, o):
-    pass
+def translate(input, output):
+    tk205.translate(input.name, output.name)
 
 # Report
 @cli.command('report', help="Create human-readable report based on input representation.")
 @click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False))
 @click.option('-o', '--output', help="Output report path WITHOUT extension (pdf implied).",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
-def report(i, o):
-    pass
+def report(input, output):
+    print("Report functionality not yet implemented.")
 
 # Document Schema
 @cli.command('docschema', help="Generate repspec-style documentation from schema information.")
 @click.option('-o', '--output', help="Output document path WITHOUT extension (docx implied?).",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
-def docschema(o):
-    pass
+def docschema(output):
+    print("Doc Schema functionality not yet implemented.")
 
 # Validate
 @cli.command('validate', help="Perform all validation tests and generate text report to stdout.")
@@ -45,5 +45,5 @@ def validate(input):
 @click.option('-s', '--syntax', help="Choice of simulation tool syntax.", type=click.Choice(['DOE-2','EnergyPlus','TRNSYS']))
 @click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False))
 @click.option('-o', '--output', help="Output report path WITHOUT extension (implied by style).",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
-def export(s, i, o):
-    pass
+def export(syntax, input, output):
+    print("Export functionality not yet implemented.")

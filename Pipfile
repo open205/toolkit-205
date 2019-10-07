@@ -10,4 +10,6 @@ pytest = "*"
 [packages]
 click = "*"
 jsonschema = "*"
+cbor2 = "*"
+
 tk205 = {editable = true,path = "."}
