@@ -44,21 +44,23 @@ Building
 
 ### Python Toolkit, tk205
 
-1. `python -m venv env`
-2. On Windows, run:
+We are currently supporting python 3.x.
 
-    `env\Scripts\activate.bat`
+In order to contribute to Toolkit 205, you will need to set up a consistent virtual environment for testing.
+This project uses `pipenv` to create a virtual python environment and install the required dependencies.
+Install `pipenv` through `pip`:
 
-    On Unix or MacOS, run:
+`pip install pipenv`
 
-    `source env/bin/activate`
-3. `pip install --editable .`
-4. `deactivate` when finished with development
+With `pipenv` installed, you may now create the virtual environment (defined in the `Pipfile`) needed to install and test `tk205`:
+
+1. `pipenv install --dev`
+2. `pipenv run pytest`
 
 
 ### Products
 
-TODO
+tk205 is both a python module and a command line tool.
 
 Example Usage
 -------------
