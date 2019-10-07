@@ -5,9 +5,9 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+pytest = "*"
 
 [packages]
 click = "*"
 jsonschema = "*"
-pytest = "*"
 tk205 = {editable = true,path = "."}
