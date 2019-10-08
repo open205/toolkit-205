@@ -22,7 +22,7 @@
           "version": "0.1.0",
           "type":"object",
           "properties" :{
-            "Description":{
+            "description":{
               "type":"object",
               "properties":{
                 "product_information":{
@@ -184,7 +184,7 @@
               },
               "additionalProperties":false
             },
-            "Performance":{
+            "performance":{
               "type": "object",
               "properties":{
                 "evaporator_liquid_type":{"$ref": "definitions.schema.json#/definitions/LiquidMixture"},

@@ -20,7 +20,7 @@
         "version": "0.1.0",
         "type":"object",
         "properties" :{
-          "Description":{
+          "description":{
             "product_information":{
               "type":"object",
                   "properties":{
@@ -74,7 +74,7 @@
                   "additionalProperties":false
                 }
               },
-              "Performance":{
+              "performance":{
                 "type":"object",
                 "properties":{
                   "nominal_volumetric_air_flow_rate":{

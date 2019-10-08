@@ -20,7 +20,7 @@
             "version": "0.1.0",
             "type":"object",
             "properties" :{
-              "Description":{
+              "description":{
                 "type": "object",
                 "properties":{
                   "product_information":{
@@ -153,7 +153,7 @@
                 },
                 "additionalProperties": false
               },
-              "Performance":{
+              "performance":{
                 "type":"object",
                 "properties":{
                   "compressor_control_method":{"$ref": "#/definitions/CompressorControlMethod"},

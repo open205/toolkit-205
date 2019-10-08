@@ -11,7 +11,7 @@
     "notes":"This is a simple example of a JSON file for RS0002 - this file should not be used for simulation",
     "RSInstance":{
       "RS0002":{
-        "Description":{
+        "description":{
           "product_information":{
             "outdoor_unit_manufacturer":"ColdAirInc",
             "outdoor_unit_model_number":"AC.2019.01",
@@ -21,7 +21,7 @@
             "compressor_type":"scroll"
           }
         },
-        "Performance":{
+        "performance":{
             "compressor_control_method": "Dynamic",
             "fan_position": "BlowThrough",
             "nominal_volumetric_air_flow_rate": "0.59",

@@ -11,7 +11,7 @@
     "notes":"This is a JSON version of the sample RS0003 file. Power is shaft power.",
     "RSInstance":{
       "RS0003":{
-        "Description":{
+        "description":{
           "product_information":{
             "manufacturer":"ABC HVAC Co",
             "model_number":"RTU-15",
@@ -21,20 +21,20 @@
             "direct_drive_impeller":"false",
             "number_of_impellers":"1"
           },
-          "assembly_component":{
+          "assembly_component":[{
             "component_type": "Furnace",
             "component_description": "Furnance HX"
           },
-          "assembly_component":{
+          {
             "component_type": "Filter",
             "component_description": "Filter Section"
           },
-          "assembly_component":{
+          {
             "component_type": "Coil",
             "component_description": "DX Coil"
-          }
+          }]
         },
-        "Performance":{
+        "performance":{
             "nominal_volumetric_air_flow_rate": "2.83",
             "wet_surface_pressure_drop": "50",
             "motor_heat_fraction": "1",

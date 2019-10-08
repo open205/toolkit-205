@@ -11,7 +11,7 @@
     "notes":"This is a JSON version of the sample RS0002 file",
     "RSInstance":{
       "RS0002":{
-        "Description":{
+        "description":{
           "product_information":{
             "outdoor_unit_manufacturer":"ColdAirInc",
             "outdoor_unit_model_number":"AC.2019.01",
@@ -31,7 +31,7 @@
             "rating_reproducible_from_performance_data": "False"
           }
         },
-        "Performance":{
+        "performance":{
             "compressor_control_method": "Dynamic",
             "fan_position": "BlowThrough",
             "nominal_volumetric_air_flow_rate": "0.59",

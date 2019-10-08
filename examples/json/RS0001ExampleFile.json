@@ -11,7 +11,7 @@
     "notes":"This is a JSON version of the sample RS0001 file",
     "RSInstance":{
       "RS0001":{
-        "Description":{
+        "description":{
           "product_information":{
             "manufacturer":"ColdWaterInc",
             "manufacturer_software_version":"Cw.2019.01",
@@ -43,7 +43,7 @@
             "rating_reproducible_from_performance_data": false
           }
         },
-        "Performance":{
+        "performance":{
             "evaporator_liquid_type": {
               "liquid_components":["water",1],
               "concentration_type":"byVolume"
