@@ -176,7 +176,7 @@
                     "description":"Data group describing cooling performance over a range of conditions",
                     "type":"object",
                     "properties":{
-                      "grid_variables_cooling":{
+                      "grid_variables":{
                         "description":"Data group defining the grid variables for cooling performance",
                         "type":"object",
                         "properties":{
@@ -240,7 +240,7 @@
                         "required":["outdoor_coil_entering_dry_bulb_temperature","indoor_coil_entering_wet_bulb_temperature","indoor_coil_entering_dry_bulb_temperature","indoor_coil_volumetric_flow_ratio","compressor_sequence_number","ambient_absolute_air_pressure"],
                         "additionalProperties":false
                       },
-                      "lookup_variables_cooling":{
+                      "lookup_variables":{
                         "description":"Data group defining the lookup variables for cooling performance",
                         "type":"object",
                         "properties":{
@@ -279,14 +279,14 @@
                         "additionalProperties":false
                       }
                     },
-                    "required":["grid_variables_cooling","lookup_variables_cooling"],
+                    "required":["grid_variables","lookup_variables"],
                     "additionalProperties":false
                   },
                   "performance_map_standby":{
                     "description":"Data group describing standby performance",
                     "type":"object",
                     "properties":{
-                      "grid_variables_standby":{
+                      "grid_variables":{
                         "description":"Data group defining the grid variables for standby performance",
                         "type":"object",
                         "properties":{
@@ -303,7 +303,7 @@
                         "required":["outdoor_coil_environment_dry_bulb_temperature"],
                         "additionalProperties":false
                       },
-                      "lookup_variables_standby":{
+                      "lookup_variables":{
                         "description":"Data group defining the grid variables for standby performance",
                         "type":"object",
                         "properties":{
@@ -322,7 +322,7 @@
                         "additionalProperties":false
                       }
                     },
-                    "required":["grid_variables_standby","lookup_variables_standby"],
+                    "required":["grid_variables","lookup_variables"],
                     "additionalProperties":false
                   }
                 },

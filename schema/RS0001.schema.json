@@ -214,7 +214,7 @@
                   "description":"Data group describing cooling performance over a range of conditions",
                   "type":"object",
                   "properties":{
-                    "grid_variables_cooling":{
+                    "grid_variables":{
                       "description":"Data group defining the grid variables for cooling performance",
                       "type":"object",
                       "properties":{
@@ -268,7 +268,7 @@
                       "required":["evaporator_liquid_volumetric_flow_rate","evaporator_liquid_leaving_temperature","condenser_liquid_volumetric_flow_rate","condenser_liquid_entering_temperature","net_evaporator_capacity_fraction"],
                       "additionalProperties":false
                     },
-                    "lookup_variables_cooling":{
+                    "lookup_variables":{
                       "description":"Data group defining the lookup variables for cooling performance",
                       "type":"object",
                       "properties":{
@@ -364,14 +364,14 @@
                       "additionalProperties":false
                     }
                   },
-                  "required":["grid_variables_cooling","lookup_variables_cooling"],
+                  "required":["grid_variables","lookup_variables"],
                   "additionalProperties":false
                 },
                 "performance_map_standby":{
                   "description":"Data group describing standby performance",
                   "type":"object",
                   "properties":{
-                    "grid_variables_standby":{
+                    "grid_variables":{
                       "description":"Data group defining the grid variables for standby performance",
                       "type":"object",
                       "properties":{
@@ -388,7 +388,7 @@
                       "required":["chiller_environment_dry_bulb_temperature"],
                       "additionalProperties":false
                     },
-                    "lookup_variables_standby":{
+                    "lookup_variables":{
                       "description":"Data group defining the lookup variables for standby performance",
                       "type":"object",
                       "properties":{
@@ -407,7 +407,7 @@
                       "additionalProperties":false
                     }
                   },
-                  "required":["grid_variables_standby","lookup_variables_standby"],
+                  "required":["grid_variables","lookup_variables"],
                   "additionalProperties":false
                 }
               },

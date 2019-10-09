@@ -36,20 +36,20 @@
             "motor_heat_fraction": "1",
             "power_standby": "8",
             "performance_map_discrete":{
-              "grid_variables_discrete":{
+              "grid_variables":{
                 "speed_number": [1,2,3,4,5,6,7,8,9,10,11],
                 "static_pressure_difference":[25,75,120,170,220]
               },
-              "lookup_variables_discrete":{
+              "lookup_variables":{
                 "volumetric_air_flow_rate":[],
                 "input_power":[]
               }
             },
             "performance_map_standby":{
-              "grid_variables_standby":{
+              "grid_variables":{
                 "environment_dry_bulb_temperature":[]
               },
-              "lookup_variables_standby":{
+              "lookup_variables":{
                 "input_power":[]
               }
             }

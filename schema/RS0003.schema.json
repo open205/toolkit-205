@@ -111,7 +111,7 @@
                       "description":"Data group describing fan performance in terms of air flow, static pressure, impeller speed, and fan electrical or shaft power",
                       "type":"object",
                       "properties":{
-                        "grid_variables_continuous":{
+                        "grid_variables":{
                           "description":"Data group describing grid variables for continuous fan performance",
                           "type":"object",
                           "properties":{
@@ -138,7 +138,7 @@
                           "required":["volumetric_air_flow_rate","static_pressure_difference"],
                           "additionalProperties":false
                         },
-                        "lookup_variables_continuous":{
+                        "lookup_variables":{
                           "description":"Data group describing lookup variables for continuous fan performance",
                           "type":"object",
                           "properties":{
@@ -162,11 +162,11 @@
                               "notes": "Shaft or electric power depending on 'has_motor'"
                             }
                           },
-                          "required":["lookup_variables_continuous","input_power"],
+                          "required":["lookup_variables","input_power"],
                           "additionalProperties":false
                         }
                       },
-                      "required":["grid_variables_continuous","lookup_variables_continuous"],
+                      "required":["grid_variables","lookup_variables"],
                       "additionalProperties":false,
                       "notes": "Applies for fan assemblies that can operate continuously over a range of shaft speeds. "
                       }
@@ -176,7 +176,7 @@
                         "description":"Data group describing fan performance in terms of speed setting, static pressure, air flow, and power",
                         "type":"object",
                         "properties":{
-                          "grid_variables_discrete":{
+                          "grid_variables":{
                             "description":"Data group describing grid variables for discrete fan performance",
                             "type":"object",
                             "properties":{
@@ -205,7 +205,7 @@
                             "additionalProperties":false,
                             "notes": "Applies for fan assemblies that operate at discrete rotational speeds, either with or without flow control feature"
                           },
-                          "lookup_variables_discrete":{
+                          "lookup_variables":{
                             "discription":"Data group describing lookup variables for discrete fan performance",
                             "type":"object",
                             "properties":{
@@ -233,7 +233,7 @@
                             "additionalProperties":false
                           }
                         },
-                        "required":["grid_variables_discrete","lookup_variables_discrete"],
+                        "required":["grid_variables","lookup_variables"],
                         "additionalProperties":false
                       }
                     }
@@ -242,7 +242,7 @@
                     "description":"Data group describing standby performance",
                     "type":"object",
                     "properties":{
-                      "grid_variables_standby":{
+                      "grid_variables":{
                         "description":"Data group defining the grid variables for standby performance",
                         "type":"object",
                         "properties":{
@@ -259,7 +259,7 @@
                         "required":["environment_dry_bulb_temperature"],
                         "additionalProperties":false
                       },
-                      "lookup_variables_standby":{
+                      "lookup_variables":{
                         "description":"Data group defining the grid variables for standby performance",
                         "type":"object",
                         "properties":{
@@ -277,7 +277,7 @@
                         "additionalProperties":false
                       }
                     },
-                    "required":["grid_variables_standby","lookup_variables_standby"],
+                    "required":["grid_variables","lookup_variables"],
                     "additionalProperties":false
                   }
                 },
