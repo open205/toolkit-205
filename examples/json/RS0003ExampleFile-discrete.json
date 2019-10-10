@@ -21,7 +21,7 @@
             "direct_drive_impeller":"true",
             "number_of_impellers":"1"
           },
-          "assembly_component":[{
+          "assembly_components":[{
             "component_type": "Furnace",
             "component_description": "Furnance HX"
           },
@@ -35,14 +35,16 @@
             "wet_surface_pressure_drop": "24.8",
             "motor_heat_fraction": "1",
             "power_standby": "8",
-            "performance_map_discrete":{
-              "grid_variables":{
-                "speed_number": [1,2,3,4,5,6,7,8,9,10,11],
-                "static_pressure_difference":[25,75,120,170,220]
-              },
-              "lookup_variables":{
-                "volumetric_air_flow_rate":[],
-                "input_power":[]
+            "performace_map":{
+              "performance_map_discrete":{
+                "grid_variables":{
+                  "speed_number": [1,2,3,4,5,6,7,8,9,10,11],
+                  "static_pressure_difference":[25,75,120,170,220]
+                },
+                "lookup_variables":{
+                  "volumetric_air_flow_rate":[],
+                  "input_power":[]
+                }
               }
             },
             "performance_map_standby":{
