@@ -20,7 +20,7 @@
             "nominal_frequency":60,
             "tolerance_standard":"AHRI 551/591-2015",
             "compressor_type":"centrifugal",
-            "drive_type":"VariableSpeed",
+            "speed_control_type":"VariableSpeed",
             "liquid_data_source":"AHRI 551/591-2015",
             "refrigerant_type":"R134a",
             "hotgas_bypass_installed":false

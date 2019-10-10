@@ -63,7 +63,7 @@
                       "notes": "Example AHRI 550/590-2015, EN14511-2018, EN14825-2016, GB18430.1-2007"
                     },
                     "compressor_type":{"$ref": "definitions.schema.json#/definitions/CompressorType"},
-                    "drive_type":{"$ref": "#/definitions/SpeedControlType"},
+                    "speed_control_type":{"$ref": "#/definitions/SpeedControlType"},
                     "liquid_data_source":{
                       "description":"Source of the liquid properties data",
                       "type":"string",
