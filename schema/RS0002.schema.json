@@ -11,6 +11,14 @@
     "FanPosition":{
       "type":"string",
       "enum":["BlowThrough","DrawThrough"]
+    },
+    "AHRI210240TestStandardYear":{
+      "type":"string",
+      "enum":["2008","2017"]
+    },
+    "AHRI340360TestStandardYear":{
+      "type":"string",
+      "enum":["2007","2015","IP/2019"]
     }
   },
   "0002Spec":{
@@ -55,10 +63,7 @@
                         "description":"AHRI Certified Reference Number",
                         "type":"string"
                       },
-                      "test_standard_year":{
-                        "description":"Name and version of the AHRI test standard",
-                        "type":"integer"
-                      },
+                      "test_standard_year":{"$ref": "#/definitions/AHRI210240TestStandardYear"},
                       "manufacturer_data_source_version":{
                         "description":"Version of the software used to generate the AHRI rating and the performance maps",
                         "type":"string"
@@ -106,10 +111,7 @@
                         "description":"AHRI Certified Reference Number",
                         "type":"string"
                       },
-                      "test_standard_year":{
-                        "description":"Name and version of the AHRI test standard",
-                        "type":"integer"
-                      },
+                      "test_standard_year":{"$ref": "#/definitions/AHRI340360TestStandardYear"},
                       "manufacturer_data_source_version":{
                         "description":"Version of the software used to generate the AHRI rating and the performance maps",
                         "type":"string"
