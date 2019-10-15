@@ -38,7 +38,7 @@
             "nominal_volumetric_air_flow_rate": "2.83",
             "wet_surface_pressure_drop": "50",
             "motor_heat_fraction": "1",
-            "power_standby": "0",
+            "standby_power": "0",
             "performance_map_continuous":{
               "grid_variables":{
                 "volumetric_air_flow_rate": [1.3,1.42,1.53,1.65,1.77,1.89,2.01,2.12,2.24,2.36,2.48,2.6,2.71,2.83,2.95,3.07,3.19,3.3,3.42,3.54,3.66,3.78,3.89,4.01,4.13,4.25,4.37,4.48,4.6,4.72,4.84,4.96,5.07,5.19],
@@ -46,14 +46,6 @@
               },
               "lookup_variables":{
                 "impeller_speed":[],
-                "input_power":[]
-              }
-            },
-            "performance_map_standby":{
-              "grid_variables":{
-                "environment_dry_bulb_temperature":[]
-              },
-              "lookup_variables":{
                 "input_power":[]
               }
             }
