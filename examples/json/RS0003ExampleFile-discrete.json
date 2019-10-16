@@ -34,7 +34,7 @@
             "nominal_volumetric_air_flow_rate": "0.366",
             "wet_surface_pressure_drop": "24.8",
             "motor_heat_fraction": "1",
-            "power_standby": "8",
+            "standby_power": "8",
             "performace_map":{
               "performance_map_discrete":{
                 "grid_variables":{
@@ -45,14 +45,6 @@
                   "volumetric_air_flow_rate":[],
                   "input_power":[]
                 }
-              }
-            },
-            "performance_map_standby":{
-              "grid_variables":{
-                "environment_dry_bulb_temperature":[]
-              },
-              "lookup_variables":{
-                "input_power":[]
               }
             }
           }

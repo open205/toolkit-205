@@ -100,7 +100,7 @@
                     "units": "-",
                     "notes": "Used to determine amount of heat from motor (and drive)"
                   },
-                  "power_standby":{
+                  "standby_power":{
                     "description":"Assembly power draw when fan is not operating",
                     "type":"number",
                     "minimum":0,
@@ -240,51 +240,9 @@
                         }
                       }
                     ]
-                  },
-                  "performance_map_standby":{
-                    "description":"Data group describing standby performance",
-                    "type":"object",
-                    "properties":{
-                      "grid_variables":{
-                        "description":"Data group defining the grid variables for standby performance",
-                        "type":"object",
-                        "properties":{
-                          "environment_dry_bulb_temperature":{
-                            "description":"Dry bulb temperature of the air in the environment",
-                            "type":"array",
-                            "items":{
-                              "type":"number",
-                              "minimum":0
-                            },
-                            "units": "K"
-                          }
-                        },
-                        "required":["environment_dry_bulb_temperature"],
-                        "additionalProperties":false
-                      },
-                      "lookup_variables":{
-                        "description":"Data group defining the grid variables for standby performance",
-                        "type":"object",
-                        "properties":{
-                          "input_power":{
-                            "description":"Total power consumed by the fan assembly when not running.",
-                            "type":"array",
-                            "items":{
-                              "type":"number",
-                              "minimum":0
-                            },
-                            "units": "W"
-                          }
-                        },
-                        "required":["input_power"],
-                        "additionalProperties":false
-                      }
-                    },
-                    "required":["grid_variables","lookup_variables"],
-                    "additionalProperties":false
                   }
                 },
-                "required":["nominal_volumetric_air_flow_rate","wet_surface_pressure_drop","motor_heat_fraction","power_standby","performance_map_standby"],
+                "required":["nominal_volumetric_air_flow_rate","wet_surface_pressure_drop","motor_heat_fraction","standby_power"],
                 "additionalProperties":false
               }
             },
