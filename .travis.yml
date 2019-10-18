@@ -30,8 +30,8 @@ matrix:
     python: "3.7"
     before_install:
       - choco install python3
-      - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
-      - python -m pip install pipenv
+      - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+      - python3 -m pip install pipenv
 
 install:
   - pipenv install --dev
