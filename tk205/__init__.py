@@ -21,13 +21,13 @@ def load(file):
         assert(False)
 
 def validate(file):
-    abs_path = uri_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','schema'))
+    abs_path = uri_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','schema-205','schema'))
 
     if os.sep != posixpath.sep:
         uri_path = posixpath.sep + uri_path
 
     resolver = jsonschema.RefResolver(f'file://{uri_path}/', None)
-    with open(os.path.join(abs_path,"..","schema","ASHRAE205.schema.json"), "r") as read_file:
+    with open(os.path.join(abs_path,"ASHRAE205.schema.json"), "r") as read_file:
         schema = json.load(read_file)
         instance = load(file)
         validator = jsonschema.Draft7Validator(schema, resolver=resolver)
