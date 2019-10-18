@@ -34,7 +34,6 @@ matrix:
       - python -m pip install pipenv
 
 install:
-  - git submodule update --init --recursive
   - pipenv install --dev
 
 script:
