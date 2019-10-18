@@ -31,7 +31,7 @@ matrix:
     before_install:
       - choco install python3 --params "/InstallDir:C:\\Python"
       - export PATH="/c/Python:/c/Python/Scripts:$PATH"
-      - python3 -m pip install pipenv
+      - python -m pip install pipenv
 
 install:
   - pipenv install --dev
