@@ -21,7 +21,7 @@
             "direct_drive_impeller":"true",
             "number_of_impellers":"1"
           },
-          "assembly_component":[{
+          "assembly_components":[{
             "component_type": "Furnace",
             "component_description": "Furnance HX"
           },
