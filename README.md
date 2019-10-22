@@ -28,19 +28,6 @@ The Standard is intended to support the following use cases:
 
 Generally, a data publisher (e.g., manufacturer) provides an ASHRAE Standard 205 representation of a specific piece of equipment that the application user can load into compliant performance simulation software.
 
-Supported Equipment
--------------------
-
-Each type of equipment has a corresponding schema file (*.schema.json):
-
-- **RS0001** Liquid-Cooled Chillers
-- **RS0002** Unitary Cooling Air-Conditioning Equipment
-- **RS0003** Fan Assemblies
-
-Each of these schemas is nested within a top level schema, *ASHRAE205.fbs*, that is analogous to a base-class for any equipment representation schema.
-
-Finally, there are common definitions included in the *common.fbs* schema file referenced by all representations.
-
 Building
 --------
 
