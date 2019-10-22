@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/open205/toolkit-205.svg?branch=develop)](https://travis-ci.org/open205/toolkit-205)
+
 Toolkit 205
 ===========
 
@@ -26,57 +28,40 @@ The Standard is intended to support the following use cases:
 
 Generally, a data publisher (e.g., manufacturer) provides an ASHRAE Standard 205 representation of a specific piece of equipment that the application user can load into compliant performance simulation software.
 
-Why FlatBuffers?
-----------------
-
-[FlatBuffers](http://google.github.io/flatbuffers/) is a computationally fast and memory efficient cross platform serialization library. It uses a defined schema to generate minimal source code for several languages including: C/C++, Python, Java, and JavaScript.
-
-Supported Equipment
--------------------
-
-Each type of equipment has a corresponding FlatBuffer schema file (*.fbs):
-
-- **RS0001** Liquid-Cooled Chillers
-- **RS0002** Unitary Cooling Air-Conditioning Equipment
-- **RS0003** Fan Assemblies
-
-Each of these schemas is nested within a top level schema, *ASHRAE205.fbs*, that is analogous to a base-class for any equipment representation schema.
-
-Finally, there are common definitions included in the *common.fbs* schema file referenced by all representations.
-
 Building
 --------
 
-### Dependencies
+Toolkit 205 uses git submodules. To clone the submodules, you will either have to:
 
-- CMake
-- Git
-- Anaconda Python 3.x (used in example)
-- C++ compiler (used in example)
+1. use a recursive clone when initially cloning this repository:
 
-### Compile steps:
+    `git clone --recurse-submodules https://github.com/open205/toolkit-205.git`
 
-From the root directory:
+    or
 
-1. `mkdir build`
-2. `cd build`
-3. `cmake ..`
-4. `cmake --build . --config Release`
+2. do a recursive submodule update after cloneing this repository:
+
+    `git submodule update --init --recursive`
+
+We are currently supporting python 3.x.
+
+In order to contribute to Toolkit 205, you will need to set up a consistent virtual environment for testing.
+This project uses `pipenv` to create a virtual python environment and install the required dependencies.
+Install `pipenv` through `pip`:
+
+`pip install pipenv`
+
+With `pipenv` installed, you may now create the virtual environment (defined in the `Pipfile`) needed to install and test `tk205`:
+
+1. `pipenv install --dev`
+2. `pipenv run pytest`
+
 
 ### Products
 
-Currently, the build process will produce:
-
-- C++ language files for reading/writing ASHRAE 205 FlatBuffer files
-- Python language files for reading/writing ASHRAE 205 FlatBuffer files
-- Binary and JSON versions of the schema
-- An example C++ program to read an RS0001 (i.e., Chiller) representation.
+tk205 is both a python module and a command line tool.
 
 Example Usage
 -------------
 
-To test the example type `ctest -C Release` in the `build` directory.
-
-The provided example demonstrates the ability to generate a FlatBuffer in Python based on spreadsheet data provided by a manufacturer.
-
-The FlatBuffer is then read into C++ demonstrating general functionality of the data exchange and use in native C++ structures.
+TODO
