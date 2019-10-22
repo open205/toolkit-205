@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/open205/toolkit-205.svg?branch=develop)](https://travis-ci.org/open205/toolkit-205)
+
 Toolkit 205
 ===========
 
@@ -42,7 +44,17 @@ Finally, there are common definitions included in the *common.fbs* schema file r
 Building
 --------
 
-### Python Toolkit, tk205
+Toolkit 205 uses git submodules. To clone the submodules, you will either have to:
+
+1. use a recursive clone when initially cloning this repository:
+
+    `git clone --recurse-submodules https://github.com/open205/toolkit-205.git`
+
+    or
+
+2. do a recursive submodule update after cloneing this repository:
+
+    `git submodule update --init --recursive`
 
 We are currently supporting python 3.x.
 
