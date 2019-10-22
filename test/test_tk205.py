@@ -28,7 +28,5 @@ def test_cbor_examples_validation():
     for example in os.listdir(example_dir):
         tk205.validate(os.path.join(example_dir,example))
 
-'''
-#def test_xlsx_template_creation():
-#    tk205.template('RS0001','output')
-'''
+def test_xlsx_template_creation():
+    tk205.template('RS0001','output')

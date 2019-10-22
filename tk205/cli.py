@@ -34,6 +34,13 @@ def report(input, output):
 def docschema(output):
     print("Doc Schema functionality not yet implemented.")
 
+# XLSX Template
+@cli.command('template', help="Generate an XLSX template based on the schema for a given repspec.")
+@click.option('-rs', '--repspec', help="Representation Specification ID.",  type=click.Choice(['RS0001','RS0002','RS0003', 'all']))
+@click.option('-d', '--directory', help="Output directory path.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
+def template(repspec, directory):
+    print("XLSX functionality not yet implemented.")
+
 # Validate
 @cli.command('validate', help="Perform all validation tests and generate text report to stdout.")
 @click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False))

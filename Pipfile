@@ -12,5 +12,6 @@ pipenv = "*"
 click = "*"
 jsonschema = "*"
 cbor2 = "*"
+openpyxl = "*"
 
 tk205 = {editable = true,path = "."}
