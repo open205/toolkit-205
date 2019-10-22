@@ -37,6 +37,8 @@ def validate(file):
                 print(list(suberror.schema_path), suberror.message, sep=", ")
         if len(errors) == 0:
             print(f"Validation Successful for {instance['ASHRAE205']['description']}")
+        else:
+            raise Exception
 
 def translate(input, output):
     with open(input,'r') as input_file:

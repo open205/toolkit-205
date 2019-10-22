@@ -1,15 +1,15 @@
 {
   "ASHRAE205":{
-    "RSID":"RS0002",
-    "RSVersion":"0.1.0",
-    "RSTitle":"Unitary Cooling Air-Conditioning Equipment",
+    "schema_version":"0.1.0",
+    "RS_ID":"RS0002",
+    "RS_title":"Unitary Cooling Air-Conditioning Equipment",
     "ID":"bcf8b859-67a3-42f4-8f8d-4e57af1ccf22",
     "data_timestamp":"2019-09-13T00:00Z",
     "data_version":"A205DV-1",
     "description":"Variable Speed Air Conditioner",
     "data_source":"ACSelect",
     "notes":"This is a JSON version of the sample RS0002 file",
-    "RSInstance":{
+    "RS_instance":{
       "RS0002":{
         "description":{
           "product_information":{
@@ -24,18 +24,18 @@
             "certified_reference_number": "456789",
             "test_standard_year": "2017",
             "manufacturer_data_source_version": "1.1.0",
-            "SEER": "22.5",
-            "EER": "14.5",
-            "capacity": "35000",
-            "rating_fan_power_per_flow": "10",
-            "rating_reproducible_from_performance_data": "False"
+            "SEER": 22.5,
+            "EER": 14.5,
+            "capacity": 35000,
+            "rating_fan_power_per_flow": 10,
+            "rating_reproducible_from_performance_data": false
           }
         },
         "performance":{
             "compressor_control_method": "Dynamic",
             "fan_position": "BlowThrough",
-            "nominal_volumetric_air_flow_rate": "0.59",
-            "cycling_degradation_coefficient": "0.25",
+            "nominal_volumetric_air_flow_rate": 0.59,
+            "cycling_degradation_coefficient": 0.25,
             "performance_map_cooling":{
               "grid_variables":{
                 "outdoor_coil_entering_dry_bulb_temperature": [297.05,302.55,308.15,313.75,319.25],

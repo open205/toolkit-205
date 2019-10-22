@@ -1,15 +1,15 @@
 {
   "ASHRAE205":{
-    "RSID":"RS0002",
-    "RSVersion":"0.1.0",
-    "RSTitle":"Unitary Cooling Air-Conditioning Equipment",
+    "RS_ID":"RS0002",
+    "schema_version":"0.1.0",
+    "RS_title":"Unitary Cooling Air-Conditioning Equipment",
     "ID":"bcf8b859-67a3-42f4-8f8d-4e57af1ccf22",
     "data_timestamp":"2019-09-13T00:00Z",
     "data_version":"A205DV-1",
     "description":"Simple Example File",
     "data_source":"Committee",
     "notes":"This is a simple example of a JSON file for RS0002 - this file should not be used for simulation",
-    "RSInstance":{
+    "RS_instance":{
       "RS0002":{
         "description":{
           "product_information":{
@@ -24,8 +24,8 @@
         "performance":{
             "compressor_control_method": "Dynamic",
             "fan_position": "BlowThrough",
-            "nominal_volumetric_air_flow_rate": "0.59",
-            "cycling_degradation_coefficient": "0.25",
+            "nominal_volumetric_air_flow_rate": 0.59,
+            "cycling_degradation_coefficient": 0.25,
             "performance_map_cooling":{
               "grid_variables":{
                 "outdoor_coil_entering_dry_bulb_temperature": [302.55,308.15,313.75],
