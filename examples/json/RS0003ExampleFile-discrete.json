@@ -2,7 +2,6 @@
   "ASHRAE205":{
     "schema_version":"0.1.0",
     "RS_ID":"RS0003",
-    "RS_title":"Fan Assembly",
     "ID":"bcf8b859-67a3-42f4-8f8d-4e57af1ccf22",
     "data_timestamp":"2019-09-13T00:00Z",
     "data_version":"A205DV-1",
