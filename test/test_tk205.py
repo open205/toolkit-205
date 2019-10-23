@@ -29,4 +29,7 @@ def test_cbor_examples_validation():
         tk205.validate(os.path.join(example_dir,example))
 
 def test_xlsx_template_creation():
-    tk205.template('RS0001','output')
+    rss = ['RS0001','RS0002','RS0003']
+    for rs in rss:
+        tk205.template(rs,'output')
+    assert(False)
