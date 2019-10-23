@@ -17,9 +17,7 @@ def load(file):
         with open(file, 'rb') as input_file:
             return cbor2.load(input_file)
     else:
-        # TODO unsupported input
-        print(f"Unsupported input \"{ext}\".")
-        assert(False)
+        raise Exception(f"Unsupported input \"{ext}\".")
 
 def validate(file):
     abs_path = uri_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','schema-205','schema'))
@@ -39,7 +37,7 @@ def validate(file):
         if len(errors) == 0:
             print(f"Validation Successful for {instance['ASHRAE205']['description']}")
         else:
-            raise Exception
+            raise Exception(f"Validation failed for ${file}.")
 
 def translate(input, output):
     with open(input,'r') as input_file:
