@@ -32,4 +32,3 @@ def test_xlsx_template_creation():
     rss = ['RS0001','RS0002','RS0003']
     for rs in rss:
         tk205.template(rs,'output')
-    assert(False)
