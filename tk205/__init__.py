@@ -13,11 +13,24 @@ def load(file):
     if (ext.lower() == '.json'):
         with open(file, 'r') as input_file:
             return json.load(input_file)
-    if (ext.lower() in ['.a205','.cbor']):
+    if (ext.lower() == '.cbor'):
         with open(file, 'rb') as input_file:
             return cbor2.load(input_file)
     else:
         raise Exception(f"Unsupported input \"{ext}\".")
+
+def dump(content, file):
+    # todo check file exisits
+    ext = get_extension(file)
+    if (ext.lower() == '.json'):
+        with open(file,'w') as output_file:
+            json.dump(content, output_file)
+    if (ext.lower() == '.cbor'):
+        with open(file,'wb') as output_file:
+            cbor2.dump(content, output_file)
+    else:
+        raise Exception(f"Unsupported output \"{ext}\".")
+
 
 def validate(file):
     abs_path = uri_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','schema-205','schema'))
@@ -37,9 +50,7 @@ def validate(file):
         if len(errors) == 0:
             print(f"Validation Successful for {instance['ASHRAE205']['description']}")
         else:
-            raise Exception(f"Validation failed for ${file}.")
+            raise Exception(f"Validation failed for {file}.")
 
 def translate(input, output):
-    with open(input,'r') as input_file:
-        with open(output,'wb') as output_file:
-            cbor2.dump(json.load(input_file),output_file)
+    dump(load(input),output)
