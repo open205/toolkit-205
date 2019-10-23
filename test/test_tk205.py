@@ -2,8 +2,23 @@ import tk205
 import os
 import pytest
 
+if not os.path.isdir('build'):
+    os.mkdir('build')
+    
+if not os.path.isdir('build/examples'):
+    os.mkdir('build/examples')
+
+if not os.path.isdir('build/examples/cbor'):
+    os.mkdir('build/examples/cbor')
+
+if not os.path.isdir('build/examples/xlsx'):
+    os.mkdir('build/examples/xlsx')
+
+if not os.path.isdir('build/templates'):
+    os.mkdir('build/templates')
+
 def test_json_examples_validation():
-    example_dir = 'examples/json'
+    example_dir = 'schema-205/examples/json'
     for example in os.listdir(example_dir):
         tk205.validate(os.path.join(example_dir,example))
 
@@ -15,20 +30,20 @@ def test_bad_examples_validation():
             tk205.validate(os.path.join(example_dir,example))
 
 def test_example_translation():
-    example_dir = 'examples/json'
+    example_dir = 'schema-205/examples/json'
     for example in os.listdir(example_dir):
         in_path = os.path.join(example_dir,example)
         basename = os.path.basename(in_path)
         filename = os.path.splitext(basename)[0]
-        out_path = os.path.join('examples/cbor',filename + '.cbor')
+        out_path = os.path.join('build/examples/cbor',filename + '.cbor')
         tk205.translate(in_path,out_path)
 
 def test_cbor_examples_validation():
-    example_dir = 'examples/cbor'
+    example_dir = 'build/examples/cbor'
     for example in os.listdir(example_dir):
         tk205.validate(os.path.join(example_dir,example))
 
 def test_xlsx_template_creation():
     rss = ['RS0001','RS0002','RS0003']
     for rs in rss:
-        tk205.template(rs,'output')
+        tk205.template(rs,'build/templates')
