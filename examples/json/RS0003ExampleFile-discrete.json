@@ -14,11 +14,11 @@
           "product_information":{
             "manufacturer":"XYZFurnace Co",
             "model_number":"F060",
-            "has_motor":"true",
-            "enclosed":"true",
+            "has_motor":true,
+            "enclosed":true,
             "impeller_type":"CentrifugalForwardCurved",
-            "direct_drive_impeller":"true",
-            "number_of_impellers":"1"
+            "direct_drive_impeller":true,
+            "number_of_impellers":1
           },
           "assembly_components":[{
             "component_type": "Furnace",

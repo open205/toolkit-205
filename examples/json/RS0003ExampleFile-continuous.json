@@ -14,11 +14,11 @@
           "product_information":{
             "manufacturer":"ABC HVAC Co",
             "model_number":"RTU-15",
-            "has_motor":"false",
-            "enclosed":"true",
+            "has_motor":false,
+            "enclosed":true,
             "impeller_type":"CentrifugalForwardCurved",
-            "direct_drive_impeller":"false",
-            "number_of_impellers":"1"
+            "direct_drive_impeller":false,
+            "number_of_impellers":1
           },
           "assembly_components":[{
             "component_type": "Furnace",
