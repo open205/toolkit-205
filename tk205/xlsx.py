@@ -63,6 +63,8 @@ class A205XLSXNode:
         for column, header in enumerate(xlsx_headers, start=1):
             worksheet.cell(row=1, column=column).value = header
             worksheet.cell(row=1, column=column).font = openpyxl.styles.Font(bold=True)
+        worksheet.column_dimensions['B'].width = 40
+        worksheet.column_dimensions['C'].width = 31
 
     def get_schema_node(self):
         return self.tree.schema.get_schema_node(self.lineage)
@@ -86,20 +88,42 @@ class A205XLSXNode:
                 self.write_header(wb[sheet])    
         
         if len(self.children) > 0:
-            wb[sheet].cell(row=self.first_row,column=1).value = '.'.join(self.lineage)
+            value_column = 1
+            wb[sheet].cell(row=self.first_row,column=value_column).value = '.'.join(self.lineage)
         else:
-            wb[sheet].cell(row=self.first_row,column=2).value = self.name
+            value_column = 2
+            wb[sheet].cell(row=self.first_row,column=value_column).value = self.name
 
         schema_node = self.get_schema_node()
 
         if schema_node:
+            # Add units
             if 'units' in schema_node:
                 wb[sheet].cell(row=self.first_row,column=4).value = schema_node['units']
-            wb[sheet].cell(row=self.first_row,column=5).value = self.is_required()
-        else:
-            pass # Add comment (not found in schema)
 
-        if self.value:
+            # Add required
+                # TODO: Make conditional formatting (e.g. red name if not entered)
+            wb[sheet].cell(row=self.first_row,column=5).value = self.is_required()
+
+            # Add description
+            if 'description' in schema_node:
+                comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                wb[sheet].cell(row=self.first_row,column=value_column).comment = comment
+
+            # Enum validation
+            if 'enum' in schema_node:
+                enumerants = f'"{",".join(schema_node["enum"])}"'
+                if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
+                    dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
+                    wb[sheet].add_data_validation(dv)
+                    dv.add(wb[sheet].cell(row=self.first_row,column=3))
+
+        else:
+            # Not found in schema
+            comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
+            wb[sheet].cell(row=self.first_row,column=value_column).comment = comment
+
+        if self.value is not None:
             wb[sheet].cell(row=self.first_row,column=3).value = self.value
 
         for child in self.children:
@@ -154,6 +178,7 @@ class A205XLSXTree:
                 self.rs = ws.title
 
         self.root_node = A205XLSXNode("ASHRAE205", tree=self)
+        self.root_node.last_row += 1
         self.root_node.read_node()
         return self
 
