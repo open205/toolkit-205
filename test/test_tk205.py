@@ -86,3 +86,12 @@ def test_json_to_tree_to_json_translation():
 
 def test_xlsx_to_tree_to_xlsx_translation():
     pass
+
+def test_get_schema_node():
+    schema = tk205.A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json"))
+    node = schema.get_schema_node(['ASHRAE205','RS_instance','RS0001','description','product_information','compressor_type'])
+    assert('enum' in node)
+    node = schema.get_schema_node(['ASHRAE205', 'RS_instance', 'RS0003', 'description', 'product_information', 'impeller_type'])
+    assert('enum' in node)
+    node = schema.get_schema_node(['ASHRAE205', 'RS_instance', 'RS0002', 'performance', 'fan_RS', 'ASHRAE205','RS_instance', 'RS0003', 'description', 'product_information', 'impeller_type'])
+    assert('enum' in node)

@@ -23,12 +23,14 @@ class A205XLSXNode:
             self.first_row = parent.last_row + 1
             self.last_row = self.first_row
             self.increment_parent_rows()
+            self.inner_rs = parent.inner_rs
         else:
             # Root node
             self.lineage = [name]
             self.tree = tree
             self.first_row = 2
             self.last_row = 2
+            self.inner_rs = self.tree.rs
         self.value = value
         self.children = []
         self.name = name
@@ -182,13 +184,17 @@ class A205XLSXTree:
 
     def create_tree_from_schema(self, node):
         schema_node = node.get_schema_node()
+
+        if 'RS' in schema_node:
+            node.inner_rs = schema_node['RS']
+
         if 'properties' in schema_node:
             for item in schema_node['properties']:
                 self.create_tree_from_schema(A205XLSXNode(item, parent = node))
         
         if 'oneOf' in schema_node:
             if node.name == 'RS_instance':
-                self.create_tree_from_schema(A205XLSXNode(self.rs, parent = node))
+                self.create_tree_from_schema(A205XLSXNode(node.inner_rs, parent = node))
 
     def template_tree(self, repspec, **kwargs):
         '''
