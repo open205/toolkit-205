@@ -58,11 +58,12 @@ def test_json_to_xlsx_translation():
 def test_xlsx_to_json_translation():
     example_dir = 'build/examples/xlsx'
     for example in os.listdir(example_dir):
-        in_path = os.path.join(example_dir,example)
-        basename = os.path.basename(in_path)
-        filename = os.path.splitext(basename)[0]
-        out_path = os.path.join('build/examples/json',filename + '.json')
-        tk205.translate(in_path,out_path)
+        if '~' not in tk205.get_extension(example):
+            in_path = os.path.join(example_dir,example)
+            basename = os.path.basename(in_path)
+            filename = os.path.splitext(basename)[0]
+            out_path = os.path.join('build/examples/json',filename + '.json')
+            tk205.translate(in_path,out_path)
 
 #def test_xlsx_validation():
 #    example_dir = 'build/examples/xlsx'
