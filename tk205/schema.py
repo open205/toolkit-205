@@ -33,7 +33,7 @@ class A205Schema:
                 resolution['RS'] = node['RS']
         else:
             resolution = node
-            
+
         if step_in and 'properties' in resolution:
             return resolution['properties']
         else:
@@ -55,7 +55,7 @@ class A205Schema:
                     return self.resolve(node[item],False)
                 else:
                     # Keep digging
-                    
+
                     if 'oneOf' in node[item]:
                         # Search in all options
                         for option in node[item]['oneOf']:
@@ -67,9 +67,11 @@ class A205Schema:
                                     # Not in this option try the next one
                                     # TODO: Handle this better (custom exception type)
                                     pass
-                        raise KeyError(f"'{lineage[1]}' not found in schema.")  
+                        raise KeyError(f"'{lineage[1]}' not found in schema.")
 
                     next_node = self.resolve(node[item])
+                    if 'items' in next_node:
+                        next_node = self.resolve(next_node['items'])
                     return self.trace_lineage(next_node,lineage[1:])
 
         raise KeyError(f"'{lineage[0]}' not found in schema.")

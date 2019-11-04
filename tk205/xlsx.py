@@ -15,15 +15,21 @@ class SheetType(enum.Enum):
 class A205XLSXNode:
 
     def __init__(self, name, parent=None, tree=None, value=None):
+        self.children = []
+        self.name = name
+        self.value = value
         self.parent = parent
+
         if parent:
             self.lineage = parent.lineage + [name]
             parent.add_child(self)
             self.tree = parent.tree
             self.first_row = parent.last_row + 1
             self.last_row = self.first_row
-            self.increment_parent_rows()
             self.inner_rs = parent.inner_rs
+            self.sheet = parent.child_sheet
+            self.sheet_type = parent.sheet_type
+            self.child_sheet = self.sheet
         else:
             # Root node
             self.lineage = [name]
@@ -31,18 +37,18 @@ class A205XLSXNode:
             self.first_row = 2
             self.last_row = 2
             self.inner_rs = self.tree.rs
-        self.value = value
-        self.children = []
-        self.name = name
-
-        self.is_performance_map = "performance_map" in name
-
-        if self.is_performance_map:
-            self.sheet = self.tree.rs #name
-            self.sheet_type = SheetType.PERFORMANCE_MAP
-        else:
             self.sheet = self.tree.rs
             self.sheet_type = SheetType.FLAT
+            self.child_sheet = self.sheet
+
+        # Initial detection of performance maps
+        if "performance_map" in name:
+            self.sheet_type = SheetType.PERFORMANCE_MAP
+            self.child_sheet = name
+            self.increment_parent_rows()
+
+        if self.sheet_type == SheetType.FLAT:
+            self.increment_parent_rows()
 
     def add_child(self, node):
         self.children.append(node)
@@ -85,8 +91,8 @@ class A205XLSXNode:
         if sheet not in wb:
             wb.create_sheet(sheet)
             if self.sheet_type == SheetType.FLAT:
-                self.write_header(wb[sheet])    
-        
+                self.write_header(wb[sheet])
+
         if len(self.children) > 0:
             value_column = 1
             wb[sheet].cell(row=self.first_row,column=value_column).value = '.'.join(self.lineage)
@@ -185,7 +191,11 @@ class A205XLSXTree:
     def traverse_content(self, content, parent):
         for item in content:
             if type(content[item]) == dict:
-                new_node = A205XLSXNode(item,parent=parent)
+                if "performance_map" in item:
+                    value = '$' + item
+                else:
+                    value = None
+                new_node = A205XLSXNode(item, parent=parent, value=value)
                 self.traverse_content(content[item], new_node)
             elif type(content[item]) == list:
                 A205XLSXNode(item,parent=parent,value="list")
@@ -210,13 +220,27 @@ class A205XLSXTree:
     def create_tree_from_schema(self, node):
         schema_node = node.get_schema_node()
 
+        # Handle nested RSs
         if 'RS' in schema_node:
             node.inner_rs = schema_node['RS']
 
+        # typical nodes
         if 'properties' in schema_node:
             for item in schema_node['properties']:
-                self.create_tree_from_schema(A205XLSXNode(item, parent = node))
-        
+                # Special cases
+                if item == 'schema_version':
+                    value = self.schema.get_schema_version()
+                elif item == 'RS_ID':
+                    value = node.inner_rs
+                elif 'performance_map' in item:
+                    value = '$' + item
+                elif 'items' in item:
+                    value = 'list'
+                else:
+                    value = None
+
+                self.create_tree_from_schema(A205XLSXNode(item, parent=node, value=value))
+
         if 'oneOf' in schema_node:
             if node.name == 'RS_instance':
                 self.create_tree_from_schema(A205XLSXNode(node.inner_rs, parent = node))
@@ -263,7 +287,7 @@ class A205XLSXTree:
         Save tree as workbook
         '''
         self.workbook = openpyxl.Workbook()
-        
+
         # Write tree content
         self.workbook.active.title = self.rs
         self.root_node.write_header(self.workbook[self.rs])
