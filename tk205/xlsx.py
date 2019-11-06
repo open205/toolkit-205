@@ -115,11 +115,11 @@ class A205XLSXNode:
         if self.sheet_type == SheetType.FLAT:
 
             if len(self.children) > 0:
-                value_column = 1
-                wb[sheet].cell(row=self.beg,column=value_column).value = '.'.join(self.lineage)
+                level_index = 1
+                wb[sheet].cell(row=self.beg,column=level_index).value = '.'.join(self.lineage)
             else:
-                value_column = 2
-                wb[sheet].cell(row=self.beg,column=value_column).value = self.name
+                level_index = 2
+                wb[sheet].cell(row=self.beg,column=level_index).value = self.name
 
             if schema_node:
                 # Add units
@@ -133,7 +133,7 @@ class A205XLSXNode:
                 # Add description
                 if 'description' in schema_node:
                     comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
-                    wb[sheet].cell(row=self.beg,column=value_column).comment = comment
+                    wb[sheet].cell(row=self.beg,column=level_index).comment = comment
 
                 # Enum validation
                 if 'enum' in schema_node:
@@ -146,26 +146,33 @@ class A205XLSXNode:
             else:
                 # Not found in schema
                 comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
-                wb[sheet].cell(row=self.beg,column=value_column).comment = comment
+                wb[sheet].cell(row=self.beg,column=level_index).comment = comment
 
             if self.value is not None:
                 wb[sheet].cell(row=self.beg,column=3).value = self.value
 
+        # TODO: Something better here...a lot of repetition...
         elif self.sheet_type == SheetType.PERFORMANCE_MAP:
             if len(self.children) > 0:
-                value_column = 1
+                level_index = 1
             else:
-                value_column = 2
+                level_index = 2
 
-            wb[sheet].cell(row=value_column,column=self.beg).value = self.name
+            wb[sheet].cell(row=level_index,column=self.beg).value = self.name
             if self.name == 'grid_variables':
                 wb[sheet].cell(row=1,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
 
             if '_variables' in self.parent.name:
-                wb[sheet].cell(row=value_column,column=self.beg).alignment = openpyxl.styles.Alignment(text_rotation=45)
+                wb[sheet].cell(row=level_index,column=self.beg).alignment = openpyxl.styles.Alignment(text_rotation=45)
                 if self.parent.name == 'grid_variables':
-                    wb[sheet].cell(row=value_column,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
+                    wb[sheet].cell(row=level_index,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
                     wb[sheet].cell(row=3,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
+                else:
+                    if self.value is not None:
+                        row = 4
+                        for value in self.value:
+                            wb[sheet].cell(row=row,column=self.beg).value = value
+                            row += 1
 
             if schema_node:
                 # Add units
@@ -178,15 +185,12 @@ class A205XLSXNode:
                 # Add description
                 if 'description' in schema_node:
                     comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
-                    wb[sheet].cell(row=value_column,column=self.beg).comment = comment
+                    wb[sheet].cell(row=level_index,column=self.beg).comment = comment
 
             else:
                 # Not found in schema
                 comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
-                wb[sheet].cell(row=value_column,column=self.beg).comment = comment
-
-            if self.value is not None:
-                wb[sheet].cell(row=4,column=self.beg).value = self.value
+                wb[sheet].cell(row=level_index,column=self.beg).comment = comment
 
         for child in self.children:
             child.write_node()
@@ -254,7 +258,12 @@ class A205XLSXTree:
                 new_node = A205XLSXNode(item, parent=parent, value=value)
                 self.traverse_content(content[item], new_node)
             elif type(content[item]) == list:
-                A205XLSXNode(item,parent=parent,value="list")
+                if len(content[item]) == 0:
+                    A205XLSXNode(item,parent=parent,value=content[item])
+                elif type(content[item][0]) == dict:
+                    A205XLSXNode(item,parent=parent,value='$' + item)
+                else:
+                    A205XLSXNode(item,parent=parent,value=content[item])
             else:
                 A205XLSXNode(item,parent=parent,value=content[item])
 
