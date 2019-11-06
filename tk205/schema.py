@@ -85,3 +85,17 @@ class A205Schema:
 
     def get_schema_version(self):
         return self.validator.schema["version"]
+
+    def get_grid_variable_order(self,lineage):
+        '''
+        Get the order of grid variables.
+
+        TODO: Don't know if we can always rely on jsonschema always preserving order
+        '''
+        if lineage[-1] != 'grid_variables':
+            raise Exception(f"{lineage[-1]} is not a 'grid_variables' data group.")
+        schema_node = self.get_schema_node(lineage)['properties']
+        order = []
+        for item in schema_node:
+            order.append(item)
+        return order
