@@ -21,34 +21,50 @@ class A205XLSXNode:
         self.parent = parent
 
         if parent:
-            self.lineage = parent.lineage + [name]
-            parent.add_child(self)
-            self.tree = parent.tree
-            self.first_row = parent.last_row + 1
-            self.last_row = self.first_row
-            self.inner_rs = parent.inner_rs
-            self.sheet = parent.child_sheet
-            self.sheet_type = parent.sheet_type
-            self.child_sheet = self.sheet
+            self.lineage = self.parent.lineage + [name]
+            self.tree = self.parent.tree
+            self.inner_rs = self.parent.inner_rs
+            self.sheet = self.parent.child_sheet
+            self.sheet_type = self.parent.child_sheet_type
+            if self.sheet_type != self.parent.sheet_type:
+                if self.sheet_type == SheetType.PERFORMANCE_MAP:
+                    if len(parent.children) > 0:
+                        self.beg = self.parent.children[-1].end + 1
+                    else:
+                        self.beg = 1
+                else:
+                    self.beg = 2
+            elif self.sheet_type == SheetType.PERFORMANCE_MAP:
+                if len(parent.children) > 0:
+                    self.beg = self.parent.children[-1].end + 1
+                else:
+                    self.beg = self.parent.end
+            else:
+                self.beg = self.parent.end + 1
         else:
             # Root node
             self.lineage = [name]
             self.tree = tree
-            self.first_row = 2
-            self.last_row = 2
             self.inner_rs = self.tree.rs
             self.sheet = self.tree.rs
             self.sheet_type = SheetType.FLAT
-            self.child_sheet = self.sheet
+            self.child_sheet_type = self.sheet_type
+            self.beg = 2
+
+        self.end = self.beg  # This will be changed by any children
+
+        self.increment_parent_rows()
+
+        self.child_sheet = self.sheet
+        self.child_sheet_type = self.sheet_type
 
         # Initial detection of performance maps
         if "performance_map" in name:
-            self.sheet_type = SheetType.PERFORMANCE_MAP
+            self.child_sheet_type = SheetType.PERFORMANCE_MAP
             self.child_sheet = name
-            self.increment_parent_rows()
 
-        if self.sheet_type == SheetType.FLAT:
-            self.increment_parent_rows()
+        if parent:
+            self.parent.add_child(self)
 
     def add_child(self, node):
         self.children.append(node)
@@ -61,8 +77,9 @@ class A205XLSXNode:
 
     def increment_parent_rows(self):
         if self.parent:
-            self.parent.last_row += 1
-            self.parent.increment_parent_rows()
+            if self.sheet == self.parent.sheet:
+                self.parent.end = self.end
+                self.parent.increment_parent_rows()
 
     def write_header(self, worksheet):
         xlsx_headers = ['Data Group', 'Data Element', 'Value', 'Units', 'Required']
@@ -93,44 +110,83 @@ class A205XLSXNode:
             if self.sheet_type == SheetType.FLAT:
                 self.write_header(wb[sheet])
 
-        if len(self.children) > 0:
-            value_column = 1
-            wb[sheet].cell(row=self.first_row,column=value_column).value = '.'.join(self.lineage)
-        else:
-            value_column = 2
-            wb[sheet].cell(row=self.first_row,column=value_column).value = self.name
-
         schema_node = self.get_schema_node()
 
-        if schema_node:
-            # Add units
-            if 'units' in schema_node:
-                wb[sheet].cell(row=self.first_row,column=4).value = schema_node['units']
+        if self.sheet_type == SheetType.FLAT:
 
-            # Add required
-                # TODO: Make conditional formatting (e.g. red name if not entered)
-            wb[sheet].cell(row=self.first_row,column=5).value = self.is_required()
+            if len(self.children) > 0:
+                value_column = 1
+                wb[sheet].cell(row=self.beg,column=value_column).value = '.'.join(self.lineage)
+            else:
+                value_column = 2
+                wb[sheet].cell(row=self.beg,column=value_column).value = self.name
 
-            # Add description
-            if 'description' in schema_node:
-                comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
-                wb[sheet].cell(row=self.first_row,column=value_column).comment = comment
+            if schema_node:
+                # Add units
+                if 'units' in schema_node:
+                    wb[sheet].cell(row=self.beg,column=4).value = schema_node['units']
 
-            # Enum validation
-            if 'enum' in schema_node:
-                enumerants = f'"{",".join(schema_node["enum"])}"'
-                if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
-                    dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
-                    wb[sheet].add_data_validation(dv)
-                    dv.add(wb[sheet].cell(row=self.first_row,column=3))
+                # Add required
+                    # TODO: Make conditional formatting (e.g. red name if not entered)
+                wb[sheet].cell(row=self.beg,column=5).value = self.is_required()
 
-        else:
-            # Not found in schema
-            comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
-            wb[sheet].cell(row=self.first_row,column=value_column).comment = comment
+                # Add description
+                if 'description' in schema_node:
+                    comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                    wb[sheet].cell(row=self.beg,column=value_column).comment = comment
 
-        if self.value is not None:
-            wb[sheet].cell(row=self.first_row,column=3).value = self.value
+                # Enum validation
+                if 'enum' in schema_node:
+                    enumerants = f'"{",".join(schema_node["enum"])}"'
+                    if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
+                        dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
+                        wb[sheet].add_data_validation(dv)
+                        dv.add(wb[sheet].cell(row=self.beg,column=3))
+
+            else:
+                # Not found in schema
+                comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
+                wb[sheet].cell(row=self.beg,column=value_column).comment = comment
+
+            if self.value is not None:
+                wb[sheet].cell(row=self.beg,column=3).value = self.value
+
+        elif self.sheet_type == SheetType.PERFORMANCE_MAP:
+            if len(self.children) > 0:
+                value_column = 1
+            else:
+                value_column = 2
+
+            wb[sheet].cell(row=value_column,column=self.beg).value = self.name
+            if self.name == 'grid_variables':
+                wb[sheet].cell(row=1,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
+
+            if '_variables' in self.parent.name:
+                wb[sheet].cell(row=value_column,column=self.beg).alignment = openpyxl.styles.Alignment(text_rotation=45)
+                if self.parent.name == 'grid_variables':
+                    wb[sheet].cell(row=value_column,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
+                    wb[sheet].cell(row=3,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
+
+            if schema_node:
+                # Add units
+                if 'units' in schema_node:
+                    wb[sheet].cell(row=3,column=self.beg).value = schema_node['units']
+
+                # Add required
+                    # TODO: Make conditional formatting (e.g. red name if not entered)
+
+                # Add description
+                if 'description' in schema_node:
+                    comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                    wb[sheet].cell(row=value_column,column=self.beg).comment = comment
+
+            else:
+                # Not found in schema
+                comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
+                wb[sheet].cell(row=value_column,column=self.beg).comment = comment
+
+            if self.value is not None:
+                wb[sheet].cell(row=4,column=self.beg).value = self.value
 
         for child in self.children:
             child.write_node()
@@ -147,9 +203,9 @@ class A205XLSXNode:
         ws = self.tree.workbook[self.sheet]
         end_node = False
         while not end_node:
-            data_group = ws.cell(row=self.last_row,column=1).value
-            data_element = ws.cell(row=self.last_row,column=2).value
-            value = ws.cell(row=self.last_row,column=3).value
+            data_group = ws.cell(row=self.end,column=1).value
+            data_element = ws.cell(row=self.end,column=2).value
+            value = ws.cell(row=self.end,column=3).value
             if data_group:
                 lineage = data_group.split(".")
                 if len(lineage) <= self.get_num_ancestors():
@@ -184,7 +240,7 @@ class A205XLSXTree:
                 self.rs = ws.title
 
         self.root_node = A205XLSXNode("ASHRAE205", tree=self)
-        self.root_node.last_row += 1
+        self.root_node.end += 1
         self.root_node.read_node()
         return self
 
