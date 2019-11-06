@@ -128,7 +128,9 @@ class A205XLSXNode:
 
                 # Add required
                     # TODO: Make conditional formatting (e.g. red name if not entered)
-                wb[sheet].cell(row=self.beg,column=5).value = self.is_required()
+                if self.is_required():
+                    wb[sheet].cell(row=self.beg,column=5).value = u'\u2713'
+                wb[sheet].cell(row=self.beg,column=5).alignment = openpyxl.styles.Alignment(horizontal='center')
 
                 # Add description
                 if 'description' in schema_node:
