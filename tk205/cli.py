@@ -34,13 +34,20 @@ def report(input, output):
 def docschema(output):
     print("Doc Schema functionality not yet implemented.")
 
+# XLSX Template
+@cli.command('template', help="Generate an XLSX template based on the schema for a given repspec.")
+@click.option('-rs', '--repspec', help="Representation Specification ID.",  type=click.Choice(['RS0001','RS0002','RS0003', 'all']))
+@click.option('-d', '--directory', help="Output directory path.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
+def template(repspec, directory):
+    tk205.template(repspec, directory)
+
 # Validate
 @cli.command('validate', help="Perform all validation tests and generate text report to stdout.")
 @click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False))
 def validate(input):
     tk205.validate(input.name)
 
-# export
+# Export
 @cli.command('export', help="Generate simulation input models in specific simulation tool syntax (not yet functional).")
 @click.option('-s', '--syntax', help="Choice of simulation tool syntax.", type=click.Choice(['DOE-2','EnergyPlus','TRNSYS']))
 @click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False))
