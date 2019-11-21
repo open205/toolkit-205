@@ -592,7 +592,7 @@ class A205XLSXTree:
             - fan_type = continuous
         '''
         self.template_tree(repspec, **kwargs)
-        output_path = os.path.join(directory,f"{repspec}-template.xlsx")
+        output_path = os.path.join(directory,f"{repspec}-template.a205.xlsx")
         self.save(output_path)
 
     def save(self, file_name):
