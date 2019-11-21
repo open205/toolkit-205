@@ -2,7 +2,7 @@ import os
 import json
 import posixpath
 import jsonschema
-
+from .util import create_grid_set
 
 class A205Schema:
     def __init__(self, schema_path):
@@ -86,7 +86,10 @@ class A205Schema:
     def get_schema_version(self):
         return self.validator.schema["version"]
 
-    def get_grid_variable_order(self,lineage):
+    def get_rs_title(self, rs):
+        return self.resolve_ref(f'{rs}.schema.json#/title')
+
+    def get_grid_variable_order(self, lineage, grid_vars):
         '''
         Get the order of grid variables.
 
@@ -94,8 +97,30 @@ class A205Schema:
         '''
         if lineage[-1] != 'grid_variables':
             raise Exception(f"{lineage[-1]} is not a 'grid_variables' data group.")
-        schema_node = self.get_schema_node(lineage)['properties']
+        parent_schema_node = self.get_schema_node(lineage[:-1])
+        if 'oneOf' in parent_schema_node:
+            # Alternate performance maps allowed. Make sure we get the right one
+            for option in parent_schema_node['oneOf']:
+                option = self.resolve(option)
+                for var in grid_vars:
+                    if var not in option['grid_variables']['properties']:
+                        schema_node = None
+                        break
+                    else:
+                        schema_node = option['grid_variables']['properties']
+                if schema_node:
+                    break
+        else:
+            schema_node = self.get_schema_node(lineage)['properties']
         order = []
+
+        if not schema_node:
+            raise Exception(f"Unable to find schema for grid variables: {grid_vars}")
+
         for item in schema_node:
             order.append(item)
         return order
+
+    def create_grid_set(self, grid_var_content, lineage):
+        order = self.get_grid_variable_order(lineage,[x for x in grid_var_content])
+        return create_grid_set(grid_var_content, order)
