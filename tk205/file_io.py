@@ -1,39 +1,44 @@
 import os
 import json
 import cbor2
+import yaml
 from .xlsx import template, A205XLSXTree
 
 def get_extension(file):
     return os.path.splitext(file)[1]
 
-def load(file):
-    # todo check file exisits
-    ext = get_extension(file).lower()
+def load(input_file_path):
+    ext = get_extension(input_file_path).lower()
     if (ext == '.json'):
-        with open(file, 'r') as input_file:
+        with open(input_file_path, 'r') as input_file:
             return json.load(input_file)
     elif (ext == '.cbor'):
-        with open(file, 'rb') as input_file:
+        with open(input_file_path, 'rb') as input_file:
             return cbor2.load(input_file)
     elif (ext == '.xlsx'):
         tree = A205XLSXTree()
-        return tree.load_workbook(file).get_content()
+        return tree.load_workbook(input_file_path).get_content()
+    elif (ext == '.yaml'):
+        return yaml.load(input_file_path, Loader=yaml.FullLoader)
     else:
         raise Exception(f"Unsupported input \"{ext}\".")
 
-def dump(content, file):
-    # todo check file exisits
-    ext = get_extension(file).lower()
+def dump(content, output_file_path):
+    ext = get_extension(output_file_path).lower()
     if (ext == '.json'):
-        with open(file,'w') as output_file:
+        with open(output_file_path,'w') as output_file:
             json.dump(content, output_file, indent=4)
     elif (ext == '.cbor'):
-        with open(file,'wb') as output_file:
+        with open(output_file_path,'wb') as output_file:
             cbor2.dump(content, output_file)
     elif (ext == '.xlsx'):
         tree = A205XLSXTree()
         tree.load(content)
-        tree.save(file)
+        tree.save(output_file_path)
+    elif (ext == '.yaml'):
+        with open(output_file_path, 'w') as out_file:
+            out_file.write(yaml.dump(content, default_flow_style=False))
+
     else:
         raise Exception(f"Unsupported output \"{ext}\".")
 

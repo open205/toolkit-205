@@ -18,6 +18,9 @@ if not os.path.isdir('build/examples/xlsx'):
 if not os.path.isdir('build/examples/json'):
     os.mkdir('build/examples/json')
 
+if not os.path.isdir('build/examples/yaml'):
+    os.mkdir('build/examples/yaml')
+
 if not os.path.isdir('build/templates'):
     os.mkdir('build/templates')
 
@@ -88,6 +91,17 @@ def test_xlsx_template_creation():
     rss = ['RS0001','RS0002','RS0003']
     for rs in rss:
         tk205.template(rs,'build/templates')
+
+def test_json_yaml_translation():
+    example_dir = 'build/examples/json'
+    for example in os.listdir(example_dir):
+        if '~$' not in example:
+            in_path = os.path.join(example_dir,example)
+            basename = os.path.basename(in_path)
+            filename = os.path.splitext(basename)[0]
+            out_path = os.path.join('build/examples/yaml',filename + '.yaml')
+            tk205.translate(in_path,out_path)
+
 
 '''
 Unit tests
