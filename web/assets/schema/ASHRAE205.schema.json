@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ASHRAE 205",
+  "description": "Base schema for ASHRAE 205 representations",
+
+  "type":"object",
+  "properties" :{
+    "ASHRAE205":{
+      "type": "object",
+      "properties":{
+        "schema_version":{
+          "description":"Representation specification version",
+          "type": "string",
+          "pattern": "[0-9]+\\.[0-9]+\\.[0-9]+",
+          "notes": "Identifies the version of the representation specification used to generate this representation"
+        },
+        "RS_ID":{
+          "description":"Representation specification identifier",
+          "type": "string",
+          "enum": ["RS0001", "RS0002", "RS0003"],
+          "notes": "Identifies the representation specification used to generate this representation"
+        },
+        "ID":{
+          "description":"Unique equipment identifier",
+          "type": "string",
+          "pattern": "[0-9,a-f,A-F]{8}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{4}-[0-9,a-f,A-F]{12}",
+          "notes": "Assigned by data publisher to identify specific equipment.  ID shall remain unchanged for revised representations for the same equipment."
+        },
+        "data_timestamp":{
+          "description":"Date of publication",
+          "type": "string",
+          "pattern":"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}Z",
+          "notes": "Date/time of publication of this representation."
+        },
+        "data_version":{
+          "description":"Free-form version identifier for this representation",
+          "type": "string"
+        },
+        "description":{
+          "description":"Free-form description of equipment (suitable for display)",
+          "type": "string"
+        },
+        "data_source":{
+          "description":"Free-form identification of the source of this data",
+          "type": "string"
+        },
+        "notes":{
+          "description":"Additional Information",
+          "type": "string"
+        },
+        "RS_instance":{
+          "oneOf":[
+            {"$ref": "RS0001.schema.json#/0001Spec"},
+            {"$ref": "RS0002.schema.json#/0002Spec"},
+            {"$ref": "RS0003.schema.json#/0003Spec"}
+          ]
+        }
+      },
+      "required":["RS_ID","schema_version","ID","data_timestamp","RS_instance"],
+      "additionalProperties":false
+    }
+  },
+  "additionalProperties":false,
+  "definitions": {
+    "RefrigerantType":{
+      "description":"Type of refrigerant",
+      "type":"string",
+      "enum":["R11","R12","R12B1","R13","R13B1","R14e","R21","R22","R23","R30","R31","R32","R40","R41","R50",
+        "R113","R114","R115","R116","R123","R124","R125","R134a","R141b","R142b","R143a","R152a","R170",
+        "RE170","R218","R227ea","R236fa","R245fa","R290","RC318","R600","R600a","R601","R601a","R610","R611","R620",
+        "R630","R631","R702","R704","R717","R718","R720","R728","R732","R740","R744","R744A","R764",
+        "R1150","R1234yf","R1234zeE","R1270","R400","R401A","R401B","R401C","R402A","R402B","R403A","R403B","R404A",
+        "R405A","R406A","R407A","R407B","R407C","R407D","R407E","R407F","R407G","R407H","R408A","R409A","R409B","R410A",
+        "R410B","R411A","R411B","R412A","R413A","R414A","R414B","R415A","R415B","R416A","R417A","R417B","R417C","R418A",
+        "R419A","R419B","R420A","R421A","R421B","R422A","R422B","R422C","R422D","R422E","R423A","R424A","R425A","R426A",
+        "R427A","R428A","R429A","R430A","R431A","R432A","R433A","R433B","R433C","R434A","R435A","R436A","R436B","R437A",
+        "R438A","R439A","R440A","R441A","R442A","R443A","R444A","R445A","R447B","R449C","R452B","R452C","R454C","R455A",
+        "R456A","R457A","R458A","R459A","R459B","R460A","R460B","R500","R501","R502","R503","R504","R505","R506","R507A",
+        "R508A","R508B","R509A","R510A","R511A","R512A","R513B","R514A","R515A"]
+    },
+    "CompressorType":{
+      "description":"Type of compressor",
+      "type":"string",
+      "enum":["reciprocating","screw","centrifugal","rotary","scroll"]
+    },
+    "CondenserType":{
+      "description":"Type of condenser",
+      "type":"string",
+      "enum":["air","water","evaporative"]
+    },
+    "LiquidConstituent":{
+      "type":"string",
+      "enum":["water","propyleneGlycol","ethyleneGlycol"]
+    },
+    "ConcentrationType":{
+      "description":"Type of condenser",
+      "type":"string",
+      "enum":["byVolume","byMass"]
+    },
+    "LiquidComponent":{
+      "description":"A list of all liquid components within the liquid mixture",
+      "type":"array",
+      "items":[
+        {
+          "type":"string",
+          "enum":["water","propyleneGlycol","ethyleneGlycol","seaWater"]
+        },
+        {
+          "type":"number",
+          "minimum":0
+        }
+      ],
+      "additionalItems": false,
+      "minItems": 1
+    },
+    "LiquidMixture":{
+      "description":"Type of liquid in evaporator",
+      "type":"object",
+      "properties":{
+        "liquid_components":{"$ref": "#/definitions/LiquidComponent" },
+        "concentration_type":{
+          "description":"Defines whether concentration is defined on a volume or mass basis",
+          "type":"string",
+          "enum":["byVolume","byMass"]
+        }
+      }
+    }
+  }
+}

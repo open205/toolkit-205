@@ -1,0 +1,427 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Liquid-Cooler Chillers",
+  "description": "Schema for ASHRAE 205 annex RS0001: Liquid-Cooler Chillers",
+
+  "definitions": {
+    "SpeedControlType":{
+      "description":"Type of electrical motor drive",
+      "type":"string",
+      "enum":["ConstantSpeed","VariableSpeed"],
+      "enum_text":["ConstantSpeed","VariableSpeed"]
+    },
+    "StandardRatingVersion":{
+      "description":"Version",
+      "type":"string",
+      "enum":["AHRI_550_590_2015","AHRI_551_591_2015","AHRI_550_590_2015_ADDENDUM_1","AHRI_551_591_2015_ADDENDUM_1","AHRI_550_590_2018","AHRI_551_591_2018"],
+      "enum_text":["AHRI 550/590 2015","AHRI 551/591 2015","AHRI 550/590 2015 Addendum 1","AHRI 551/591 2015 Addendum 1","AHRI 550/590 2018","AHRI 551/591 2018"]
+    }
+  },
+  "0001Spec":{
+    "type":"object",
+    "properties":{
+      "RS0001":{
+          "type":"object",
+          "properties" :{
+            "description":{
+              "type":"object",
+              "properties":{
+                "product_information":{
+                  "type": "object",
+                  "properties":{
+                    "manufacturer":{
+                      "description":"Name of the manufacturer",
+                      "type": "string",
+                      "notes": "Shall be the same as 'unit manufacturer' when referring to AHRI 550/590 or AHRI 551/591"
+                    },
+                    "manufacturer_software_version":{
+                        "description":"Version of the software used to generate the performance map",
+                        "type": "string",
+                        "notes": "Example: '15.03' If the software version does not exist, input 'NA'"
+                    },
+                    "model_number":{
+                        "description":"Model number for this chiller",
+                        "type": "string",
+                        "notes": "Complete model number string for the unit; special characters are acceptable."
+                    },
+                    "nominal_voltage":{
+                      "description":"Unit nominal voltage",
+                      "type": "integer",
+                      "minimum": 0,
+                      "units": "V",
+                      "notes": "Example '460' If the unit can operate at multiple voltages, the lower of the two shall be stated"
+                    },
+                    "nominal_frequency":{
+                      "description":"Unit nominal frequency",
+                      "type": "integer",
+                      "minimum":0,
+                      "units": "Hz",
+                      "notes": "Example '60' or '50' Power supply frequency for the intended region of installation"
+                    },
+                    "tolerance_standard":{
+                      "description":"Name and version of the testing or certification standard under which the chiller is rated.",
+                      "type": "string",
+                      "notes": "Example AHRI 550/590-2015, EN14511-2018, EN14825-2016, GB18430.1-2007"
+                    },
+                    "compressor_type":{"$ref": "ASHRAE205.schema.json#/definitions/CompressorType"},
+                    "speed_control_type":{"$ref": "#/definitions/SpeedControlType"},
+                    "liquid_data_source":{
+                      "description":"Source of the liquid properties data",
+                      "type":"string",
+                      "notes": "Example: 'ASHRAE Handbook Fundamentals 2013 chapter 31'"
+                    },
+                    "refrigerant_type":{"$ref": "ASHRAE205.schema.json#/definitions/RefrigerantType"},
+                    "hotgas_bypass_installed":{
+                      "description":"Indicates if a hot-gas bypass valve is installed on the chiller",
+                      "type":"boolean"
+                    }
+                  },
+                  "required":["manufacturer","model_number"],
+                  "additionalProperties":false
+                },
+                "rating_AHRI":{
+                  "type": "object",
+                  "properties":{
+                    "certification_reference_number":{
+                      "description":"certification reference number",
+                      "type":"string",
+                      "notes": "The certification number as stated on the certificate."
+                    },
+                    "standard_rating_version":{"$ref": "#/definitions/StandardRatingVersion"},
+                    "design_net_refrigerating_capacity":{
+                      "description":"Unit rated refrigeration capacity",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "W",
+                      "notes": "The available cooling capacity of the evaporator to the thermal load calculated using only the sensible heat transfer at full load rating condition."
+                    },
+                    "design_input_power":{
+                      "description":"Total unit power",
+                      "type":"number",
+                      "minimum":0,
+                      "units": "W",
+                      "notes": "Total power input to the chiller package.  See testing standard for details."
+                    },
+                    "design_COP":{
+                      "description":"Efficiency at design point as ratio of unit of cooling per unit of power consumed",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "-",
+                      "notes": "COP kWc/kWin"
+                    },
+                    "design_part_load_value":{
+                      "description":"Rated part load efficiency over an integrated load profile",
+                      "type":"number",
+                      "units": "-",
+                      "notes": "Represents the IPLV.SI, IPLV.IP, NPLV.SI, NPLV.IP, or other part load metric as appropriate for the 'standard_rating_version' expressed as the dimensionless ratio of cooling per unit of power consumed."
+                    },
+                    "design_evaporator_liquid_volumetric_flow_rate":{
+                      "description":"Chilled liquid flow at the full load design point rating condition",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "m3/s",
+                      "notes": "Evaporator liquid volumetric flow rate at the full load rating condition. Density calculations shall be made at the inlet temperature of the heat exchanger at full load rating condition."
+                    },
+                    "design_evaporator_liquid_leaving_temperature":{
+                      "description":"Leaving evaporator liquid temperature at the full load design point rating condition",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "K",
+                      "notes": "Evaporator liquid temperature at the exit flange of the chiller’s evaporator at full load rating condition. See testing standard for details."
+                    },
+                    "design_evaporator_liquid_entering_temperature":{
+                      "description":"Entering evaporator liquid temperature at the full load design point rating condition",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "K",
+                      "notes": "Evaporator liquid temperature at the entry flange of the chiller’s evaporator at full load rating condition."
+                    },
+                    "design_evaporator_liquid_differential_pressure":{
+                      "description":"Pressure drop across the evaporator at the full load rating condition",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "Pa",
+                      "notes": "Pressure drop is as defined in the applicable rating standard"
+                    },
+                    "design_condenser_liquid_volumetric_flow_rate":{
+                      "description":"Condenser liquid flow at the full load design point rating condition",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "m3/s",
+                      "notes": "Condenser liquid volumetric flow rate at the full load rating condition. Density calculations shall be made at the inlet temperature of the heat exchanger."
+                    },
+                    "design_condenser_liquid_entering_temperature":{
+                      "description":"Entering condenser liquid temperature at the full load design point rating condition",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "K",
+                      "notes": "Condenser liquid temperature at the entry flange of the chiller’s condenser at full load rating condition.  See testing standard for details."
+                    },
+                    "design_condenser_liquid_leaving_temperature":{
+                      "description":"Leaving condenser liquid temperature at the full load design point rating condition",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "K",
+                      "notes": "Condenser liquid temperature at the exit flange of the chiller’s condenser at full load rating condition."
+                    },
+                    "design_condenser_liquid_dfferential_pressure":{
+                      "description":"Pressure drop across the condenser at the full load design point rating condition",
+                      "type":"number",
+                      "exclusiveMinimum":0,
+                      "units": "Pa",
+                      "notes": "Pressure drop is as defined in the applicable rating standard"
+                    },
+                    "rating_reproducible_from_performance_data":{
+                      "description":"Whether this rating can be reproduced using the performance data in the representation",
+                      "type":"boolean",
+                      "notes": "Mark this field as yes if the rating values in this table can be reproduced using the performance data in the representation within the tolerance of the rating standard."
+                    }
+                  },
+                  "required":["certification_reference_number","standard_rating_version","design_net_refrigerating_capacity","design_input_power","design_COP","design_part_load_value",
+                    "design_evaporator_liquid_volumetric_flow_rate","design_evaporator_liquid_leaving_temperature","design_evaporator_liquid_entering_temperature","design_evaporator_liquid_differential_pressure",
+                    "design_condenser_liquid_volumetric_flow_rate","design_condenser_liquid_entering_temperature","design_condenser_liquid_leaving_temperature","design_condenser_liquid_dfferential_pressure",
+                    "rating_reproducible_from_performance_data"]
+                }
+              },
+              "additionalProperties":false
+            },
+            "performance":{
+              "type": "object",
+              "properties":{
+                "evaporator_liquid_type":{"$ref": "ASHRAE205.schema.json#/definitions/LiquidMixture"},
+                "condenser_liquid_type":{"$ref": "ASHRAE205.schema.json#/definitions/LiquidMixture"},
+                "evaporator_fouling_factor":{
+                  "description":"Factor of heat transfer inhibition due to heat exchanger fouling layer",
+                  "type":"number",
+                  "minimum":0,
+                  "units": "m3-K/W",
+                  "notes": "Evaporator fouling factor at which the performance matrix was created. This may be different from the certification data supplied"
+                },
+                "condenser_fouling_factor":{
+                  "description":"Factor of heat transfer inhibition due to heat exchanger fouling layer",
+                  "type":"number",
+                  "minimum":0,
+                  "units": "m3-K/W",
+                  "notes": "Condenser fouling factor at which the performance matrix was created. This may be different from the certification data supplied"
+                },
+                "unit_power_limit":{
+                  "description":"Maximum unit power input",
+                  "type":"number",
+                  "exclusiveMinimum":0,
+                  "units": "W",
+                  "notes": "Maximum power input the chiller can operate at reliably and continuously at any condition in the operating envelope"
+                },
+                "performance_map_cooling":{
+                  "description":"Data group describing cooling performance over a range of conditions",
+                  "type":"object",
+                  "properties":{
+                    "grid_variables":{
+                      "description":"Data group defining the grid variables for cooling performance",
+                      "type":"object",
+                      "properties":{
+                        "evaporator_liquid_volumetric_flow_rate":{
+                          "description":"Chilled liquid (evaporator) flow",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "m3/s"
+                        },
+                        "evaporator_liquid_leaving_temperature":{
+                          "description":"Leaving evaporator liquid temperature",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "K"
+                        },
+                        "condenser_liquid_volumetric_flow_rate":{
+                          "description":"Condenser liquid flow",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "m3/s"
+                        },
+                        "condenser_liquid_entering_temperature":{
+                          "description":"Entering condenser liquid temperature",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "K"
+                        },
+                        "net_evaporator_capacity_fraction":{
+                          "description":"Fraction of maximum net capacity at the same operating conditions.",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "minimum":0,
+                            "maximum":1
+                          },
+                          "units": "-",
+                          "notes": "Ratio of net_evaporator_capacity to the maximum evaporator capacity at the same operating conditions"
+                        }
+                      },
+                      "required":["evaporator_liquid_volumetric_flow_rate","evaporator_liquid_leaving_temperature","condenser_liquid_volumetric_flow_rate","condenser_liquid_entering_temperature","net_evaporator_capacity_fraction"],
+                      "additionalProperties":false
+                    },
+                    "lookup_variables":{
+                      "description":"Data group defining the lookup variables for cooling performance",
+                      "type":"object",
+                      "properties":{
+                        "input_power":{
+                          "description":"Total power input to the packaged chiller",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "W",
+                          "notes": "All power consumed by the chiller, including controls, motors, variable speed drives, purge units, sump heaters, fans, etc."
+                        },
+                        "net_evaporator_capacity":{
+                          "description":"Unit refrigeration capacity",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "minimum":0
+                          },
+                          "units": "W",
+                          "notes": "The available cooling capacity of the evaporator to the thermal load calculated using only the sensible heat transfer."
+                        },
+                        "net_condenser_capacity":{
+                          "description":"Condenser heat rejection",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "minimum":0
+                          },
+                          "units": "W",
+                          "notes": "The capacity of the condenser transferred to the condenser cooling stream using only the sensible heat transfer."
+                        },
+                        "evaporator_liquid_entering_temperature":{
+                          "description":"Entering evaporator liquid temperature",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "K"
+                        },
+                        "condenser_liquid_leaving_temperature":{
+                          "description":"Leaving condenser liquid temperature",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "K"
+                        },
+                        "evaporator_liquid_differential_pressure":{
+                          "description":"Pressure drop across the evaporator",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "Pa"
+                        },
+                        "condenser_liquid_differential_pressure":{
+                          "description":"Pressure drop across the condenser",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "Pa"
+                        },
+                        "oil_cooler_heat":{
+                          "description":"Heat rejected by the chiller oil cooler (if separate stream crossing the control volume boundary)",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "W",
+                          "notes": "Heat transferred to another liquid crossing the control volume boundary from the chiller oil cooler. NULL if not present"
+                        },
+                        "motor_controller_heat":{
+                          "description":"Heat rejected by the motor control center cooling (if separate stream crossing the control volume boundary)",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "W",
+                          "notes": "Heat transferred to another liquid crossing the control volume boundary from the chiller motor controller (inverter drive, starter, etc). NULL if not present"
+                        }
+                      },
+                      "required":["input_power","net_evaporator_capacity","net_condenser_capacity","evaporator_liquid_entering_temperature","condenser_liquid_leaving_temperature",
+                      "evaporator_liquid_differential_pressure","condenser_liquid_differential_pressure","oil_cooler_heat","motor_controller_heat"],
+                      "additionalProperties":false
+                    }
+                  },
+                  "required":["grid_variables","lookup_variables"],
+                  "additionalProperties":false
+                },
+                "performance_map_standby":{
+                  "description":"Data group describing standby performance",
+                  "type":"object",
+                  "properties":{
+                    "grid_variables":{
+                      "description":"Data group defining the grid variables for standby performance",
+                      "type":"object",
+                      "properties":{
+                        "chiller_environment_dry_bulb_temperature":{
+                          "description":"Dry bulb temperature of the air in the environment of the chiller",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "exclusiveMinimum":0
+                          },
+                          "units": "K"
+                        }
+                      },
+                      "required":["chiller_environment_dry_bulb_temperature"],
+                      "additionalProperties":false
+                    },
+                    "lookup_variables":{
+                      "description":"Data group defining the lookup variables for standby performance",
+                      "type":"object",
+                      "properties":{
+                        "input_power":{
+                          "description":"Total power consumed by the chiller when not running. Value shall include all power sources and all auxiliary equipment provided with the chiller.",
+                          "type":"array",
+                          "items":{
+                            "type":"number",
+                            "minimum":0
+                          },
+                          "units": "W",
+                          "notes": "Power consumed by chiller during off cycle. An example is a VSD cooling fan or sump heater."
+                        }
+                      },
+                      "required":["input_power"],
+                      "additionalProperties":false
+                    }
+                  },
+                  "required":["grid_variables","lookup_variables"],
+                  "additionalProperties":false
+                }
+              },
+              "required":["evaporator_liquid_type","condenser_liquid_type","evaporator_fouling_factor","condenser_fouling_factor","performance_map_cooling","performance_map_standby"],
+              "additionalProperties":false
+            }
+          },
+          "required":["performance"],
+          "additionalProperties":false
+      }
+    },
+    "required":["RS0001"],
+    "additionalProperties": false
+  }
+}

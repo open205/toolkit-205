@@ -1,0 +1,56 @@
+ASHRAE205:
+  ID: bcf8b859-67a3-42f4-8f8d-4e57af1ccf22
+  RS_ID: RS0003
+  RS_instance:
+    RS0003:
+      description:
+        assembly_components:
+        - component_description: Furnance HX
+          component_type: FURNACE
+        - component_description: Filter Section
+          component_type: FILTER
+        product_information:
+          direct_drive_impeller: true
+          enclosed: true
+          has_motor: true
+          impeller_type: CENTRIFIGUL_FORWARD_CURVED
+          manufacturer: XYZFurnace Co
+          model_number: F060
+          number_of_impellers: 1
+      performance:
+        fan_operation_type: DISCRETE
+        motor_heat_fraction: 1
+        nominal_volumetric_air_flow_rate: 0.366
+        performance_map:
+          grid_variables:
+            speed_number:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            static_pressure_difference:
+            - 25
+            - 75
+            - 120
+            - 170
+            - 220
+          lookup_variables:
+            input_power: []
+            volumetric_air_flow_rate: []
+        standby_power: 8
+        wet_coil_pressure_drop: 24.8
+  data_source: FanSelect
+  data_timestamp: 2019-09-13T00:00Z
+  data_version: A205DV-1
+  description: Discrete Fan
+  notes: This is a JSON version of the sample RS0003 file. Speeds 1-4 are Heating,
+    1st stage, settings (low,mlo,norm,hi).  Speeds 5-8 are Heating, 2nd stage, settings
+    (low,mlo,norm,hi), Speeds 9-11 are Cooling, settings (low,norm,hi).
+  schema_version: 0.1.0

@@ -1,0 +1,106 @@
+{
+    "ASHRAE205": {
+        "schema_version": "0.1.0",
+        "RS_ID": "RS0002",
+        "ID": "bcf8b859-67a3-42f4-8f8d-4e57af1ccf22",
+        "data_timestamp": "2019-09-13T00:00Z",
+        "data_version": "A205DV-1",
+        "description": "Variable Speed Air Conditioner",
+        "data_source": "ACSelect",
+        "notes": "This is a JSON version of the sample RS0002 file",
+        "RS_instance": {
+            "RS0002": {
+                "description": {
+                    "product_information": {
+                        "outdoor_unit_manufacturer": "ColdAirInc",
+                        "outdoor_unit_model_number": "AC.2019.01",
+                        "indoor_unit_manufacturer": "ColdAirInc",
+                        "indoor_unit_model_number": "AC.2019.02",
+                        "refrigerant_type": "R410A",
+                        "compressor_type": "SCROLL"
+                    },
+                    "rating_AHRI_210_240": {
+                        "certified_reference_number": "456789",
+                        "test_standard_year": "2017",
+                        "manufacturer_data_source_version": "1.1.0",
+                        "SEER": 22.5,
+                        "EER": 14.5,
+                        "capacity": 35000,
+                        "rating_fan_power_per_flow": 10,
+                        "rating_reproducible_from_performance_data": false
+                    }
+                },
+                "performance": {
+                    "compressor_control_method": "DYNAMIC",
+                    "fan_position": "BLOW_THROUGH",
+                    "nominal_volumetric_air_flow_rate": 0.59,
+                    "cycling_degradation_coefficient": 0.25,
+                    "performance_map_cooling": {
+                        "grid_variables": {
+                            "outdoor_coil_entering_dry_bulb_temperature": [
+                                297.05,
+                                302.55,
+                                308.15,
+                                313.75,
+                                319.25
+                            ],
+                            "indoor_coil_entering_wet_bulb_temperature": [
+                                277.15,
+                                290.35,
+                                292.55,
+                                294.85
+                            ],
+                            "indoor_coil_entering_dry_bulb_temperature": [
+                                297.15,
+                                300.15,
+                                302.15
+                            ],
+                            "indoor_coil_volumetric_flow_ratio": [
+                                0.303,
+                                0.42,
+                                0.447,
+                                0.453,
+                                0.641,
+                                0.659,
+                                0.7,
+                                1,
+                                1.08
+                            ],
+                            "compressor_sequence_number": [
+                                1,
+                                2,
+                                3
+                            ],
+                            "ambient_absolute_air_pressure": [
+                                101.325
+                            ]
+                        },
+                        "lookup_variables": {
+                            "gross_total_cooling_capacity": [],
+                            "gross_sensible_cooling_capacity": [],
+                            "gross_cooling_power": []
+                        }
+                    },
+                    "performance_map_standby": {
+                        "grid_variables": {
+                            "outdoor_coil_environment_dry_bulb_temperature": [
+                                255.37,
+                                283.15,
+                                283.65,
+                                310.93
+                            ]
+                        },
+                        "lookup_variables": {
+                            "gross_power": [
+                                40,
+                                40,
+                                0,
+                                0
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

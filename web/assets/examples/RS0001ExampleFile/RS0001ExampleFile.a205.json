@@ -1,0 +1,148 @@
+{
+    "ASHRAE205": {
+        "schema_version": "0.1.0",
+        "RS_ID": "RS0001",
+        "ID": "bcf8b859-67a3-42f4-8f8d-4e57af1ccf22",
+        "data_timestamp": "2019-09-10T00:00Z",
+        "data_version": "A205DV-1",
+        "description": "Water Cooled Centrifugal Chiller",
+        "data_source": "CWI-ChilSelect",
+        "notes": "This is a JSON version of the sample RS0001 file",
+        "RS_instance": {
+            "RS0001": {
+                "description": {
+                    "product_information": {
+                        "manufacturer": "ColdWaterInc",
+                        "manufacturer_software_version": "Cw.2019.01",
+                        "model_number": "CC-500-VS",
+                        "nominal_voltage": 460,
+                        "nominal_frequency": 60,
+                        "tolerance_standard": "AHRI 551/591-2015",
+                        "compressor_type": "CENTRIFUGAL",
+                        "speed_control_type": "VariableSpeed",
+                        "liquid_data_source": "AHRI 551/591-2015",
+                        "refrigerant_type": "R134A",
+                        "hotgas_bypass_installed": false
+                    },
+                    "rating_AHRI": {
+                        "certification_reference_number": "987654",
+                        "standard_rating_version": "AHRI_551_591_2015",
+                        "design_net_refrigerating_capacity": 1758000,
+                        "design_input_power": 284900,
+                        "design_COP": 6.171,
+                        "design_part_load_value": 10.36,
+                        "design_evaporator_liquid_volumetric_flow_rate": 0.00839,
+                        "design_evaporator_liquid_leaving_temperature": 280.15,
+                        "design_evaporator_liquid_entering_temperature": 293.15,
+                        "design_evaporator_liquid_differential_pressure": 53100,
+                        "design_condenser_liquid_volumetric_flow_rate": 0.00974,
+                        "design_condenser_liquid_entering_temperature": 303.15,
+                        "design_condenser_liquid_leaving_temperature": 308.15,
+                        "design_condenser_liquid_dfferential_pressure": 36400,
+                        "rating_reproducible_from_performance_data": false
+                    }
+                },
+                "performance": {
+                    "evaporator_liquid_type": {
+                        "liquid_components": [
+                            {
+                                "liquid_constituent": "WATER",
+                                "concentration": 1
+                            }
+                        ],
+                        "concentration_type": "BY_VOLUME"
+                    },
+                    "condenser_liquid_type": {
+                        "liquid_components": [
+                            {
+                                "liquid_constituent": "WATER",
+                                "concentration": 1
+                            }
+                        ],
+                        "concentration_type": "BY_VOLUME"
+                    },
+                    "evaporator_fouling_factor": 1.8e-05,
+                    "condenser_fouling_factor": 4.4e-05,
+                    "unit_power_limit": 315000,
+                    "performance_map_cooling": {
+                        "grid_variables": {
+                            "evaporator_liquid_volumetric_flow_rate": [
+                                0.05585,
+                                0.05737,
+                                0.05856,
+                                0.08385,
+                                0.1398
+                            ],
+                            "evaporator_liquid_leaving_temperature": [
+                                278.15,
+                                280.15,
+                                282.15
+                            ],
+                            "condenser_liquid_volumetric_flow_rate": [
+                                0.00115,
+                                0.077,
+                                0.09437,
+                                0.09644,
+                                0.09737,
+                                0.115
+                            ],
+                            "condenser_liquid_entering_temperature": [
+                                283.65,
+                                284.15,
+                                284.65,
+                                285.15,
+                                285.65,
+                                286.15,
+                                286.65,
+                                287.15,
+                                287.65,
+                                288.15,
+                                288.65,
+                                289.15,
+                                289.65,
+                                290.15,
+                                290.65,
+                                291.15,
+                                294.15,
+                                297.15,
+                                300.15,
+                                303.15
+                            ],
+                            "net_evaporator_capacity_fraction": [
+                                0.15,
+                                0.2,
+                                0.3,
+                                0.4,
+                                0.5,
+                                0.6,
+                                0.7,
+                                0.8,
+                                0.9,
+                                1
+                            ]
+                        },
+                        "lookup_variables": {
+                            "input_power": [],
+                            "net_evaporator_capacity": [],
+                            "net_condenser_capacity": [],
+                            "evaporator_liquid_entering_temperature": [],
+                            "condenser_liquid_leaving_temperature": [],
+                            "evaporator_liquid_differential_pressure": [],
+                            "condenser_liquid_differential_pressure": [],
+                            "oil_cooler_heat": [],
+                            "motor_controller_heat": []
+                        }
+                    },
+                    "performance_map_standby": {
+                        "grid_variables": {
+                            "chiller_environment_dry_bulb_temperature": []
+                        },
+                        "lookup_variables": {
+                            "input_power": []
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

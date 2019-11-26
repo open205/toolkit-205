@@ -1,0 +1,170 @@
+ASHRAE205:
+  ID: bcf8b859-67a3-42f4-8f8d-4e57af1ccf22
+  RS_ID: RS0002
+  RS_instance:
+    RS0002:
+      description:
+        product_information:
+          compressor_type: SCROLL
+          indoor_unit_manufacturer: ColdAirInc
+          indoor_unit_model_number: AC.2019.02
+          outdoor_unit_manufacturer: ColdAirInc
+          outdoor_unit_model_number: AC.2019.01
+          refrigerant_type: R410A
+      performance:
+        compressor_control_method: DYNAMIC
+        cycling_degradation_coefficient: 0.25
+        fan_position: BLOW_THROUGH
+        nominal_volumetric_air_flow_rate: 0.59
+        performance_map_cooling:
+          grid_variables:
+            ambient_absolute_air_pressure:
+            - 101.325
+            compressor_sequence_number:
+            - 1
+            indoor_coil_entering_dry_bulb_temperature:
+            - 300.15
+            - 302.15
+            indoor_coil_entering_wet_bulb_temperature:
+            - 288.15
+            - 290.35
+            - 292.55
+            indoor_coil_volumetric_flow_ratio:
+            - 0.72
+            - 1
+            outdoor_coil_entering_dry_bulb_temperature:
+            - 302.55
+            - 308.15
+            - 313.75
+          lookup_variables:
+            gross_cooling_power:
+            - 0.52
+            - 0.48
+            - 0.52
+            - 0.48
+            - 0.52
+            - 0.48
+            - 0.52
+            - 0.48
+            - 0.5
+            - 0.47
+            - 0.5
+            - 0.47
+            - 0.64
+            - 0.62
+            - 0.64
+            - 0.62
+            - 0.65
+            - 0.61
+            - 0.65
+            - 0.61
+            - 0.63
+            - 0.61
+            - 0.63
+            - 0.61
+            - 0.79
+            - 0.76
+            - 0.79
+            - 0.76
+            - 0.79
+            - 0.76
+            - 0.79
+            - 0.76
+            - 0.78
+            - 0.76
+            - 0.78
+            - 0.76
+            gross_sensible_cooling_capacity:
+            - 3.2
+            - 3.6
+            - 3.2
+            - 3.6
+            - 3.2
+            - 3.6
+            - 3.2
+            - 3.6
+            - 2.788
+            - 3.348
+            - 3.332
+            - 3.6
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3
+            - 2.666
+            - 3.038
+            - 3.1
+            - 3.1
+            - 2.8
+            - 3.1
+            - 2.8
+            - 3.1
+            - 2.8
+            - 3.1
+            - 2.8
+            - 3.1
+            - 2.61
+            - 3.1
+            - 2.9
+            - 3.1
+            gross_total_cooling_capacity:
+            - 3.2
+            - 3.6
+            - 3.2
+            - 3.6
+            - 3.2
+            - 3.6
+            - 3.2
+            - 3.6
+            - 3.4
+            - 3.6
+            - 3.4
+            - 3.6
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3.1
+            - 3.1
+            - 3.1
+            - 3.1
+            - 2.8
+            - 3.1
+            - 2.8
+            - 3.1
+            - 2.8
+            - 3.1
+            - 2.8
+            - 3.1
+            - 2.9
+            - 3.1
+            - 2.9
+            - 3.1
+        performance_map_standby:
+          grid_variables:
+            outdoor_coil_environment_dry_bulb_temperature:
+            - 255.37
+            - 283.15
+            - 283.65
+            - 310.93
+          lookup_variables:
+            gross_power:
+            - 40
+            - 40
+            - 0
+            - 0
+  data_source: Committee
+  data_timestamp: 2019-09-13T00:00Z
+  data_version: A205DV-1
+  description: Simple Example File
+  notes: This is a simple example of a JSON file for RS0002 - this file should not
+    be used for simulation
+  schema_version: 0.1.0
