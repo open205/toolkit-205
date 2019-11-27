@@ -137,7 +137,7 @@ def test_get_grid_variable_order():
     assert(order == grid_vars_names)
 
     # "oneOf" case 1
-    grid_vars_names = ['volumetric_air_flow_rate','static_pressure_difference']
+    grid_vars_names = ['impeller_speed','static_pressure_difference']
     order = schema.get_grid_variable_order(['ASHRAE205','RS_instance','RS0003','performance','performance_map','grid_variables'], grid_vars_names)
     assert(order == grid_vars_names)
 
