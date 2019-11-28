@@ -18,7 +18,7 @@ def load(input_file_path):
     elif (ext == '.xlsx'):
         tree = A205XLSXTree()
         return tree.load_workbook(input_file_path).get_content()
-    elif (ext == '.yaml'):
+    elif (ext == '.yaml') or (ext == '.yml'):
         return yaml.load(input_file_path, Loader=yaml.FullLoader)
     else:
         raise Exception(f"Unsupported input \"{ext}\".")
@@ -35,9 +35,9 @@ def dump(content, output_file_path):
         tree = A205XLSXTree()
         tree.load(content)
         tree.save(output_file_path)
-    elif (ext == '.yaml'):
+    elif (ext == '.yaml') or (ext == '.yml'):
         with open(output_file_path, 'w') as out_file:
-            out_file.write(yaml.dump(content, default_flow_style=False))
+            yaml.dump(content, out_file)
 
     else:
         raise Exception(f"Unsupported output \"{ext}\".")

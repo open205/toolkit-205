@@ -73,6 +73,15 @@ def test_xlsx_to_json_translation():
             out_path = os.path.join('build/examples/json',filename + '.json')
             tk205.translate(in_path,out_path)
 
+def test_json_yaml_translation():
+    example_dir = 'schema-205/examples/json'
+    for example in os.listdir(example_dir):
+        in_path = os.path.join(example_dir,example)
+        basename = os.path.basename(in_path)
+        filename = os.path.splitext(basename)[0]
+        out_path = os.path.join('build/examples/yaml',filename + '.yaml')
+        tk205.translate(in_path,out_path)
+
 def test_json_round_trip():
     origin = 'schema-205/examples/json'
     product = 'build/examples/json'
@@ -91,16 +100,6 @@ def test_xlsx_template_creation():
     rss = ['RS0001','RS0002','RS0003']
     for rs in rss:
         tk205.template(rs,'build/templates')
-
-def test_json_yaml_translation():
-    example_dir = 'build/examples/json'
-    for example in os.listdir(example_dir):
-        if '~$' not in example:
-            in_path = os.path.join(example_dir,example)
-            basename = os.path.basename(in_path)
-            filename = os.path.splitext(basename)[0]
-            out_path = os.path.join('build/examples/yaml',filename + '.yaml')
-            tk205.translate(in_path,out_path)
 
 
 '''
