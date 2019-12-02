@@ -14,23 +14,9 @@
 					<h3 class="featureBlock-subHeading" style="margin-top: 6.5px;">{{item[0]}}</h3>
 					<p>{{item[1]}}</p>
 				</div>
-				{% for file in item[2] %}
-					<div class="column lg-2" style="margin: auto;">
-						<a class="btn btn--hexagon-secondary" href="assets/examples/{{ file }}">
-							{% if 'cbor' in file %}
-							cbor
-							{% elif 'json' in file %}
-							json
-							{% elif 'xlsx' in file %}
-							xlsx
-							{% elif 'yaml' in file %}
-							yaml
-							{% elif 'yml' in file %}
-							yaml
-							{% endif %}
-						</a>
+					<div class="column lg-8" style="margin: auto;">
+						<a class="btn btn--hexagon-secondary" href="assets/templates/{{ item[2] }}">Download</a>
 					</div>
-				{% endfor %}
 				</div>
 				{% endfor %}
 
