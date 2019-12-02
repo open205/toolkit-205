@@ -47,7 +47,14 @@ class A205Schema:
     def get_schema(self):
         return self.validator.schema
 
-    def trace_lineage(self, node, lineage):
+    def trace_lineage(self, node, lineage, options):
+        '''
+        Search through lineage for the schema node one generation at a time.
+
+        node: node to trace into
+        lineage: remaining lineage to trace
+        options: indices for any oneOf nodes
+        '''
         for item in node:
             if lineage[0] == item:
                 if len(lineage) == 1:
@@ -57,29 +64,35 @@ class A205Schema:
                     # Keep digging
 
                     if 'oneOf' in node[item]:
-                        # Search in all options
-                        for option in node[item]['oneOf']:
-                            option = self.resolve(option)
-                            if lineage[1] in option:
-                                try:
-                                    return self.trace_lineage(option,lineage[1:])
-                                except KeyError:
-                                    # Not in this option try the next one
-                                    # TODO: Handle this better (custom exception type)
-                                    pass
-                        raise KeyError(f"'{lineage[1]}' not found in schema.")
+                        if options[0] is not None:
+                            option = self.resolve(node[item]['oneOf'][options[0]])
+                            return self.trace_lineage(option,lineage[1:],options[1:])
+                        else:
+                            # Search in all options
+                            for option in node[item]['oneOf']:
+                                option = self.resolve(option)
+                                if lineage[1] in option:
+                                    try:
+                                        return self.trace_lineage(option,lineage[1:],options[1:])
+                                    except KeyError:
+                                        # Not in this option try the next one
+                                        # TODO: Handle this better (custom exception type)
+                                        pass
+                            raise KeyError(f"'{lineage[1]}' not found in schema.")
 
                     next_node = self.resolve(node[item])
                     if 'items' in next_node:
                         next_node = self.resolve(next_node['items'])
-                    return self.trace_lineage(next_node,lineage[1:])
+                    return self.trace_lineage(next_node,lineage[1:],options[1:])
 
         raise KeyError(f"'{lineage[0]}' not found in schema.")
 
-    def get_schema_node(self, lineage):
+    def get_schema_node(self, lineage, options=None):
+        if options is None:
+            options = [None]*len(lineage)
         schema = self.validator.schema['properties']
         try:
-            return self.trace_lineage(schema, lineage)
+            return self.trace_lineage(schema, lineage, options)
         except KeyError:
             return None
 
@@ -97,7 +110,7 @@ class A205Schema:
         '''
         if lineage[-1] != 'grid_variables':
             raise Exception(f"{lineage[-1]} is not a 'grid_variables' data group.")
-        parent_schema_node = self.get_schema_node(lineage[:-1])
+        parent_schema_node = self.get_schema_node(lineage[:-1], [None]*(len(lineage) - 1))
         if 'oneOf' in parent_schema_node:
             # Alternate performance maps allowed. Make sure we get the right one
             for option in parent_schema_node['oneOf']:
@@ -111,7 +124,7 @@ class A205Schema:
                 if schema_node:
                     break
         else:
-            schema_node = self.get_schema_node(lineage)['properties']
+            schema_node = self.get_schema_node(lineage,[None]*len(lineage))['properties']
         order = []
 
         if not schema_node:

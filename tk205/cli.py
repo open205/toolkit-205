@@ -35,11 +35,25 @@ def docschema(output):
     print("Doc Schema functionality not yet implemented.")
 
 # XLSX Template
-@cli.command('template', help="Generate an XLSX template based on the schema for a given repspec.")
-@click.option('-rs', '--repspec', help="Representation Specification ID.",  type=click.Choice(['RS0001','RS0002','RS0003', 'all']))
-@click.option('-d', '--directory', help="Output directory path.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
-def template(repspec, directory):
-    tk205.template(repspec, directory)
+@cli.command('template', help="Generate an XLSX template based on the schema for a given repspec.", context_settings=dict(ignore_unknown_options=True,allow_extra_args=True))
+@click.option('-r', '--repspec', help="Representation Specification ID.",  type=click.Choice(['RS0001','RS0002','RS0003']))
+@click.option('-o', '--output', help="Output template path.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
+@click.pass_context
+def template(ctx, repspec, output):
+    kwargs = {}
+    for i, arg in enumerate(ctx.args):
+        if '=' in arg:
+            new_arg = arg.split('=')
+            key = new_arg[0].lstrip('-')
+            value = new_arg[1]
+            kwargs[key] = value
+        else:
+            if arg[0] == '-':
+                key = arg.lstrip('-')
+                value = ctx.args[i+1]
+                kwargs[key] = value
+
+    tk205.template(repspec, output.name, **kwargs)
 
 # Validate
 @cli.command('validate', help="Perform all validation tests and generate text report to stdout.")

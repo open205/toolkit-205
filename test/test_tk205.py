@@ -85,9 +85,23 @@ def test_xlsx_validation():
             tk205.validate(os.path.join(example_dir,example))
 
 def test_xlsx_template_creation():
-    rss = ['RS0001','RS0002','RS0003']
+    rss = [
+            ('RS0001', {}, None),
+            ('RS0002', {}, 'no-fan'),
+            ('RS0002', {'fan_RS': True, 'performance_map_type': 'DISCRETE'}, 'discrete-fan'),
+            ('RS0003', {'performance_map_type': 'DISCRETE'}, 'discrete'),
+            ('RS0003', {'performance_map_type': 'CONTINUOUS'}, 'continuous'),
+        ]
     for rs in rss:
-        tk205.template(rs,'build/templates')
+        file_name_components = [rs[0]]
+        if rs[2]:
+            file_name_components.append(rs[2])
+        file_name_components.append("template.a205.xlsx")
+        file_name = '-'.join(file_name_components)
+        tk205.template(rs[0],os.path.join("build","templates",file_name), **rs[1])
+
+def test_xlsx_template_correctness():
+    pass
 
 '''
 Unit tests
