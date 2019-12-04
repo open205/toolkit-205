@@ -67,7 +67,7 @@ class A205XLSXNode:
                 # Indicator of pointer to another sheet
                 if "performance_map" in self.value:
                     self.child_sheet_type = SheetType.PERFORMANCE_MAP
-                elif "RS" in self.value:
+                elif "_representation" in self.value:
                     self.child_sheet_type = SheetType.FLAT
                 else:
                     self.child_sheet_type = SheetType.ARRAY
@@ -385,7 +385,7 @@ class A205XLSXNode:
                 else:
                     # End of sheet
                     end_node = True
-            else:
+            else:  # Flat Sheets
                 data_group = ws.cell(row=self.end,column=1).value
                 data_element = ws.cell(row=self.end,column=2).value
                 value = ws.cell(row=self.end,column=3).value
@@ -401,6 +401,7 @@ class A205XLSXNode:
                             new_node = A205XLSXNode(lineage[-1], parent=self)
                         new_node.read_node()
                 elif data_element:
+                    # Determine hierarchy level using number of spaces
                     level = (len(data_element) - len(data_element.lstrip(' ')))/self.white_space_multiplier
                     data_element = data_element.strip(' ')
                     generations = self.get_num_ancestors() - level
@@ -535,18 +536,8 @@ class A205XLSXTree:
         schema_node = node.get_schema_node()
 
         # Handle nested RSs
-        if node.name[-3:] == '_RS':
-            # Embedded rep spec
-            if node.name in self.template_args:
-                # Keyword indicating whether to include or not
-                if self.template_args[node.name]:
-                    self.get_template_arg(node.name)
-                    node.inner_rs = schema_node['RS']
-                elif 'RS' in schema_node:
-                    # if keyword value is False don't add a template for this rep spec
-                    return
-            else:
-                return
+        if 'RS' in schema_node:
+            node.inner_rs = schema_node['RS']
 
         # typical nodes
         if 'properties' in schema_node:
@@ -562,17 +553,9 @@ class A205XLSXTree:
                 elif 'items' in schema_node['properties'][item] and node.sheet_type == SheetType.FLAT:
                     name = unique_name_with_index(item, self.sheets)
                     value = '$' + name
-                elif item[-3:] == '_RS':
+                elif item[-len('_representation'):] == '_representation':
                     # Embedded rep spec
-                    if item in self.template_args:
-                        template_arg_value = self.get_template_arg(item)
-                        # Keyword indicating whether to include or not
-                        if template_arg_value:
-                            # if keyword value is True
-                            value = '$' + item
-                        else:
-                            # if keyword value is False
-                            value = None
+                    value = '$' + item
                 elif item in self.template_args:
                     # General keyword value setting
                     value = self.get_template_arg(item)

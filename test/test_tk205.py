@@ -25,11 +25,24 @@ if not os.path.isdir('build/templates'):
 Process tests
 '''
 
-def test_json_validation():
-    example_dir = 'schema-205/examples/json'
-    for example in os.listdir(example_dir):
-        tk205.validate(os.path.join(example_dir,example))
+def perform_translations(source_dir, output_dir):
+    output_extension = '.' + os.path.split(output_dir)[-1]
+    tk205.file_io.clear_directory(output_dir)
+    for source in os.listdir(source_dir):
+        if '~$' not in source:  # Ignore temporary Excel files
+            source_path = os.path.join(source_dir,source)
+            base_name = os.path.basename(source_path)
+            file_name = os.path.splitext(base_name)[0]
+            output_path = os.path.join(output_dir,file_name + output_extension)
+            tk205.translate(source_path, output_path)
 
+def perform_validations(example_dir):
+    for example in os.listdir(example_dir):
+        if '~$' not in example:  # Ignore temporary Excel files
+            tk205.validate(os.path.join(example_dir,example))
+
+def test_json_validation():
+    perform_validations('schema-205/examples/json')
 
 def test_bad_examples_validation():
     example_dir = 'test/bad-examples'
@@ -38,57 +51,35 @@ def test_bad_examples_validation():
             tk205.validate(os.path.join(example_dir,example))
 
 def test_json_to_cbor_translation():
-    example_dir = 'schema-205/examples/json'
-    for example in os.listdir(example_dir):
-        in_path = os.path.join(example_dir,example)
-        basename = os.path.basename(in_path)
-        filename = os.path.splitext(basename)[0]
-        out_path = os.path.join('build/examples/cbor',filename + '.cbor')
-        tk205.translate(in_path,out_path)
+    perform_translations('schema-205/examples/json', 'build/examples/cbor')
 
 def test_cbor_validation():
-    example_dir = 'build/examples/cbor'
-    for example in os.listdir(example_dir):
-        tk205.validate(os.path.join(example_dir,example))
+    perform_validations('build/examples/cbor')
 
 def test_json_to_xlsx_translation():
-    example_dir = 'schema-205/examples/json'
-    for example in os.listdir(example_dir):
-        in_path = os.path.join(example_dir,example)
-        basename = os.path.basename(in_path)
-        filename = os.path.splitext(basename)[0]
-        out_path = os.path.join('build/examples/xlsx',filename + '.xlsx')
-        tk205.translate(in_path,out_path)
+    perform_translations('schema-205/examples/json', 'build/examples/xlsx')
 
 def test_xlsx_to_json_translation():
-    example_dir = 'build/examples/xlsx'
-    for example in os.listdir(example_dir):
-        if '~$' not in example:
-            in_path = os.path.join(example_dir,example)
-            basename = os.path.basename(in_path)
-            filename = os.path.splitext(basename)[0]
-            out_path = os.path.join('build/examples/json',filename + '.json')
-            tk205.translate(in_path,out_path)
+    perform_translations('build/examples/xlsx', 'build/examples/json')
 
 def test_json_round_trip():
-    origin = 'schema-205/examples/json'
-    product = 'build/examples/json'
-    for example in (os.listdir(origin)):
-        origin_path = os.path.join(origin,example)
-        product_path = os.path.join(product,example)
+    origin_dir = 'schema-205/examples/json'
+    product_dir = 'build/examples/json'
+    for example in (os.listdir(origin_dir)):
+        origin_path = os.path.join(origin_dir,example)
+        product_path = os.path.join(product_dir,example)
         assert(tk205.load(origin_path) == tk205.load(product_path))
 
 def test_xlsx_validation():
-    example_dir = 'build/examples/xlsx'
-    for example in os.listdir(example_dir):
-        if '~$' not in example:
-            tk205.validate(os.path.join(example_dir,example))
+    perform_validations('build/examples/xlsx')
 
 def test_xlsx_template_creation():
+    output_dir = 'build/templates'
+    tk205.file_io.clear_directory(output_dir)
     rss = [
             ('RS0001', {}, None),
-            ('RS0002', {}, 'no-fan'),
-            ('RS0002', {'fan_RS': True, 'performance_map_type': 'DISCRETE'}, 'discrete-fan'),
+            ('RS0002', {'performance_map_type': 'DISCRETE'}, 'discrete-fan'),
+            ('RS0002', {'performance_map_type': 'CONTINUOUS'}, 'continuous-fan'),
             ('RS0003', {'performance_map_type': 'DISCRETE'}, 'discrete'),
             ('RS0003', {'performance_map_type': 'CONTINUOUS'}, 'continuous'),
         ]
@@ -98,10 +89,7 @@ def test_xlsx_template_creation():
             file_name_components.append(rs[2])
         file_name_components.append("template.a205.xlsx")
         file_name = '-'.join(file_name_components)
-        tk205.template(rs[0],os.path.join("build","templates",file_name), **rs[1])
-
-def test_xlsx_template_correctness():
-    pass
+        tk205.template(rs[0],os.path.join(output_dir,file_name), **rs[1])
 
 '''
 Unit tests
@@ -119,7 +107,7 @@ def test_get_schema_node():
     assert('enum' in node)
 
     # Node in nested RS
-    node = schema.get_schema_node(['ASHRAE205', 'RS_instance', 'RS0002', 'performance', 'fan_RS', 'ASHRAE205','RS_instance', 'RS0003', 'description', 'product_information', 'impeller_type'])
+    node = schema.get_schema_node(['ASHRAE205', 'RS_instance', 'RS0002', 'performance', 'fan_representation', 'ASHRAE205','RS_instance', 'RS0003', 'description', 'product_information', 'impeller_type'])
     assert('enum' in node)
 
     # Array node
