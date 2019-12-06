@@ -16,7 +16,7 @@ jobs:
           python-version: 3.7
       - name: Install
         run: |
-          python -m pip intstall --upgrade pip
+          python -m pip install --upgrade pip
           python -m pip install pipenv
           pipenv install --dev
       - name: Test
