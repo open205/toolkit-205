@@ -39,11 +39,11 @@ def test_bad_examples_validation():
 def test_json_to_cbor_translation():
     tk205.translate_directory('schema-205/examples/json', 'build/examples/cbor')
 
-def test_yaml_validation():
-    tk205.validate_directory('build/examples/yaml')
-
 def test_json_to_yaml_translation():
     tk205.translate_directory('schema-205/examples/json', 'build/examples/yaml')
+
+def test_yaml_validation():
+    tk205.validate_directory('build/examples/yaml')
 
 def test_cbor_validation():
     tk205.validate_directory('build/examples/cbor')
