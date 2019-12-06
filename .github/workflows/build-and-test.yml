@@ -1,0 +1,22 @@
+name: Build and Test
+
+on: push
+
+jobs:
+  build:
+    name: Build
+    runs-on: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install
+        run: |
+          python -m pip intstall --upgrade pip
+          python -m pip install pipenv
+          pipenv install --dev
+      - name: Test
+        run: |
+          pipenv run pytest -v
+
