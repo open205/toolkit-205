@@ -18,8 +18,8 @@ def cli():
 short_help_text = "Translate a representation specification between file formats."
 help_text = short_help_text
 @cli.command('translate', short_help=short_help_text, help=help_text)
-@click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False))
-@click.option('-o', '--output', help="Output file with extension.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
+@click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
+@click.option('-o', '--output', help="Output file with extension.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
 def translate(input, output):
     tk205.translate(input.name, output.name)
 
@@ -50,8 +50,8 @@ help_text = "\n\n".join([short_help_text] + [
     "generates a DISCRETE performance map for RS0003."
     ])
 @cli.command('template', short_help=short_help_text, help=help_text, context_settings=dict(ignore_unknown_options=True,allow_extra_args=True))
-@click.option('-r', '--repspec', help="Representation Specification ID.",  type=click.Choice(['RS0001','RS0002','RS0003']))
-@click.option('-o', '--output', help="Output template path.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
+@click.option('-r', '--repspec', help="Representation Specification ID.",  type=click.Choice(['RS0001','RS0002','RS0003']), required=True, metavar="[RS0001-RS0003]")
+@click.option('-o', '--output', help="Output template path.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
 @click.pass_context
 def template(ctx, repspec, output):
     kwargs = {}
@@ -76,7 +76,7 @@ def template(ctx, repspec, output):
 short_help_text = "Perform all validation tests and generate text report to stdout."
 help_text = short_help_text
 @cli.command('validate', short_help=short_help_text, help=help_text)
-@click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False))
+@click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
 def validate(input):
     tk205.validate(input.name)
 
@@ -89,3 +89,6 @@ help_text = short_help_text
 @click.option('-o', '--output', help="Output report path WITHOUT extension (implied by style).",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False))
 def export(syntax, input, output):
     print("Export functionality not yet implemented.")
+
+if __name__ == '__main__':
+    cli()
