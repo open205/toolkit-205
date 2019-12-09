@@ -3,7 +3,7 @@ import os
 import json
 from functools import reduce
 
-def get_title_and_description2(json_file, path):
+def get_title_and_description(json_file, path):
     with open(os.path.join(path, json_file), 'r')as input_file:
         input_json = json.load(input_file)
         if "title" in input_json:
@@ -13,25 +13,6 @@ def get_title_and_description2(json_file, path):
             title = input_json["ASHRAE205"]["RS_ID"]
             description = input_json["ASHRAE205"]["description"]
         return title, description
-
-
-def get_title_and_description(file_list, path):
-    title_and_description = {}
-    for item in file_list:
-        if isinstance(item, list):
-            for subitem in os.listdir(path):
-                if not subitem.startswith('.') and os.path.isdir(os.path.join(path, subitem)):
-                    get_title_and_description(item, os.path.join(path, os.path.splitext(subitem)[0]))
-        elif os.path.splitext(item)[-1].lower() == '.json' and os.path.isdir(os.path.join(path, item)):
-            print('found')
-            with open(os.path.join(path, item), 'r')as input_file:
-                input_json = json.load(input_file)
-                title = input_json["title"]
-                description = input_json["description"]
-                title_and_description[item] = [title, description]
-                print(title_and_description)
-    return title_and_description
-
 
 def get_directory_structure(rootdir):
     """
@@ -59,7 +40,7 @@ def generate_page(env, template_name, file_name, destination, headline, content)
         )) 
     f.close()
 
-def main():
+def generate():
     # Setup for Jinja
     root = os.path.dirname(os.path.abspath(__file__))
     jinja_templates_dir = os.path.join(root, 'templates')
@@ -83,7 +64,7 @@ def main():
     # Create schema.html
     schema_page_data = []
     for schema_file in sorted(schema_dictionary):
-        title, description = get_title_and_description2(schema_file, schema_directory)
+        title, description = get_title_and_description(schema_file, schema_directory)
         schema_page_data.append([title, description, schema_file])
     generate_page(env, 'schema_template.html', 'schema.html', destination_dir, 'JSON Schema (Normative)', schema_page_data)
 
@@ -91,7 +72,7 @@ def main():
     examples_page_data = []
     for example_file in sorted(examples_dictionary['json']):
         file_list = []
-        title, description = get_title_and_description2(example_file, os.path.join(examples_directory, "json"))
+        title, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
         titles_and_descriptions.append([title, description])    # Please solve me.
         base_name = os.path.splitext(example_file)[0]
         for keys, example_types in examples_dictionary.items():
@@ -113,6 +94,8 @@ def main():
     # Create toolkit205.html
     generate_page(env, 'tk205_template.html', 'tk205.html', destination_dir, '', [])
 
+def main():
+    generate()
 
 if __name__ == '__main__':
 	main()
