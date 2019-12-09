@@ -7,12 +7,14 @@ verify_ssl = true
 pylint = "*"
 pytest = "*"
 pipenv = "*"
+atomicwrites = "*"
 
 [packages]
 click = "*"
 jsonschema = "*"
 cbor2 = "*"
 openpyxl = "*"
-tk205 = {editable = true,path = "."}
+pyyaml = "*"
 Jinja2 = "*"
-invoke = "*"
+
+tk205 = {editable = true,path = "."}
