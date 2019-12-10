@@ -59,7 +59,7 @@ def generate():
     examples_dictionary = get_directory_structure(examples_directory)
     templates_dictionary = get_directory_structure(templates_directory)
 
-    titles_and_descriptions = [] # This is a terrible solutions for this problem. these titles and descriptions are only for examples and templates, different from json.
+    titles_and_descriptions = []
 
     # Create schema.html
     schema_page_data = []
@@ -71,22 +71,26 @@ def generate():
     # Create examples.html
     examples_page_data = []
     for example_file in sorted(examples_dictionary['json']):
+        example_file_data ={}
         file_list = []
         title, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
-        titles_and_descriptions.append([title, description])    # Please solve me.
+        titles_and_descriptions.append({"title":title, "description":description})
         base_name = os.path.splitext(example_file)[0]
         for keys, example_types in examples_dictionary.items():
             for example in example_types:
                 if base_name in example:
                     file_list.append(example)
-        examples_page_data.append([title, description, file_list])
+        example_file_data["title"] = title
+        example_file_data["description"] = description
+        example_file_data["file_list"] = file_list
+        examples_page_data.append(example_file_data)
     generate_page(env, 'examples_template.html', 'examples.html', destination_dir, 'Example Files', examples_page_data)
 
     # Create templates.html
     templates_page_data = []
     for index, template_file in enumerate(templates_dictionary):
-        templates_page_data.append([titles_and_descriptions[index][0],titles_and_descriptions[index][1], template_file])
-    generate_page(env, 'schema_template.html', 'templates.html', destination_dir, 'XLSX Templates', templates_page_data)
+        templates_page_data.append([titles_and_descriptions[index]["title"],titles_and_descriptions[index]["description"], template_file])
+    generate_page(env, 'templates_template.html', 'templates.html', destination_dir, 'XLSX Templates', templates_page_data)
 
     # Create index.html AKA about page
     generate_page(env, 'about_template.html', 'index.html', destination_dir, '', [])

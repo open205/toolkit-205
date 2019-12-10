@@ -11,10 +11,10 @@
 				{% for item in content %}
 				<div class="row">
 				<div class="column lg-12">
-					<h3 class="featureBlock-subHeading" style="margin-top: 6.5px;">{{item[0]}}</h3>
-					<p>{{item[1]}}</p>
+					<h3 class="featureBlock-subHeading" style="margin-top: 6.5px;">{{item["title"]}}</h3>
+					<p>{{item["description"]}}</p>
 				</div>
-				{% for file in item[2] %}
+				{% for file in item["file_list"] %}
 					<div class="column lg-2" style="margin: auto;">
 						<a class="btn btn--hexagon-secondary" href="assets/examples/{{ file }}">
 							{% if 'cbor' in file %}
