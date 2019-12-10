@@ -1,7 +1,7 @@
 from jinja2 import Environment, FileSystemLoader
 import os
 import json
-from functools import reduce
+from collections import OrderedDict 
 
 def get_title_and_description(json_file, path):
     with open(os.path.join(path, json_file), 'r')as input_file:
@@ -62,34 +62,30 @@ def generate():
     titles_and_descriptions = []
 
     # Create schema.html
-    schema_page_data = []
+    schema_page_data = OrderedDict() 
     for schema_file in sorted(schema_dictionary):
         title, description = get_title_and_description(schema_file, schema_directory)
-        schema_page_data.append([title, description, schema_file])
+        schema_page_data[title] = {'title':title, 'description':description, 'schema_file':schema_file}
     generate_page(env, 'schema_template.html', 'schema.html', destination_dir, 'JSON Schema (Normative)', schema_page_data)
 
     # Create examples.html
-    examples_page_data = []
+    examples_page_data = OrderedDict()
     for example_file in sorted(examples_dictionary['json']):
-        example_file_data ={}
         file_list = []
         title, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
-        titles_and_descriptions.append({"title":title, "description":description})
+        titles_and_descriptions.append({'title':title, 'description':description})
         base_name = os.path.splitext(example_file)[0]
         for keys, example_types in examples_dictionary.items():
             for example in example_types:
                 if base_name in example:
                     file_list.append(example)
-        example_file_data["title"] = title
-        example_file_data["description"] = description
-        example_file_data["file_list"] = file_list
-        examples_page_data.append(example_file_data)
+        examples_page_data[example_file]={'title':title, 'description':description, 'file_list':file_list}
     generate_page(env, 'examples_template.html', 'examples.html', destination_dir, 'Example Files', examples_page_data)
 
     # Create templates.html
-    templates_page_data = []
+    templates_page_data = OrderedDict()
     for index, template_file in enumerate(templates_dictionary):
-        templates_page_data.append([titles_and_descriptions[index]["title"],titles_and_descriptions[index]["description"], template_file])
+        templates_page_data[template_file] = {'title':titles_and_descriptions[index]['title'], 'description':titles_and_descriptions[index]['description'], 'template_file':template_file}
     generate_page(env, 'templates_template.html', 'templates.html', destination_dir, 'XLSX Templates', templates_page_data)
 
     # Create index.html AKA about page

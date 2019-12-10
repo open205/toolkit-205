@@ -8,14 +8,14 @@
 				<h2>{{headline}}</h2>
 				<hr>
 
-				{% for item in content %}
+				{% for key, item in content.items() %}
 				<div class="row">
 				<div class="column lg-12">
-					<h3 class="featureBlock-subHeading" style="margin-top: 6.5px;">{{item[0]}}</h3>
-					<p>{{item[1]}}</p>
+					<h3 class="featureBlock-subHeading" style="margin-top: 6.5px;">{{item['title']}}</h3>
+					<p>{{item['description']}}</p>
 				</div>
 					<div class="column lg-8" style="margin: auto;">
-						<a class="btn btn--hexagon-secondary" href="assets/schema/{{ item[2] }}">Download</a>
+						<a class="btn btn--hexagon-secondary" href="assets/schema/{{ item['schema_file'] }}">Download</a>
 					</div>
 				</div>
 				{% endfor %}
