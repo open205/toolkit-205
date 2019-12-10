@@ -68,18 +68,12 @@ def test_xlsx_validation():
 def test_xlsx_template_creation():
     output_dir = 'build/templates'
     tk205.file_io.clear_directory(output_dir)
-    rss = [
-            ('RS0001', {}, None),
-            ('RS0002', {'performance_map_type': 'DISCRETE'}, 'discrete-fan'),
-            ('RS0002', {'performance_map_type': 'CONTINUOUS'}, 'continuous-fan'),
-            ('RS0003', {'performance_map_type': 'DISCRETE'}, 'discrete'),
-            ('RS0003', {'performance_map_type': 'CONTINUOUS'}, 'continuous'),
-        ]
+    rss = tk205.load('config/templates.json')
     for rs in rss:
-        file_name_components = [rs[0]]
-        if rs[2]:
-            file_name_components.append(rs[2])
+        file_name_components = [rs["RS"]]
+        if rs["file-name-suffix"]:
+            file_name_components.append(rs["file-name-suffix"])
         file_name_components.append("template.a205.xlsx")
         file_name = '-'.join(file_name_components)
-        tk205.template(rs[0],os.path.join(output_dir,file_name), **rs[1])
+        tk205.template(rs["RS"],os.path.join(output_dir,file_name), **rs["keywords"])
 
