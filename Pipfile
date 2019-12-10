@@ -8,6 +8,7 @@ pylint = "*"
 pytest = "*"
 pipenv = "*"
 atomicwrites = "*"
+Jinja2 = "*"
 
 [packages]
 click = "*"
@@ -15,6 +16,5 @@ jsonschema = "*"
 cbor2 = "*"
 openpyxl = "*"
 pyyaml = "*"
-Jinja2 = "*"
 
 tk205 = {editable = true,path = "."}
