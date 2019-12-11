@@ -3,25 +3,25 @@
         "RS": "RS0001",
         "keywords": {},
         "file-name-suffix": null,
-        "description": "Water Cooled Centrifugal Chiller"
+        "description": "Water Cooled Chiller"
     },
     {
         "RS": "RS0002",
         "keywords": {"performance_map_type": "DISCRETE"},
         "file-name-suffix": "discrete-fan",
-        "description": "Variable Speed Air Conditioner with Discrete Fan"
+        "description": "Unitary System with Discrete Fan"
     },
     {
         "RS": "RS0002",
         "keywords": {"performance_map_type": "CONTINUOUS"},
         "file-name-suffix": "continuous-fan",
-        "description": "Variable Speed Air Conditioner with Continuous Fan"
+        "description": "Unitary System with Continuous Fan"
     },
     {
         "RS": "RS0003",
         "keywords": {"performance_map_type": "CONTINUOUS"},
         "file-name-suffix": "continuous",
-        "description": "(continuous)"
+        "description": "Continuous Fan Assembly"
     },
     {
         "RS": "RS0003",
