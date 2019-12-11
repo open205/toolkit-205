@@ -16,7 +16,19 @@
 				</div>
 				{% for file in item['file_list'] %}
 					<div class="column lg-2" style="margin: auto;">
-						<a class="btn btn--hexagon-secondary" href="assets/examples/{{ file }}">
+						<a class="btn btn--hexagon-secondary" href="assets/examples/
+						{% if 'cbor' in file %}
+						cbor
+						{% elif 'json' in file %}
+						json
+						{% elif 'xlsx' in file %}
+						xlsx
+						{% elif 'yaml' in file %}
+						yaml
+						{% elif 'yml' in file %}
+						yaml
+						{% endif %}
+						/{{ file }}">
 							{% if 'cbor' in file %}
 							cbor
 							{% elif 'json' in file %}

@@ -9,6 +9,7 @@ pytest = "*"
 pipenv = "*"
 atomicwrites = "*"
 Jinja2 = "*"
+gitpython = "*"
 
 [packages]
 click = "*"
