@@ -1,4 +1,3 @@
-import sys
 import git
 import os
 import json
@@ -6,6 +5,7 @@ from collections import OrderedDict
 from distutils.dir_util import copy_tree
 from jinja2 import Environment, FileSystemLoader
 import tk205
+from tk205.file_io import set_dir
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -59,37 +59,18 @@ def create_files(web_dir):
     """
     Create or replace the example and template files inside of open205.github.io
     """
-    assets_dir = os.path.join(web_dir, 'assets')
-    if not os.path.isdir(assets_dir):
-        os.mkdir(assets_dir)
+    assets_dir = set_dir(os.path.join(web_dir, 'assets'))
 
-    examples_dir = os.path.join(assets_dir, 'examples')
-    if not os.path.isdir(examples_dir):
-        os.mkdir(examples_dir)
+    examples_dir = set_dir(os.path.join(assets_dir, 'examples'))
 
-    json_dir = os.path.join(examples_dir, 'json')
-    if not os.path.isdir(json_dir):
-        os.mkdir(json_dir)
+    json_dir = set_dir(os.path.join(examples_dir, 'json'))
+    cbor_dir = set_dir(os.path.join(examples_dir, 'cbor'))
+    xlsx_dir = set_dir(os.path.join(examples_dir, 'xlsx'))
+    yaml_dir = set_dir(os.path.join(examples_dir, 'yaml'))
 
-    cbor_dir = os.path.join(examples_dir, 'cbor')
-    if not os.path.isdir(cbor_dir):
-        os.mkdir(cbor_dir)
+    templates_dir = set_dir(os.path.join(assets_dir, 'templates'))
 
-    xlsx_dir = os.path.join(examples_dir, 'xlsx')
-    if not os.path.isdir(xlsx_dir):
-        os.mkdir(xlsx_dir)
-
-    yaml_dir = os.path.join(examples_dir, 'yaml')
-    if not os.path.isdir(yaml_dir):
-        os.mkdir(yaml_dir)
-
-    templates_dir = os.path.join(assets_dir, 'templates')
-    if not os.path.isdir(templates_dir):
-        os.mkdir(templates_dir)
-
-    schema_dir = os.path.join(assets_dir, 'schema')
-    if not os.path.isdir(schema_dir):
-        os.mkdir(schema_dir)
+    schema_dir = set_dir(os.path.join(assets_dir, 'schema'))
 
     tk205.translate_directory('schema-205/examples/json', json_dir)
     tk205.translate_directory('schema-205/examples/json', cbor_dir)
@@ -113,15 +94,10 @@ def clone():
     """
     Clone open205.github.io website repository into the build directory.
     """
-    build_dir = os.path.join(root_dir, '..', 'build')
-    if not os.path.isdir(build_dir):
-        os.mkdir(build_dir)
+    build_dir = set_dir(os.path.join(root_dir, '..', 'build'))
     web_dir = os.path.join(build_dir, 'web')
     if not os.path.isdir(web_dir):
         git.Repo.clone_from("https://github.com/open205/open205.github.io.git", web_dir, branch='master')
-    assets_dir = os.path.join(web_dir, 'assets')
-    if not os.path.isdir(assets_dir):
-        os.mkdir(assets_dir)
     return web_dir
 
 
@@ -155,8 +131,8 @@ def generate(web_dir):
         title, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
 
         base_name = os.path.splitext(example_file)[0]
-        for keys, example_types in examples_dictionary.items():
-            for example in example_types:
+        for key in examples_dictionary:
+            for example in examples_dictionary[key]:
                 if base_name in example:
                     file_list.append(example)
         examples_page_data[example_file]={'title': title, 'description': description, 'file_list': file_list}
