@@ -9,6 +9,13 @@ from tk205.file_io import set_dir
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
+def is_git_repo(path):
+    try:
+        _ = git.Repo(path).git_dir
+        return True
+    except git.exc.InvalidGitRepositoryError:
+        return False
+
 def get_title_and_description(json_file, path):
     """
     Open an ASHRAE205 json schema or example file and return the title and description.
@@ -96,8 +103,19 @@ def clone():
     """
     build_dir = set_dir(os.path.join(root_dir, '..', 'build'))
     web_dir = os.path.join(build_dir, 'web')
-    if not os.path.isdir(web_dir):
-        git.Repo.clone_from("https://github.com/open205/open205.github.io.git", web_dir, branch='master')
+    if os.path.isdir(web_dir) and is_git_repo(web_dir):
+        print("Repository found...")
+    elif os.path.isdir(web_dir) and not is_git_repo(web_dir):
+        print("Working folder found. Continuing without git...")
+    else:
+        print("Attempting to clone open205.github.io....")
+        try:
+            web_repo = git.repo.clone_from("https://github.com/open205/open205.github.io.git", web_dir, branch='master')
+        except git.exc.GitError as e:
+            print("GitPython Error: { %s }" % e)
+            print("Continuing without git repository...")
+        finally:
+            set_dir(web_dir)
     return web_dir
 
 
