@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="main">
+		<div class="section">
+			<div class="contained">
+
+				<h2>{{headline}}</h2>
+				<hr>
+
+				{% for key, item in content.items() %}
+				<div class="row">
+				<div class="column lg-12">
+					<h3 class="featureBlock-subHeading" style="margin-top: 6.5px;">{{item['title']}}</h3>
+					<p>{{item['description']}}</p>
+				</div>
+					<div class="column lg-8" style="margin: auto;">
+						<a class="btn btn--hexagon-secondary" href="assets/schema/{{ item['schema_file'] }}">Download</a>
+					</div>
+				</div>
+				{% endfor %}
+
+				<div class="row">
+					<!-- This must be here to even out the rows -->
+				</div>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}

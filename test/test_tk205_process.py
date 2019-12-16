@@ -1,34 +1,32 @@
 import tk205
+from tk205.file_io import set_dir
 import os
 import pytest
 
-if not os.path.isdir('build'):
-    os.mkdir('build')
+build_dir = set_dir("build")
 
-if not os.path.isdir('build/examples'):
-    os.mkdir('build/examples')
+test_dir = set_dir(os.path.join(build_dir,"test"))
 
-if not os.path.isdir('build/examples/cbor'):
-    os.mkdir('build/examples/cbor')
+examples_dir = set_dir(os.path.join(test_dir,"examples"))
 
-if not os.path.isdir('build/examples/xlsx'):
-    os.mkdir('build/examples/xlsx')
+cbor_dir = set_dir(os.path.join(examples_dir,"cbor"))
 
-if not os.path.isdir('build/examples/json'):
-    os.mkdir('build/examples/json')
+xlsx_dir = set_dir(os.path.join(examples_dir,"xlsx"))
 
-if not os.path.isdir('build/examples/yaml'):
-    os.mkdir('build/examples/yaml')
+json_dir = set_dir(os.path.join(examples_dir,"json"))
 
-if not os.path.isdir('build/templates'):
-    os.mkdir('build/templates')
+yaml_dir = set_dir(os.path.join(examples_dir,"yaml"))
+
+templates_dir = set_dir(os.path.join(test_dir,"templates"))
+
+json_source_dir = os.path.join("schema-205","examples","json")
 
 '''
 Process tests
 '''
 
 def test_json_validation():
-    tk205.validate_directory('schema-205/examples/json')
+    tk205.validate_directory(json_source_dir)
 
 def test_bad_examples_validation():
     example_dir = 'test/bad-examples'
@@ -37,49 +35,43 @@ def test_bad_examples_validation():
             tk205.validate(os.path.join(example_dir,example))
 
 def test_json_to_cbor_translation():
-    tk205.translate_directory('schema-205/examples/json', 'build/examples/cbor')
-
-def test_json_to_yaml_translation():
-    tk205.translate_directory('schema-205/examples/json', 'build/examples/yaml')
-
-def test_yaml_validation():
-    tk205.validate_directory('build/examples/yaml')
+    tk205.translate_directory(json_source_dir, cbor_dir)
 
 def test_cbor_validation():
-    tk205.validate_directory('build/examples/cbor')
+    tk205.validate_directory(cbor_dir)
+
+def test_json_to_yaml_translation():
+    tk205.translate_directory(json_source_dir, yaml_dir)
+
+def test_yaml_validation():
+    tk205.validate_directory(yaml_dir)
 
 def test_json_to_xlsx_translation():
-    tk205.translate_directory('schema-205/examples/json', 'build/examples/xlsx')
+    tk205.translate_directory(json_source_dir, xlsx_dir)
+
+def test_xlsx_validation():
+    tk205.validate_directory(xlsx_dir)
 
 def test_xlsx_to_json_translation():
-    tk205.translate_directory('build/examples/xlsx', 'build/examples/json')
+    tk205.translate_directory(xlsx_dir, json_dir)
 
 def test_json_round_trip():
-    origin_dir = 'schema-205/examples/json'
-    product_dir = 'build/examples/json'
+    origin_dir = json_source_dir
+    product_dir = json_dir
     for example in (os.listdir(origin_dir)):
         origin_path = os.path.join(origin_dir,example)
         product_path = os.path.join(product_dir,example)
         assert(tk205.load(origin_path) == tk205.load(product_path))
 
-def test_xlsx_validation():
-    tk205.validate_directory('build/examples/xlsx')
-
 def test_xlsx_template_creation():
-    output_dir = 'build/templates'
+    output_dir = templates_dir
     tk205.file_io.clear_directory(output_dir)
-    rss = [
-            ('RS0001', {}, None),
-            ('RS0002', {'performance_map_type': 'DISCRETE'}, 'discrete-fan'),
-            ('RS0002', {'performance_map_type': 'CONTINUOUS'}, 'continuous-fan'),
-            ('RS0003', {'performance_map_type': 'DISCRETE'}, 'discrete'),
-            ('RS0003', {'performance_map_type': 'CONTINUOUS'}, 'continuous'),
-        ]
+    rss = tk205.load('config/templates.json')
     for rs in rss:
-        file_name_components = [rs[0]]
-        if rs[2]:
-            file_name_components.append(rs[2])
+        file_name_components = [rs["RS"]]
+        if rs["file-name-suffix"]:
+            file_name_components.append(rs["file-name-suffix"])
         file_name_components.append("template.a205.xlsx")
         file_name = '-'.join(file_name_components)
-        tk205.template(rs[0],os.path.join(output_dir,file_name), **rs[1])
+        tk205.template(rs["RS"],os.path.join(output_dir,file_name), **rs["keywords"])
 

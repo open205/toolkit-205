@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="main">
+		<div class="section">
+			<div class="contained">
+
+				<h2>{{headline}}</h2>
+				<hr>
+
+				{% for key, item in content.items() %}
+				<div class="row">
+				<div class="column lg-12">
+					<h3 class="featureBlock-subHeading" style="margin-top: 6.5px;">{{item['title']}}</h3>
+					<p>{{item['description']}}</p>
+				</div>
+				{% for file in item['file_list'] %}
+					<div class="column lg-2" style="margin: auto;">
+						<a class="btn btn--hexagon-secondary" href="assets/examples/
+						{% if 'cbor' in file %}
+						cbor
+						{% elif 'json' in file %}
+						json
+						{% elif 'xlsx' in file %}
+						xlsx
+						{% elif 'yaml' in file %}
+						yaml
+						{% elif 'yml' in file %}
+						yaml
+						{% endif %}
+						/{{ file }}">
+							{% if 'cbor' in file %}
+							cbor
+							{% elif 'json' in file %}
+							json
+							{% elif 'xlsx' in file %}
+							xlsx
+							{% elif 'yaml' in file %}
+							yaml
+							{% elif 'yml' in file %}
+							yaml
+							{% endif %}
+						</a>
+					</div>
+				{% endfor %}
+				</div>
+				{% endfor %}
+
+				<div class="row">
+					<!-- This must be here to even out the rows -->
+				</div>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}

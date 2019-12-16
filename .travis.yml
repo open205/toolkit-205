@@ -38,3 +38,4 @@ install:
 
 script:
 - pipenv run pytest -v
+- pipenv run python web/web-content.py

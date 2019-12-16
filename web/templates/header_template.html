@@ -1,0 +1,34 @@
+<header class="headerMain">
+    <div class="headerMain-util">
+        <div class="logoMain">
+            <a href="https://www.ashrae.org/">
+                <img src="assets/public/logo_ashrae.png">
+            </a>
+            <h1>ASHRAE Standard 205P Resource Files</h1>
+        </div>
+    </div>
+    <div class="headerMain-main">
+        <div>
+            <div class="headerMain-mainZone02"></div>
+            <nav id="navMain" class="navMain">
+                <ul>
+                    <li class="ismega">
+                        <a {% if 'index.html' == nav %}class="selected"{% endif %} href="index.html">About</a>
+                    </li>
+                    <li class="ismega">
+                        <a {% if 'schema.html' == nav %}class="selected"{% endif %} href="schema.html">JSON Schema (Normative)</a>
+                    </li>
+                    <li class="ismega">
+                        <a {% if 'examples.html' == nav %}class="selected"{% endif %} href="examples.html">Example Files</a>
+                    </li>
+                    <li class="ismega">
+                        <a {% if 'templates.html' == nav %}class="selected"{% endif %} href="templates.html">XLSX Templates</a>
+                    </li>
+                    <li class="ismega">
+                        <a {% if 'tk205.html' == nav %}class="selected"{% endif %} href="tk205.html">Toolkit 205</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
