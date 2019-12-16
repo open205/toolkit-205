@@ -13,7 +13,7 @@ def is_git_repo(path):
     try:
         _ = git.Repo(path).git_dir
         return True
-    except git.exc.InvalidGitRepositoryError:
+    except git.InvalidGitRepositoryError:
         return False
 
 def get_title_and_description(json_file, path):
@@ -106,13 +106,12 @@ def clone():
     if os.path.isdir(web_dir) and is_git_repo(web_dir):
         pass
     elif os.path.isdir(web_dir) and not is_git_repo(web_dir):
-        print("Working folder found. Continuing without git...")
+        print("Working folder found. Continuing without git repository...")
     else:
-        print("Attempting to clone open205.github.io....")
         try:
-            git.repo.clone_from("https://github.com/open205/open205.github.io.git", web_dir, branch='master')
-        except git.exc.GitError as e:
-            print("GitPython Error: { %s }" % e)
+            git.Repo.clone_from("https://github.com/open205/open205.github.io.git", web_dir, branch='master')
+        except git.GitError as e:
+            print(f"GitPython Error: {e}")
             print("Continuing without git repository...")
             set_dir(web_dir)
     return web_dir
