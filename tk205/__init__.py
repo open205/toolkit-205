@@ -23,6 +23,13 @@ def translate_directory(source_dir, output_dir, clear=True):
             translate(source_path, output_path)
 
 def validate_directory(example_dir):
+    errors = []
     for example in os.listdir(example_dir):
         if '~$' not in example:  # Ignore temporary Excel files
-            validate(os.path.join(example_dir,example))
+            try:
+                validate(os.path.join(example_dir,example))
+            except Exception as e: # Change to tk205 Exception
+                errors.append(e)
+    if len(errors) > 0:
+        error_str = '\n\n'.join([f"{e}" for e in errors])
+        raise Exception(f"{error_str}")
