@@ -28,5 +28,11 @@
         "keywords": {"performance_map_type": "DISCRETE"},
         "file-name-suffix": "discrete",
         "description": "Discrete Fan Assembly"
+    },
+    {
+        "RS": "RS0004",
+        "keywords": {},
+        "file-name-suffix": null,
+        "description": "DX Coil System"
     }
 ]

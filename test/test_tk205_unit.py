@@ -29,10 +29,10 @@ def test_get_schema_node():
     assert('enum' in node)
 
 def test_create_grid_set():
-    rep = tk205.load('schema-205/examples/json/RS0002SimpleExampleFile.a205.json')
-    grid_vars = rep['ASHRAE205']['RS_instance']['RS0002']['performance']['performance_map_cooling']['grid_variables']
+    rep = tk205.load('schema-205/examples/json/RS0004SimpleExampleFile.a205.json')
+    grid_vars = rep['ASHRAE205']['RS_instance']['RS0004']['performance']['performance_map_cooling']['grid_variables']
     schema = tk205.A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json"))
-    grid_set = schema.create_grid_set(grid_vars, ['ASHRAE205','RS_instance','RS0002','performance','performance_map_cooling','grid_variables'])
+    grid_set = schema.create_grid_set(grid_vars, ['ASHRAE205','RS_instance','RS0004','performance','performance_map_cooling','grid_variables'])
     table_length = 1
     for var in grid_vars:
         table_length *= len(grid_vars[var])
@@ -44,12 +44,12 @@ def test_get_grid_variable_order():
     schema = tk205.A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json"))
 
     # Typical case
-    grid_vars_names = ['outdoor_coil_entering_dry_bulb_temperature','indoor_coil_entering_wet_bulb_temperature', 'indoor_coil_entering_dry_bulb_temperature', 'indoor_coil_volumetric_flow_ratio', 'compressor_sequence_number', 'ambient_absolute_air_pressure']
-    order = schema.get_grid_variable_order(['ASHRAE205','RS_instance','RS0002','performance','performance_map_cooling','grid_variables'],grid_vars_names)
+    grid_vars_names = ['outdoor_coil_entering_dry_bulb_temperature','indoor_coil_entering_relative_humidity', 'indoor_coil_entering_dry_bulb_temperature', 'indoor_coil_air_mass_flow_rate', 'compressor_sequence_number', 'ambient_absolute_air_pressure']
+    order = schema.get_grid_variable_order(['ASHRAE205','RS_instance','RS0004','performance','performance_map_cooling','grid_variables'],grid_vars_names)
     assert(order == grid_vars_names)
 
     # "oneOf" case 1
-    grid_vars_names = ['impeller_speed','static_pressure_difference']
+    grid_vars_names = ['volumetric_air_flow_rate','static_pressure_difference']
     order = schema.get_grid_variable_order(['ASHRAE205','RS_instance','RS0003','performance','performance_map','grid_variables'], grid_vars_names)
     assert(order == grid_vars_names)
 
@@ -59,10 +59,10 @@ def test_get_grid_variable_order():
     assert(order == grid_vars_names)
 
 def test_process_grid_set():
-    rep = tk205.load('schema-205/examples/json/RS0002SimpleExampleFile.a205.json')
-    grid_vars = rep['ASHRAE205']['RS_instance']['RS0002']['performance']['performance_map_cooling']['grid_variables']
+    rep = tk205.load('schema-205/examples/json/RS0004SimpleExampleFile.a205.json')
+    grid_vars = rep['ASHRAE205']['RS_instance']['RS0004']['performance']['performance_map_cooling']['grid_variables']
     schema = tk205.A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json"))
-    grid_set = schema.create_grid_set(grid_vars, ['ASHRAE205','RS_instance','RS0002','performance','performance_map_cooling','grid_variables'])
+    grid_set = schema.create_grid_set(grid_vars, ['ASHRAE205','RS_instance','RS0004','performance','performance_map_cooling','grid_variables'])
     grid_vars2 = tk205.util.process_grid_set(grid_set)
     assert(grid_vars == grid_vars2)
 

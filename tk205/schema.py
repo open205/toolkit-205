@@ -15,15 +15,32 @@ class A205Schema:
 
             self.validator = jsonschema.Draft7Validator(json.load(schema_file), resolver=resolver)
 
+    def process_errors(self, errors, parent_level = 0):
+        '''
+        This method collects relevant error messages using recursion for 'oneOf' or 'anyOf' validations
+        '''
+        messages = []
+        for error in errors:
+            if error.validator in ['oneOf','anyOf']:
+                messages += self.process_errors(error.context, len(error.path))
+            else:
+                if len(error.path) >= parent_level:
+                    messages.append(f"{error.message} ({'.'.join(error.path)})")
+        return messages
+
     def validate(self, instance):
         errors = sorted(self.validator.iter_errors(instance), key=lambda e: e.path)
-        for error in errors:
-            for suberror in sorted(error.context, key=lambda e: e.schema_path):
-                print(list(suberror.schema_path), suberror.message, sep=", ")
         if len(errors) == 0:
-            print(f"Validation Successful for {instance['ASHRAE205']['description']}")
+            print(f"Validation successful for {instance['ASHRAE205']['description']}")
         else:
-            raise Exception(f"Validation failed.")
+            messages = self.process_errors(errors)
+            messages = [f"{i}. {message}" for i, message in enumerate(messages, start=1)]
+            message_str = '\n  '.join(messages)
+            if 'RS_ID' in instance['ASHRAE205']:
+                rs_id = instance['ASHRAE205']['RS_ID']
+            else:
+                rs_id = "RS????"
+            raise Exception(f"Validation failed for \"{instance['ASHRAE205']['description']}\" ({rs_id}) with {len(messages)} errors:\n  {message_str}")
 
     def resolve(self, node, step_in=True):
         if '$ref' in node:
