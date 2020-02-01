@@ -16,6 +16,9 @@ class A205Schema:
             self.validator = jsonschema.Draft7Validator(json.load(schema_file), resolver=resolver)
 
     def process_errors(self, errors, parent_level = 0):
+        '''
+        This method collects relevant error messages using recursion for 'oneOf' or 'anyOf' validations
+        '''
         messages = []
         for error in errors:
             if error.validator in ['oneOf','anyOf']:
