@@ -19,9 +19,9 @@ class TreeSchema:
     def resolve(self, node, step_in=True):
         if '$ref' in node:
             resolution = self.resolve_ref(node['$ref'])
-            # If this node is a reference to a nested representation, append the required RS_ID
-            if 'RS' in node:
-                resolution['RS'] = node['RS']
+            # # If this node is a reference to a nested representation, append the required RS_ID
+            # if 'RS' in node:
+            #     resolution['RS'] = node['RS']
         else:
             resolution = node
 
@@ -31,53 +31,50 @@ class TreeSchema:
             return resolution
 
     def resolve_ref(self, ref):
-        scope, resolution = self.validator.resolver.resolve(ref)
-        self.validator.resolver.push_scope(scope)
-        return resolution
+        return '$ref:TBD'
+        # scope, resolution = self.validator.resolver.resolve(ref)
+        # self.validator.resolver.push_scope(scope)
+        # return resolution
 
     def get_schema(self):
         return self.validator.schema
 
-    def trace_lineage(self, node, lineage, options):
+    def trace_lineage(self, node, lineage):
         '''
         Search through lineage for the schema node one generation at a time.
 
         node: node to trace into
         lineage: remaining lineage to trace
-        options: indices for any oneOf nodes
         '''
-        #print('trace_lineage; lineage =', lineage)
+        print('trace_lineage; lineage =', lineage)
         #print('trace_lineage; node =', node)
         if not len(lineage): # i.e. []
+            print('Root level; returning whole schema.')
             next_node = self.validator.schema
-            #print('next node', next_node)
-            # if 'items' in next_node:
-            #     next_node = self.resolve(next_node['items'])
             return next_node
 
         for item in node:
             if lineage[0] == item:
                 if len(lineage) == 1:
                     # This is the last node
-                    return self.resolve(node[item],False)
+                    last_node = self.resolve(node[item],False) # get the value associated with key:node
+                    return last_node
                 else:
                     # Keep digging
 
-                    next_node = self.resolve(node[item])
+                    next_node = self.resolve(node[item],False)
                     # if 'items' in next_node:
                     #     next_node = self.resolve(next_node['items'])
-                    return self.trace_lineage(next_node,lineage[1:],options[1:])
+                    return self.trace_lineage(next_node,lineage[1:])
 
         raise KeyError(f"'{lineage[0]}' not found in schema.")
 
-    def get_schema_node(self, lineage, options=None):
-        if options is None:
-            options = [None]*len(lineage)
+    def get_schema_node(self, lineage):
         schema = self.validator.schema
         try:
-            return self.trace_lineage(schema, lineage, options)
+            return self.trace_lineage(schema, lineage)
         except KeyError as ke:
-            print(ke)
+            print('KeyError',ke)
             return None
 
     def get_grid_variable_order(self, lineage, grid_vars):

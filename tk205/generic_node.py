@@ -8,7 +8,7 @@ from .util import process_grid_set, unique_name_with_index
 
 class A205GenericNode:
 
-    def __init__(self, name, parent=None, tree=None, value=None, option=None):
+    def __init__(self, name, parent=None, tree=None, value=None):
         self.children = []  # List of children A205GenericNodes
         self.name = name  # Name of this node
         self.value = value  # Value (if any) of this node
@@ -18,7 +18,6 @@ class A205GenericNode:
         if parent:
             # Inherit much information from parent
             self.lineage = self.parent.lineage + [name]  # List of parent node names (as strings)
-            self.options = self.parent.options + [option]
             self.tree = self.parent.tree
             self.inner_rs = self.parent.inner_rs
 
@@ -28,7 +27,6 @@ class A205GenericNode:
             # Root node
             self.name = 'ROOT'
             self.lineage = []
-            self.options = []
             self.tree = tree
             self.inner_rs = self.tree.rs
 
@@ -58,7 +56,7 @@ class A205GenericNode:
         '''
         Search for schema content for this node
         '''
-        return self.tree.schema.get_schema_node(self.lineage, self.options)
+        return self.tree.schema.get_schema_node(self.lineage)
 
     def is_required(self):
         '''
@@ -84,3 +82,22 @@ class A205GenericNode:
                 child.collect_content(content[self.name])
         else:
             content[self.name] = self.value
+
+
+class A205StringNode(A205GenericNode):
+
+    def __init__(self, name, value, parent=None, tree=None):
+        super().__init__(name, parent, tree)
+        self.value = value #string
+
+class A205EnumNode(A205GenericNode):
+
+    def __init__(self, name, value, parent=None, tree=None):
+        super().__init__(name, parent, tree)
+        self.value = value #string list
+
+class A205RefNode(A205GenericNode):
+
+    def __init__(self, name, value, parent=None, tree=None):
+        super().__init__(name, parent, tree)
+        self.value = value #string refering to the node lineage of a type
