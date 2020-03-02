@@ -10,7 +10,7 @@ class A205GenericNode:
 
     def __init__(self, name, parent=None, tree=None, value=None):
         self.children = []  # List of children A205GenericNodes
-        self.name = name  # Name of this node
+        self.name = name  # Name of this node (i.e. key)
         self.value = value  # Value (if any) of this node
         self.parent = parent  # Parent A205GenericNode of this node
         self.grid_set = None  # Ordered arrays of repeated grid variable values (used only for grid_variable nodes)
@@ -71,10 +71,9 @@ class A205GenericNode:
         else:
             return True
 
-
     def collect_content(self, content):
         '''
-        Collect content from the tree and return it as a Python Dict.
+        Collect content from the owner down, and return it as a Python Dict.
         '''
         if len(self.children) > 0:
             content[self.name] = {}
@@ -100,4 +99,6 @@ class A205RefNode(A205GenericNode):
 
     def __init__(self, name, value, parent=None, tree=None):
         super().__init__(name, parent, tree)
+        print('A205RefNode parent', parent.name)
         self.value = value #string refering to the node lineage of a type
+        print('self.value', self.value)

@@ -17,13 +17,12 @@ class TreeSchema:
 
 
     def resolve(self, node, step_in=True):
-        if '$ref' in node:
-            resolution = self.resolve_ref(node['$ref'])
-            # # If this node is a reference to a nested representation, append the required RS_ID
-            # if 'RS' in node:
-            #     resolution['RS'] = node['RS']
-        else:
-            resolution = node
+        # if isinstance(node, (str,dict)) and '$ref' in node:
+        #     resolution = self.resolve_ref(node['$ref'])
+        #     print(resolution)
+        # else:
+        #     resolution = node
+        resolution = node
 
         if step_in and 'properties' in resolution:
             return resolution['properties']
@@ -32,9 +31,6 @@ class TreeSchema:
 
     def resolve_ref(self, ref):
         return '$ref:TBD'
-        # scope, resolution = self.validator.resolver.resolve(ref)
-        # self.validator.resolver.push_scope(scope)
-        # return resolution
 
     def get_schema(self):
         return self.validator.schema
@@ -46,10 +42,9 @@ class TreeSchema:
         node: node to trace into
         lineage: remaining lineage to trace
         '''
-        print('trace_lineage; lineage =', lineage)
-        #print('trace_lineage; node =', node)
+        #print('trace_lineage; lineage =', lineage)
         if not len(lineage): # i.e. []
-            print('Root level; returning whole schema.')
+            #print('Root level; returning whole schema.')
             next_node = self.validator.schema
             return next_node
 
@@ -61,7 +56,6 @@ class TreeSchema:
                     return last_node
                 else:
                     # Keep digging
-
                     next_node = self.resolve(node[item],False)
                     # if 'items' in next_node:
                     #     next_node = self.resolve(next_node['items'])

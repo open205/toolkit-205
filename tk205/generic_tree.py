@@ -11,10 +11,10 @@ from .generic_node import A205RefNode
 
 class A205GenericTree:
 
-    def __init__(self):
+    def __init__(self, input_path):
         self.content = {}
         self.rs = ""
-        schema_path = os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json")
+        schema_path = input_path #os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json")
         self.schema = TreeSchema(schema_path)
         self.root_node = None
 
@@ -31,14 +31,21 @@ class A205GenericTree:
                     print('Creating new dict node')
                     self.create_tree_from_schema(A205GenericNode(entry, parent=node))
                 elif isinstance(schema_node[entry], str):
-                    print('Creating new str node')
-                    self.create_tree_from_schema(A205StringNode(entry, parent=node, value=schema_node[entry]))
+                    if '$ref' in entry:
+                        print('Creating new ref node')
+                        self.create_tree_from_schema(A205RefNode(entry, parent=node, value=schema_node[entry]))
+                    else:
+                        print('Creating new str node')
+                        self.create_tree_from_schema(A205StringNode(entry, parent=node, value=schema_node[entry]))
+                elif isinstance(schema_node[entry], (int, float)) and not isinstance(schema_node[entry], bool):
+                    print('Creating new str(int) node', 'value', schema_node[entry])
+                    self.create_tree_from_schema(A205StringNode(entry, parent=node, value=str(schema_node[entry])))
+                elif isinstance(schema_node[entry], bool):
+                    print('Creating new str(bool) node', 'value', schema_node[entry])
+                    self.create_tree_from_schema(A205StringNode(entry, parent=node, value=str(schema_node[entry])))
                 elif isinstance(schema_node[entry], list):
                     print('Creating new enum node')
                     self.create_tree_from_schema(A205EnumNode(entry, parent=node, value=schema_node[entry]))
-                elif "$ref" in entry:
-                    print('Creating new ref node')
-                    self.create_tree_from_schema(A205RefNode(entry, parent=node, value=schema_node[entry]))
     '''
             # Iterate typical tags in node (e.g. type, properties, required, additionalProperties, definitions, etc.) as keys in the schema_node dict
             # For completeness, should iterate all the possible tags, or store them in a class/struct
@@ -78,17 +85,17 @@ class A205GenericTree:
                 self.create_tree_from_schema(A205GenericNode(it, parent=node, value=it))
     '''
 
-    def template_tree(self, repspec, **kwargs):
+    def template_tree(self):
         '''
         Generate empty tree content based on the schema for a specific RS?
 
         kwargs:
           any data element and value in the schema
         '''
-        self.rs = repspec
+        #self.rs = repspec
         self.root_node = A205GenericNode(None, tree=self) # name=None, lineage=[]
         self.create_tree_from_schema(self.root_node)
-        return self.get_content()
+        return self
 
     def get_content(self):
         '''
@@ -98,13 +105,38 @@ class A205GenericTree:
         self.root_node.collect_content(content)
         return content
 
+    def get_definition_nodes(self, starting_node=None):
+        if starting_node is None:
+            starting_node = self.root_node
+        for child in starting_node.children:
+            if 'definitions' in child.name:
+                for c in child.children:
+                    for node in [ch for ch in c.children if (isinstance(ch, A205EnumNode) and ch.name == 'enum')]:
+                        value = 'enum ' + node.parent.name + ' {'
+                        for e in node.value:
+                            value += (e + ', ')
+                        value = value[:-2]
+                        value += '};'
+                        print(value)
+            else:
+                self.get_definition_nodes(child)
 
-def build_tree(repspec, output_path, **kwargs):
+
+
+def iterdict(d, level=0):
+    for key in d:
+        if isinstance(d[key], dict):
+            print('Level', level, '  '*level, key, ':', '[dict]')
+            iterdict(d[key], level+1)
+        else:
+           print('Level', level, '  '*level, key, ':', d[key])
+
+def build_tree(input_path):
     '''
     Generate a tree based on the schema for a specific RS
     '''
-    tree = A205GenericTree()
-    return tree.template_tree(repspec, **kwargs)
+    tree = A205GenericTree(input_path)
+    return tree.template_tree()
 
 def view_schema():
     '''
