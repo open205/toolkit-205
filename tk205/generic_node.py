@@ -4,7 +4,6 @@ import json
 import re
 import enum
 from .tree_schema import TreeSchema
-from .util import process_grid_set, unique_name_with_index
 
 class A205GenericNode:
 
@@ -99,6 +98,6 @@ class A205RefNode(A205GenericNode):
 
     def __init__(self, name, value, parent=None, tree=None):
         super().__init__(name, parent, tree)
-        print('A205RefNode parent', parent.name)
-        self.value = value #string refering to the node lineage of a type
-        print('self.value', self.value)
+        self.value = re.sub('\#', '', value)
+        self.value = self.value.split('/') #list refering to the node lineage of a type
+        print(value, self.value)

@@ -3,6 +3,14 @@ import click
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
+# def iterdict(d, level=0):
+#     for key in d:
+#         if isinstance(d[key], dict):
+#             print('Level', level, '  '*level, key, ':', '[dict]')
+#             iterdict(d[key], level+1)
+#         else:
+#            print('Level', level, '  '*level, key, ':', d[key])
+
 def print_version():
     click.echo(f'{__name__}, version {__version__}')
 
@@ -40,35 +48,14 @@ help_text = short_help_text
 def docschema(output):
     print("Doc Schema functionality not yet implemented.")
 
-# XLSX Template
-short_help_text = "Generate an XLSX template based on the schema for a given repspec."
-help_text = "\n\n".join([short_help_text] + [
-    "Specific data elements may be set within the template using additional options. For example:",
-    "  --notes=\"Generated from template.\"",
-    "Where repspecs use alternatives, a keyword must be provided to define which alternative to use. For example:",
-    "  --performance_map_type=DISCRETE",
-    "generates a DISCRETE performance map for RS0003."
-    ])
+# Tree Template
+short_help_text = "Generate a template based on the schema for a given repspec."
 @cli.command('template', short_help=short_help_text, help=help_text, context_settings=dict(ignore_unknown_options=True,allow_extra_args=True))
-@click.option('-r', '--repspec', help="Representation Specification ID.",  type=click.Choice(['RS0001','RS0002','RS0003']), required=True, metavar="[RS0001-RS0003]")
-@click.option('-o', '--output', help="Output template path.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
-@click.pass_context
-def template(ctx, repspec, output):
-    kwargs = {}
-    for i, arg in enumerate(ctx.args):
-        if '=' in arg:
-            new_arg = arg.split('=')
-            key = new_arg[0].lstrip('-')
-            value = new_arg[1]
-            kwargs[key] = value
-        else:
-            if arg[0] == '-':
-                key = arg.lstrip('-')
-                value = ctx.args[i+1]
-                kwargs[key] = value
-
+@click.option('-i', '--input', help="Input schema file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
+def template(input): 
     try:
-        tk205.template(repspec, output.name, **kwargs)
+        t = tk205.build_tree(input.name)
+        t.get_definition_nodes()
     except Exception as e:
         print(e)
 
