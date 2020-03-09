@@ -11,6 +11,7 @@ class A205GenericNode:
         self.children = []  # List of children A205GenericNodes
         self.name = name  # Name of this node (i.e. key)
         self.value = value  # Value (if any) of this node
+        self.vartype = None
         self.parent = parent  # Parent A205GenericNode of this node
         self.grid_set = None  # Ordered arrays of repeated grid variable values (used only for grid_variable nodes)
 
@@ -18,7 +19,7 @@ class A205GenericNode:
             # Inherit much information from parent
             self.lineage = self.parent.lineage + [name]  # List of parent node names (as strings)
             self.tree = self.parent.tree
-            self.inner_rs = self.parent.inner_rs
+            #self.inner_rs = self.parent.inner_rs
 
             self.parent.add_child(self)
 
@@ -27,13 +28,25 @@ class A205GenericNode:
             self.name = 'ROOT'
             self.lineage = []
             self.tree = tree
-            self.inner_rs = self.tree.rs
+            #self.inner_rs = self.tree.rs
 
+    def get_node_type(self):
+        return self.__class__.__name__
+        
     def add_child(self, node):
         '''
         Add a child node to this node.
         '''
         self.children.append(node)
+
+    def get_num_ancestors(self):
+        '''
+        Count ancestors back to root.
+        '''
+        if self.parent:
+            return len(self.parent.lineage)
+        else:
+            return 0
 
     def get_ancestor(self,generation):
         if generation == 0:
@@ -82,22 +95,72 @@ class A205GenericNode:
             content[self.name] = self.value
 
 
-class A205StringNode(A205GenericNode):
+class A205PropertiesNode(A205GenericNode):
 
-    def __init__(self, name, value, parent=None, tree=None):
+    def __init__(self, name, parent=None, tree=None, value=None):
+        super().__init__(name, parent, tree, value)
+
+class A205TerminalNode(A205GenericNode):
+
+    def __init__(self, name, parent=None, tree=None, value=None):
+        super().__init__(name, parent, tree, value)
+
+class A205StringNode(A205TerminalNode):
+
+    def __init__(self, name, value, parent, tree=None):
+        super().__init__(name, parent, tree, value)
+        self.vartype = 'std::string'
+        self.name = parent.name
+
+class A205NumericNode(A205TerminalNode):
+
+    def __init__(self, name, parent, tree=None, value=None):
+        # value is None by default; the header declaration doesn't get initialized.
+        super().__init__(name, parent, tree, value)
+        self.vartype = 'float'
+        self.name = parent.name
+
+class A205BooleanNode(A205TerminalNode):
+
+    def __init__(self, name, value, parent, tree=None):
+        super().__init__(name, parent, tree, value)
+        self.vartype = 'bool'
+        #self.value = 'true' if value else 'false'
+        self.name = parent.name
+
+class A205EnumNode(A205TerminalNode):
+
+    def __init__(self, name, value, parent, tree=None):
+        super().__init__(name, parent, tree, value)
+        self.vartype = 'enum'
+        contents = parent.name + ' {'
+        for e in value:
+            contents += (e + ', ')
+        contents = contents[:-2]
+        contents += '}'
+        self.name = contents
+
+class A205RefNode(A205TerminalNode):
+
+    def __init__(self, name, value, parent, tree=None):
         super().__init__(name, parent, tree)
-        self.value = value #string
+        reference = re.sub('\#', '', value)
+        reference = reference.split('/') #list refering to the node lineage of a type
+        print(value, reference)
+        self.vartype = reference[-1]
+        self.name = parent.name
 
-class A205EnumNode(A205GenericNode):
 
-    def __init__(self, name, value, parent=None, tree=None):
-        super().__init__(name, parent, tree)
-        self.value = value #string list
+# self.name should probably be self.content
 
-class A205RefNode(A205GenericNode):
+# A terminal node of type "enum" takes precedence over one of type "string" or "number" in defining
+# its parent's variable type
 
-    def __init__(self, name, value, parent=None, tree=None):
-        super().__init__(name, parent, tree)
-        self.value = re.sub('\#', '', value)
-        self.value = self.value.split('/') #list refering to the node lineage of a type
-        print(value, self.value)
+# Type of the node is not necessarily the "type" of the  C++ proxy I want to store; what patterns are
+# available to me to convert between those?
+
+# C++ proxy type needs a depth parameter?
+
+# If C++ proxy objects are not stored in a tree (same or different to Node Tree) then can they
+# stil be rearranged 
+
