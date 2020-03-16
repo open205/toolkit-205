@@ -48,11 +48,14 @@ class A205GenericNode:
         else:
             return 0
 
-    def get_ancestor(self,generation):
+    def get_ancestor(self, generation):
         if generation == 0:
             return self
         else:
             return self.parent.get_ancestor(generation - 1)
+
+    def get_lineage_as_str(self):
+        return '.'.join(self.lineage)
 
     def add_grid_set(self, grid_set):
         '''
@@ -112,12 +115,36 @@ class A205StringNode(A205TerminalNode):
         self.vartype = 'std::string'
         self.name = parent.name
 
+class A205VectorNode(A205TerminalNode):
+
+    def __init__(self, name, parent, tree=None, value=None):
+        # value is None by default; the header declaration doesn't get initialized.
+        super().__init__(name, parent, tree, value)
+        try:
+            vtype = value['type']
+            stype = 'unknown' # 'object'
+            if 'number' in vtype:
+                stype = 'float'
+            elif 'string' in vtype:
+                stype = 'std::string'
+            elif 'integer' in vtype:
+                stype = 'int'
+            self.vartype = 'std::vector<' + stype + '>'
+            self.name = parent.name
+        except KeyError as ke: # 'type' not in value
+            self.vartype = 'std::vector<TBD>'
+            self.name = parent.name
+
+
 class A205NumericNode(A205TerminalNode):
 
     def __init__(self, name, parent, tree=None, value=None):
         # value is None by default; the header declaration doesn't get initialized.
         super().__init__(name, parent, tree, value)
-        self.vartype = 'float'
+        if value == 'number':
+            self.vartype = 'float'
+        elif value == 'integer':
+            self.vartype = 'int'
         self.name = parent.name
 
 class A205BooleanNode(A205TerminalNode):
@@ -143,15 +170,14 @@ class A205EnumNode(A205TerminalNode):
 class A205RefNode(A205TerminalNode):
 
     def __init__(self, name, value, parent, tree=None):
-        super().__init__(name, parent, tree)
+        super().__init__(name, parent, tree, value)
         reference = re.sub('\#', '', value)
         reference = reference.split('/') #list refering to the node lineage of a type
-        print(value, reference)
         self.vartype = reference[-1]
         self.name = parent.name
 
 
-# self.name should probably be self.content
+# self.name should probably be self.content (for terminal nodes)... but we also need a name for parent nodes...
 
 # A terminal node of type "enum" takes precedence over one of type "string" or "number" in defining
 # its parent's variable type
