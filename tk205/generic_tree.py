@@ -13,7 +13,7 @@ from .generic_node import A205TerminalNode
 from .generic_node import A205NumericNode
 from .generic_node import A205BooleanNode
 from .generic_node import A205VectorNode
-from collections import defaultdict
+from collections import defaultdict # we count on the ordered behavior; if using python < 3.6, try DefaultDict
 
 class A205GenericTree:
 
@@ -128,34 +128,37 @@ class A205GenericTree:
         ''' '''
         print('format_cpp()')
         self._get_terminal_nodes_by_lineage()
-        last_heading = ''
-        for heading in self.cpp_proxy_items:
+        for i in range(len(self.cpp_proxy_items.keys())):
+            previous_path = list(self.cpp_proxy_items.keys())[i-1] if i > 0 else ''
+            current_path = list(self.cpp_proxy_items.keys())[i]
+            next_path = list(self.cpp_proxy_items.keys())[i+1] if i < len(self.cpp_proxy_items)-1 else ''
             structnames = []
-            heading_elements = heading.split('.')
-            print('heading', heading_elements)
-            previous_elements = last_heading.split('.') # for comparison
-            #print('previous', previous_elements)
-            # if 'definitions' in heading, we have to do some work to move it inside a class
-            if 'definitions' in heading:
-                for value in self.cpp_proxy_items[heading]:
+            path_elements = current_path.split('.')
+            previous_elements = previous_path.split('.')
+            next_elements = next_path.split('.')
+            # if 'definitions' in path, we have to do some work to move it inside a class
+            if 'definitions' in current_path:
+                for value in self.cpp_proxy_items[current_path]:
                     print('\t', value)
-            # otherwise:
-            property_element_index = 0
-            while property_element_index >= 0:
+            # Otherwise, for each element, collect the indentation level (embeddedness) and name
+            # of its unique parent struct. Only store the struct name if the element is the first
+            # or only member of that struct; else store empty string to signify the same indentation 
+            # level as the previous element.
+            i_property = 0
+            while i_property >= 0:
                 try:
-                    property_element_index = heading_elements.index('properties')
-                    if len(previous_elements) > property_element_index + 1: 
-                        if heading_elements[property_element_index+1] == previous_elements[property_element_index+1]:
+                    i_property = path_elements.index('properties')
+                    if len(previous_elements) > i_property + 1: 
+                        if path_elements[i_property+1] == previous_elements[i_property+1]:
                             structnames.append('')
                         else:
-                            structnames.append(heading_elements[property_element_index+1])
+                            structnames.append(path_elements[i_property+1])
                     else:
-                        structnames.append(heading_elements[property_element_index+1])
-                    heading_elements = heading_elements[property_element_index+1 : ]
-                    previous_elements = previous_elements[property_element_index+1 : ]
+                        structnames.append(path_elements[i_property+1])
+                    path_elements = path_elements[i_property+1 : ]
+                    previous_elements = previous_elements[i_property+1 : ]
                 except:
-                    property_element_index = -1
-            print('Parent struct names for this terminal node', structnames)
+                    i_property = -1
             if len(structnames):
                 if structnames[0]:
                     # If there's at least one, the first one must be the class name.
@@ -167,14 +170,21 @@ class A205GenericTree:
                     if s:
                         print('\t'*(level+1) + 'struct ' + s + ' {')
                 # Add the actual data objects
-                for value in self.cpp_proxy_items[heading]:
+                for value in self.cpp_proxy_items[current_path]:
                     print('\t'*len(structnames), value)
                 # Close struct
-                for level, s in reversed(list(enumerate(structnames[1:]))): # heavy but ok for short list
-                    if s:
-                        print('\t'*(level+1) + '};')
+                print(current_path)
+                print(next_path)
+                if ((len(next_path) < len(current_path) and next_path in current_path) or 
+                    (next_path.count('.') == current_path.count('.') and next_path != current_path)):
+                    #for level, s in enumerate(structnames[1:]):
+                    for level, s in reversed(list(enumerate(structnames[1:]))): # heavy but ok for short list
+                        if s:
+                            print('\t'*(level+1) + '};')
+                if not next_path:
+                    print('};') # Close class
 
-            last_heading = heading
+            #last_path = path
 
 
 def iterdict(d, level=0):
