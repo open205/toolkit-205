@@ -165,6 +165,10 @@ class A205EnumNode(A205TerminalNode):
             contents += (e + ', ')
         contents = contents[:-2]
         contents += '}'
+        print(parent.parent.name)
+        # Differentiate an enum variable declared in-place from an enum definition
+        if parent.parent.name == 'properties':
+            contents += ' _' + parent.name
         self.name = contents
 
 class A205RefNode(A205TerminalNode):

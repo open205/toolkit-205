@@ -132,59 +132,87 @@ class A205GenericTree:
             previous_path = list(self.cpp_proxy_items.keys())[i-1] if i > 0 else ''
             current_path = list(self.cpp_proxy_items.keys())[i]
             next_path = list(self.cpp_proxy_items.keys())[i+1] if i < len(self.cpp_proxy_items)-1 else ''
-            structnames = []
-            path_elements = current_path.split('.')
-            previous_elements = previous_path.split('.')
-            next_elements = next_path.split('.')
+            # path_elements = current_path.split('.')
+            # previous_elements = previous_path.split('.')
+            # next_elements = next_path.split('.')
             # if 'definitions' in path, we have to do some work to move it inside a class
-            if 'definitions' in current_path:
-                for value in self.cpp_proxy_items[current_path]:
-                    print('\t', value)
+            # if 'definitions' in current_path:
+            #     for value in self.cpp_proxy_items[current_path]:
+            #         print('\t', value)
+            
             # Otherwise, for each element, collect the indentation level (embeddedness) and name
             # of its unique parent struct. Only store the struct name if the element is the first
             # or only member of that struct; else store empty string to signify the same indentation 
             # level as the previous element.
-            i_property = 0
-            while i_property >= 0:
-                try:
-                    i_property = path_elements.index('properties')
-                    if len(previous_elements) > i_property + 1: 
-                        if path_elements[i_property+1] == previous_elements[i_property+1]:
-                            structnames.append('')
-                        else:
-                            structnames.append(path_elements[i_property+1])
-                    else:
-                        structnames.append(path_elements[i_property+1])
-                    path_elements = path_elements[i_property+1 : ]
-                    previous_elements = previous_elements[i_property+1 : ]
-                except:
-                    i_property = -1
-            if len(structnames):
-                if structnames[0]:
+
+            # elif 'properties' in current_path
+            item_structnames = self._property_path_to_name_list(previous_path, current_path)
+            next_item_structnames = self._property_path_to_name_list(current_path, next_path)
+
+            if len(item_structnames):
+                if item_structnames[0]:
                     # If there's at least one, the first one must be the class name.
-                    print ('class ' + structnames[0] + ' {')
+                    print ('class ' + item_structnames[0] + ' {')
                 # Open struct
-                for level, s in enumerate(structnames[1:]):
+                for level, s in enumerate(item_structnames[1:]):
                     # For all remaining names, indent once for each level, then 
                     # declare the struct 
                     if s:
                         print('\t'*(level+1) + 'struct ' + s + ' {')
                 # Add the actual data objects
                 for value in self.cpp_proxy_items[current_path]:
-                    print('\t'*len(structnames), value)
+                    print('\t'*len(item_structnames), value)
                 # Close struct
-                print(current_path)
-                print(next_path)
-                if ((len(next_path) < len(current_path) and next_path in current_path) or 
-                    (next_path.count('.') == current_path.count('.') and next_path != current_path)):
-                    #for level, s in enumerate(structnames[1:]):
-                    for level, s in reversed(list(enumerate(structnames[1:]))): # heavy but ok for short list
-                        if s:
-                            print('\t'*(level+1) + '};')
-                if not next_path:
-                    print('};') # Close class
+                # print(current_path)
+                # print(next_path)
+                print(item_structnames)
+                print(next_item_structnames)
+                if next_item_structnames.count('') <= item_structnames.count(''):
+                    print('\t'*(len(item_structnames)-1) + '};')
+                elif len(next_item_structnames) <= len(item_structnames):
+                    print('\t'*(len(item_structnames)-1) + '};')
 
-            #last_path = path
+                # if ((len(next_path) < len(current_path) and next_path in current_path) or 
+                #     (next_path.count('.') == current_path.count('.') and next_path != current_path)):
+                #     for level, s in reversed(list(enumerate(item_structnames[1:]))): # heavy but ok for short list
+                #         if s:
+                #             print('\t'*(level+1) + '};')
+
+                if not next_path:
+                    for level, s in reversed(list(enumerate(item_structnames[1:]))): # heavy but ok for short list
+                        #print('};') # Close class
+                        print('\t'*(level) + '};')
+
+
+    def _property_path_to_name_list(self, last_path, next_path):
+        '''Convert a dot-separated string heirarchy into a list, containing empty string entries for indentation.'''
+        structnames = []
+        i_property = 0
+        path_elements = next_path.split('.')
+        previous_elements = last_path.split('.')
+        while i_property >= 0:
+            try:
+                i_property = path_elements.index('properties')
+                try:
+                    if len(previous_elements) <= i_property + 1: 
+                        # If the last item had a shorter path than the current one, i.e. it was higher
+                        # in the heirarchy, then the current path should be appended in full.
+                        structnames.append(path_elements[i_property+1])
+                    else:
+                        # Otherwise, for every shared heirarchy level, append empty string, and append
+                        # a qualified name only for the unique level.
+                        if path_elements[i_property+1] == previous_elements[i_property+1]:
+                            structnames.append('')
+                        else:
+                            structnames.append(path_elements[i_property+1])
+                    path_elements = path_elements[i_property+1 : ]
+                    previous_elements = previous_elements[i_property+1 : ]
+                except IndexError as ie:
+                    i_property = -1
+            except Exception as e:
+                #print('Exception', e.__class__.__name__, 'caught:', e)
+                i_property = -1
+        return structnames
 
 
 def iterdict(d, level=0):
