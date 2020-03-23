@@ -103,6 +103,11 @@ class A205PropertiesNode(A205GenericNode):
     def __init__(self, name, parent=None, tree=None, value=None):
         super().__init__(name, parent, tree, value)
 
+class A205DefinitionsNode(A205GenericNode):
+
+    def __init__(self, name, parent=None, tree=None, value=None):
+        super().__init__(name, parent, tree, value)
+
 class A205TerminalNode(A205GenericNode):
 
     def __init__(self, name, parent=None, tree=None, value=None):
@@ -165,9 +170,9 @@ class A205EnumNode(A205TerminalNode):
             contents += (e + ', ')
         contents = contents[:-2]
         contents += '}'
-        print(parent.parent.name)
+        #print(parent.parent.name)
         # Differentiate an enum variable declared in-place from an enum definition
-        if parent.parent.name == 'properties':
+        if parent.parent and parent.parent.name == 'properties':
             contents += ' _' + parent.name
         self.name = contents
 
