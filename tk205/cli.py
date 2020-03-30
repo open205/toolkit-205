@@ -87,7 +87,7 @@ short_help_text = "Output CPP code based on the schema for a given repspec."
 def cpp(input): 
     try:
         t = tk205.build_tree(input.name)
-        t.format_cpp()
+        t.format_cpp_3()
     except Exception as e:
         print('Exception', e.__class__.__name__, 'caught:', e)
 

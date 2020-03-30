@@ -14,6 +14,7 @@ from .generic_node import A205TerminalNode
 from .generic_node import A205NumericNode
 from .generic_node import A205BooleanNode
 from .generic_node import A205VectorNode
+from .generic_node import A205OneOfNode
 from collections import defaultdict # we count on the ordered behavior; if using python < 3.6, try DefaultDict
 
 class A205GenericTree:
@@ -21,11 +22,13 @@ class A205GenericTree:
     def __init__(self, input_path):
         self.content = {}
         self.rs = ""
-        schema_path = input_path #os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json")
+        schema_path = input_path 
         self.schema = TreeSchema(schema_path)
         self.root_node = None
         self.cpp_proxy_items = defaultdict(list)
         self.cpp_enums = []
+        self.top_level = True # Persistent marker for opening a cpp class
+        self.last_level = 0 # Persistent storage for recursive cpp-write
 
 
     def create_tree_from_schema(self, node):
@@ -42,35 +45,38 @@ class A205GenericTree:
                     self.create_tree_from_schema(A205EnumNode('enum', parent=node, value=schema_node['enum']))
             # Preemptively process array nodes too; same reason as above
             elif 'type' in schema_node and 'items' in schema_node:
+                print('Creating new vector node')
                 self.create_tree_from_schema(A205VectorNode('items', parent=node, value=schema_node['items']))
             else:
                 for entry in schema_node:
                     print('New entry key', '"'+entry+'"', 'has value type', type(schema_node[entry])) # key, type(value)
                     if isinstance(schema_node[entry], dict):
-                        if 'properties' in entry:# or 'definitions' in entry:
+                        if 'properties' in entry:
                             print('Creating new properties node (with parent', node.name, ')')
-                            self.create_tree_from_schema(A205PropertiesNode(entry, parent=node))
+                            self.create_tree_from_schema(A205PropertiesNode(entry, parent=node, value=None))
                         elif 'definitions' in entry:
                             print('Creating new definitions node (with parent', node.name, ')')
-                            self.create_tree_from_schema(A205DefinitionsNode(entry, parent=node))
+                            self.create_tree_from_schema(A205DefinitionsNode(entry, parent=node, value=None))
+                        elif 'oneOf' in entry:
+                            print('Creating new oneOf node with name', node.name)
+                            self.create_tree_from_schema(A205OneOfNode(entry, parent=node, value=None))
                         else:
                             print('Creating new generic dict node')
-                            self.create_tree_from_schema(A205GenericNode(entry, parent=node))
+                            self.create_tree_from_schema(A205GenericNode(entry, parent=node, value=schema_node[entry]))
                     elif isinstance(schema_node[entry], str):
                         if '$ref' in entry:
                             print('Creating new ref node')
                             self.create_tree_from_schema(A205RefNode(entry, parent=node, value=schema_node[entry]))
                         elif entry == 'type': # 'type' node is the arbiter of the C++-proxy node type
-                            print('Creating new str node with JSON type', schema_node[entry])
                             # Should we store level here, or just get it when we re-iterate the tree?
                             if schema_node[entry] == 'number' or schema_node[entry] == 'integer':
-                                print('Creating new numeric node')
+                                print('Creating new numeric node (with parent', node.name, ')')
                                 self.create_tree_from_schema(A205NumericNode(entry, parent=node, value=schema_node[entry]))
                             elif schema_node[entry] == 'boolean':
                                 print('Creating new boolean node')
                                 self.create_tree_from_schema(A205BooleanNode(entry, parent=node, value=schema_node[entry]))
                             elif schema_node[entry] == 'string':
-                                #prschema_node['enum']int('Creating new string node')
+                                print('Creating new string node')
                                 self.create_tree_from_schema(A205StringNode(entry, parent=node, value=schema_node[entry]))
 
 
@@ -81,8 +87,7 @@ class A205GenericTree:
         kwargs:
           any data element and value in the schema
         '''
-        #self.rs = repspec
-        self.root_node = A205GenericNode(None, tree=self) # name=None, lineage=[]
+        self.root_node = A205GenericNode(None, None, tree=self) # name=None, lineage=[]
         self.create_tree_from_schema(self.root_node)
         return self
 
@@ -127,15 +132,18 @@ class A205GenericTree:
             starting_node = self.root_node
             self.cpp_enums.clear()
         for child in starting_node.children:
-            print(child.name, child.get_node_type())
             # The enum node's grandparent is a Definitions Node (in between is the Generic Node
             # corresponding to the enum name.)
-            if isinstance(child, A205EnumNode) and isinstance(starting_node.parent, A205DefinitionsNode):
+            if self._is_enum_definition(child): #isinstance(child, A205EnumNode) and isinstance(starting_node.parent, A205DefinitionsNode):
                 value = child.vartype + ' ' + child.name + ';'
                 self.cpp_enums.append(value)
             else:
                 self._get_enum_definitions(child)
     
+
+    def _is_enum_definition(self, node):
+        '''Return True if node is an enum definition.'''
+        return isinstance(node, A205EnumNode) and isinstance(node.parent.parent, A205DefinitionsNode)
 
     def _get_parent_property_node(self, node):
         ''' '''
@@ -147,9 +155,41 @@ class A205GenericTree:
             return node # Not sure how this is going to work...@@@
 
 
+    def format_cpp_2(self, starting_node=None):
+        ''' '''
+        if starting_node is None:
+            starting_node = self.root_node
+            self.top_level = True
+        for child in starting_node.children:
+            if not isinstance(child, A205PropertiesNode) and not self._is_enum_definition(child):
+                if child.vartype and child.name:
+                    value = '\t'*child.level + child.vartype + ' ' + child.name + child.suffix
+                        
+                    if self.last_level < child.level:
+                        self.last_level = child.level
+
+                    if self.last_level > child.level:
+                        for i in range(self.last_level, child.level, -1):
+                            print((i-1)*'\t' + '};')
+                        self.last_level = child.level
+                    print(value)
+                    if self.top_level: # Should have just printed the class name line
+                        for e in self.cpp_enums:
+                            print('\t'*(child.level+1) + e)
+                        self.top_level = False
+            self.format_cpp_2(child)
+
+
+    def format_cpp_3(self, starting_node=None):
+        ''' '''
+        self._get_enum_definitions(starting_node)
+        self.format_cpp_2(starting_node)
+        for i in range(self.last_level, 0, -1):
+            print((i-1)*'\t' + '};')
+
+
     def format_cpp(self):
         ''' '''
-        print('format_cpp()')
         self._get_terminal_nodes_by_lineage()
         self._get_enum_definitions()
         for i in range(len(self.cpp_proxy_items.keys())):
@@ -183,8 +223,6 @@ class A205GenericTree:
                 # if len(item_structnames) >= 1 and any(item_structnames):
                 for value in self.cpp_proxy_items[current_path]:
                     print('\t'*len(item_structnames), value)
-                # print(item_structnames)
-                # print(next_item_structnames)
                 # Close struct
                 if next_item_structnames.count('') <= item_structnames.count(''):
                     print('\t'*(len(item_structnames)-1) + '};')
@@ -202,11 +240,11 @@ class A205GenericTree:
         i_property = 0
         path_elements = next_path.split('.')
         previous_elements = last_path.split('.')
-        is_def_enum = False
         while i_property >= 0:
             try:
                 i_property = path_elements.index('definitions')
-                is_def_enum = True
+                # Artificially "indent" any non-enum property that's inside a definitions block
+                structnames.append('')
             except Exception:
                 try:
                     i_property = path_elements.index('properties')
@@ -214,13 +252,9 @@ class A205GenericTree:
                     i_property = -1
                     continue
             try:
-                if len(path_elements) == 1 and is_def_enum:
-                    structnames.append('')
-                elif len(previous_elements) <= i_property + 1: 
+                if len(previous_elements) <= i_property + 1: 
                     # If the last item had a shorter path than the current one, i.e. it was higher
                     # in the heirarchy, then the current path should be appended in full.
-                    # If the property is an enum definition, treat it like a single-indented
-                    # struct.
                     structnames.append(path_elements[i_property+1])
                 else:
                     # Otherwise, for every shared heirarchy level, append empty string, and append
@@ -233,7 +267,6 @@ class A205GenericTree:
                 previous_elements = previous_elements[i_property+1 : ]
             except IndexError:
                 i_property = -1
-            is_def_enum = False
         return structnames
 
 
@@ -252,10 +285,10 @@ def build_tree(input_path):
     tree = A205GenericTree(input_path)
     return tree.template_tree()
 
-def view_schema():
+def view_schema(input_path):
     '''
     View the schema from which this tree is created.
     '''
-    tree = A205GenericTree()
+    tree = A205GenericTree(input_path)
     return tree.schema.get_schema()
 

@@ -14,6 +14,7 @@ class TreeSchema:
             resolver = jsonschema.RefResolver(f'file://{uri_path}/', schema_path)
 
             self.validator = jsonschema.Draft7Validator(json.load(schema_file), resolver=resolver)
+            self._amend_schema()
 
 
     def resolve(self, node, step_in=True):
@@ -32,6 +33,20 @@ class TreeSchema:
     def resolve_ref(self, ref):
         return '$ref:TBD'
 
+    def _amend_schema(self, node=None, parent_key=''):
+        '''Artificially replace oneOf lists with dictionaries that may be recursed.'''
+        if not node:
+            node = self.validator.schema
+        for key in node:
+            if isinstance(node[key], dict):
+                self._amend_schema(node[key], key)
+            elif key == 'oneOf' and isinstance(node[key], list):
+                # So far, oneOf values are lists of values (value=dict) with no explicit key, 
+                # much like the root node
+                dict_from_list = {parent_key + '_' + str(i): value for (i, value) in enumerate(node[key])}
+                node[key] = dict_from_list
+
+
     def get_schema(self):
         return self.validator.schema
 
@@ -42,9 +57,8 @@ class TreeSchema:
         node: node to trace into
         lineage: remaining lineage to trace
         '''
-        #print('trace_lineage; lineage =', lineage)
         if not len(lineage): # i.e. []
-            #print('Root level; returning whole schema.')
+            # Root level; return whole schema
             next_node = self.validator.schema
             return next_node
 
