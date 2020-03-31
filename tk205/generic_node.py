@@ -7,15 +7,14 @@ from .tree_schema import TreeSchema
 
 class A205GenericNode:
 
-    def __init__(self, name, value, parent=None, tree=None, level=-1):
+    def __init__(self, name, value, parent=None, tree=None):
         self.children = []  # List of children A205GenericNodes
         self.name = name  # Name of this node (i.e. key)
         self.value = value  # Value (if any) of this node
         self.vartype = ''
         self.suffix = ';'
         self.parent = parent  # Parent A205GenericNode of this node
-        self.grid_set = None  # Ordered arrays of repeated grid variable values (used only for grid_variable nodes)
-        self.level = 0
+        self.level = -1
 
         if parent:
             # Inherit much information from parent
@@ -24,7 +23,10 @@ class A205GenericNode:
 
             self.parent.add_child(self)
 
-            if (isinstance(parent, A205PropertiesNode) or isinstance(parent, A205OneOfNode)) and 'properties' in value:# :
+            # If this node's parent is a "property sandwich", then it's some kind of structure
+            if (isinstance(parent, A205PropertiesNode) or 
+                isinstance(parent, A205OneOfNode) or 
+                isinstance(parent, A205DefinitionsNode)) and 'properties' in value:
                 self.vartype = 'struct'
                 self.suffix = ' {'
                 self.level = parent.level + 1
@@ -36,7 +38,7 @@ class A205GenericNode:
             self.name = 'ROOT'
             self.lineage = []
             self.tree = tree
-            self.level = 0
+            self.level = -1
 
     def get_node_type(self):
         return self.__class__.__name__
@@ -108,41 +110,42 @@ class A205GenericNode:
 
 class A205PropertiesNode(A205GenericNode):
 
-    def __init__(self, name, value, parent, tree=None, level=-1):
-        super().__init__(name, value, parent, tree, level)
+    def __init__(self, name, value, parent, tree=None):
+        super().__init__(name, value, parent, tree)
 
 class A205DefinitionsNode(A205GenericNode):
 
-    def __init__(self, name, value=None, parent=None, tree=None, level=-1):
-        super().__init__(name, value, parent, tree, level)
+    def __init__(self, name, value=None, parent=None, tree=None):
+        super().__init__(name, value, parent, tree)
 
 class A205OneOfNode(A205GenericNode):
     
-    def __init__(self, name, value=None, parent=None, tree=None, level=-1):
-        super().__init__(name, value, parent, tree, level)
+    def __init__(self, name, value=None, parent=None, tree=None):
+        super().__init__(name, value, parent, tree)
         self.vartype = 'union'
         self.suffix = ' {'
         self.name = parent.name
+        # oneOfs are at a higher level in json than they would be as a cpp container
+        self.level = parent.level + 1
 
 class A205TerminalNode(A205GenericNode):
 
-    def __init__(self, name, value, parent, tree=None, level=-1):
-        super().__init__(name, value, parent, tree, level)
-        print(self.name, parent.name)
+    def __init__(self, name, value, parent, tree=None):
+        super().__init__(name, value, parent, tree)
         self.level = parent.level + 1
 
 class A205StringNode(A205TerminalNode):
 
-    def __init__(self, name, value=None, parent=None, tree=None, level=-1):
-        super().__init__(name, value, parent, tree, level)
+    def __init__(self, name, value=None, parent=None, tree=None):
+        super().__init__(name, value, parent, tree)
         self.vartype = 'std::string'
         self.name = parent.name
 
 class A205VectorNode(A205TerminalNode):
 
-    def __init__(self, name, value=None, parent=None, tree=None, level=-1):
+    def __init__(self, name, value=None, parent=None, tree=None):
         # value is None by default; the header declaration doesn't get initialized.
-        super().__init__(name, value, parent, tree, level)
+        super().__init__(name, value, parent, tree)
         try:
             vtype = value['type']
             stype = 'unknown' # 'object'
@@ -160,36 +163,35 @@ class A205VectorNode(A205TerminalNode):
 
 class A205NumericNode(A205TerminalNode):
 
-    def __init__(self, name, value=None, parent=None, tree=None, level=-1):
-        super().__init__(name, value, parent, tree, level)
+    def __init__(self, name, value=None, parent=None, tree=None):
+        super().__init__(name, value, parent, tree)
         # If this numeric node was just the definition of a parent vector node, skip it
-        if parent and parent.parent and parent.parent.name == 'items':
-            if value == 'number':
-                self.vartype = 'float'
-            elif value == 'integer':
-                self.vartype = 'int'
-            self.name = parent.name
-        else:
-            pass
+        # if parent and parent.parent and parent.parent.name == 'items':
+        if value == 'number':
+            self.vartype = 'float'
+        elif value == 'integer':
+            self.vartype = 'int'
+        self.name = parent.name
+        # else:
+        #     pass
 
 class A205BooleanNode(A205TerminalNode):
 
-    def __init__(self, name, value=None, parent=None, tree=None, level=-1):
-        super().__init__(name, value, parent, tree, level)
+    def __init__(self, name, value=None, parent=None, tree=None):
+        super().__init__(name, value, parent, tree)
         self.vartype = 'bool'
         self.name = parent.name
 
 class A205EnumNode(A205TerminalNode):
 
-    def __init__(self, name, value=None, parent=None, tree=None, level=-1):
-        super().__init__(name, value, parent, tree, level)
+    def __init__(self, name, value=None, parent=None, tree=None):
+        super().__init__(name, value, parent, tree)
         self.vartype = 'enum'
         contents = parent.name + ' {'
         for e in value:
             contents += (e + ', ')
         contents = contents[:-2]
         contents += '}'
-        #print(parent.parent.name)
         # Differentiate an enum variable declared in-place from an enum definition
         if parent.parent.name == 'properties':
             contents += ' _' + parent.name
@@ -197,8 +199,8 @@ class A205EnumNode(A205TerminalNode):
 
 class A205RefNode(A205TerminalNode):
 
-    def __init__(self, name, value=None, parent=None, tree=None, level=-1):
-        super().__init__(name, value, parent, tree, level)
+    def __init__(self, name, value=None, parent=None, tree=None):
+        super().__init__(name, value, parent, tree)
         reference = re.sub('\#', '', value)
         reference = reference.split('/') #list refering to the node lineage of a type
         self.vartype = reference[-1]

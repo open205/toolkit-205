@@ -68,10 +68,11 @@ class A205GenericTree:
                             print('Creating new ref node')
                             self.create_tree_from_schema(A205RefNode(entry, parent=node, value=schema_node[entry]))
                         elif entry == 'type': # 'type' node is the arbiter of the C++-proxy node type
-                            # Should we store level here, or just get it when we re-iterate the tree?
-                            if schema_node[entry] == 'number' or schema_node[entry] == 'integer':
-                                print('Creating new numeric node (with parent', node.name, ')')
-                                self.create_tree_from_schema(A205NumericNode(entry, parent=node, value=schema_node[entry]))
+                            if (schema_node[entry] == 'number' or schema_node[entry] == 'integer'):
+                                parent_schema_node = node.parent.get_schema_node()
+                                if 'items' not in parent_schema_node:
+                                    print('Creating new numeric node (with parent', node.name, ')')
+                                    self.create_tree_from_schema(A205NumericNode(entry, parent=node, value=schema_node[entry]))
                             elif schema_node[entry] == 'boolean':
                                 print('Creating new boolean node')
                                 self.create_tree_from_schema(A205BooleanNode(entry, parent=node, value=schema_node[entry]))
@@ -134,7 +135,7 @@ class A205GenericTree:
         for child in starting_node.children:
             # The enum node's grandparent is a Definitions Node (in between is the Generic Node
             # corresponding to the enum name.)
-            if self._is_enum_definition(child): #isinstance(child, A205EnumNode) and isinstance(starting_node.parent, A205DefinitionsNode):
+            if self._is_enum_definition(child):
                 value = child.vartype + ' ' + child.name + ';'
                 self.cpp_enums.append(value)
             else:
@@ -145,6 +146,7 @@ class A205GenericTree:
         '''Return True if node is an enum definition.'''
         return isinstance(node, A205EnumNode) and isinstance(node.parent.parent, A205DefinitionsNode)
 
+
     def _get_parent_property_node(self, node):
         ''' '''
         if node and isinstance(node.parent, A205PropertiesNode):
@@ -152,7 +154,7 @@ class A205GenericTree:
         elif node.parent:
             return self._get_parent_property_node(node.parent) # Don't forget the 'return' here!
         else:
-            return node # Not sure how this is going to work...@@@
+            return node 
 
 
     def format_cpp_2(self, starting_node=None):
@@ -166,11 +168,12 @@ class A205GenericTree:
                     value = '\t'*child.level + child.vartype + ' ' + child.name + child.suffix
                         
                     if self.last_level < child.level:
+                        # Save the deepest level as we walk down the nodes
                         self.last_level = child.level
 
                     if self.last_level > child.level:
                         for i in range(self.last_level, child.level, -1):
-                            print((i-1)*'\t' + '};')
+                            print('\t'*(i-1) + '};')
                         self.last_level = child.level
                     print(value)
                     if self.top_level: # Should have just printed the class name line
@@ -185,7 +188,7 @@ class A205GenericTree:
         self._get_enum_definitions(starting_node)
         self.format_cpp_2(starting_node)
         for i in range(self.last_level, 0, -1):
-            print((i-1)*'\t' + '};')
+            print('\t'*(i-1) + '};')
 
 
     def format_cpp(self):
