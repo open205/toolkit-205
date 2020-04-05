@@ -158,6 +158,7 @@ def generate(web_dir):
     template_content = tk205.load(os.path.join(root_dir, "..", "config", "templates.json"))
 
     templates_page_data = OrderedDict()
+    templates_dictionary.sort()
     for index, template_file in enumerate(templates_dictionary):
         templates_page_data[template_file] = {'title':template_content[index]['RS'], 'description':template_content[index]['description'], 'template_file':template_file}
     generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
