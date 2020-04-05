@@ -77,12 +77,6 @@ class A205GenericNode:
             raise Exception(f"Cannot add a grid set to '{self.name}'. Grid sets can only be added to 'grid_variables' nodes.")
         self.grid_set = grid_set
 
-    def get_schema_node(self):
-        '''
-        Search for schema content for this node
-        '''
-        return self.tree.schema.get_schema_node(self.lineage)
-
     def is_required(self):
         '''
         Check schema if this is a required node
@@ -165,15 +159,11 @@ class A205NumericNode(A205TerminalNode):
 
     def __init__(self, name, value=None, parent=None, tree=None):
         super().__init__(name, value, parent, tree)
-        # If this numeric node was just the definition of a parent vector node, skip it
-        # if parent and parent.parent and parent.parent.name == 'items':
         if value == 'number':
             self.vartype = 'float'
         elif value == 'integer':
             self.vartype = 'int'
         self.name = parent.name
-        # else:
-        #     pass
 
 class A205BooleanNode(A205TerminalNode):
 
@@ -188,6 +178,7 @@ class A205EnumNode(A205TerminalNode):
         super().__init__(name, value, parent, tree)
         self.vartype = 'enum'
         contents = parent.name + ' {'
+        contents += 'UNKNOWN, '
         for e in value:
             contents += (e + ', ')
         contents = contents[:-2]
@@ -205,18 +196,3 @@ class A205RefNode(A205TerminalNode):
         reference = reference.split('/') #list refering to the node lineage of a type
         self.vartype = reference[-1]
         self.name = parent.name
-
-
-# self.name should probably be self.content (for terminal nodes)... but we also need a name for parent nodes...
-
-# A terminal node of type "enum" takes precedence over one of type "string" or "number" in defining
-# its parent's variable type
-
-# Type of the node is not necessarily the "type" of the  C++ proxy I want to store; what patterns are
-# available to me to convert between those?
-
-# C++ proxy type needs a depth parameter?
-
-# If C++ proxy objects are not stored in a tree (same or different to Node Tree) then can they
-# stil be rearranged 
-

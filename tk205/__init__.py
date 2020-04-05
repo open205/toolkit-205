@@ -1,6 +1,7 @@
 # Imports
 from .file_io import *
 from .schema import A205Schema
+from .generic_tree import *
 import os
 
 def validate(file):

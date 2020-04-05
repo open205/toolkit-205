@@ -3,9 +3,6 @@ import json
 import cbor2
 import yaml
 from .xlsx import template, A205XLSXTree
-from .generic_tree import build_tree
-from .generic_tree import view_schema
-from .generic_tree import iterdict
 
 def get_extension(file):
     return os.path.splitext(file)[1]

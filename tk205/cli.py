@@ -1,5 +1,6 @@
 import tk205
 import click
+import logging
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -85,11 +86,11 @@ short_help_text = "Output CPP code based on the schema for a given repspec."
 @cli.command('cpp', short_help=short_help_text, help=help_text, context_settings=dict(ignore_unknown_options=True,allow_extra_args=True))
 @click.option('-i', '--input', help="Input schema file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
 def cpp(input): 
-    try:
-        t = tk205.build_tree(input.name)
-        t.format_cpp_3()
-    except Exception as e:
-        print('Exception', e.__class__.__name__, 'caught:', e)
+    logging.basicConfig(level=logging.CRITICAL, format='%(asctime)s: [%(levelname)s] %(message)s')
+    h = tk205.build_header_from_schema(input.name)
+
+    for line in h:
+        print(line)
 
 # Export
 short_help_text = "Generate simulation input models in specific simulation tool syntax."
