@@ -490,7 +490,7 @@ class A205XLSXTree:
             for item in content:
                 if type(content[item]) == dict:
                     if "performance_map" in item:
-                        value = '$' + item
+                        value = '$' + parent.parent.name + '.' + item
                     else:
                         value = None
                     new_node = A205XLSXNode(item, parent=parent, value=value)
