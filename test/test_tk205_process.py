@@ -67,11 +67,11 @@ def test_xlsx_template_creation():
     output_dir = templates_dir
     tk205.file_io.clear_directory(output_dir)
     rss = tk205.load('config/templates.json')
-    for rs in rss:
-        file_name_components = [rs["RS"]]
-        if rs["file-name-suffix"]:
-            file_name_components.append(rs["file-name-suffix"])
-        file_name_components.append("template.a205.xlsx")
-        file_name = '-'.join(file_name_components)
-        tk205.template(rs["RS"],os.path.join(output_dir,file_name), **rs["keywords"])
-
+    for rs, templates in rss.items():
+        for template in templates:
+            file_name_components = [template["RS"]]
+            if template["file-name-suffix"]:
+                file_name_components.append(template["file-name-suffix"])
+            file_name_components.append("template.a205.xlsx")
+            file_name = '-'.join(file_name_components)
+            tk205.template(template["RS"],os.path.join(output_dir,file_name), **template["keywords"])
