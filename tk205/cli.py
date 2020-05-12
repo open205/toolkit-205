@@ -50,7 +50,7 @@ help_text = "\n\n".join([short_help_text] + [
     "generates a DISCRETE performance map for RS0003."
     ])
 @cli.command('template', short_help=short_help_text, help=help_text, context_settings=dict(ignore_unknown_options=True,allow_extra_args=True))
-@click.option('-r', '--repspec', help="Representation Specification ID.",  type=click.Choice(['RS0001','RS0002','RS0003','RS0004','RS0005','RS0006']), required=True, metavar="[RS0001-RS0003]")
+@click.option('-r', '--repspec', help="Representation Specification ID.",  type=click.Choice(['RS0001','RS0002','RS0003','RS0004','RS0005','RS0006']), required=True, metavar="[RS0001-RS0006]")
 @click.option('-o', '--output', help="Output template path.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
 @click.pass_context
 def template(ctx, repspec, output):
