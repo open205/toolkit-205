@@ -35,7 +35,9 @@ def unique_name_with_index(name, list_of_names):
         i = 0
         searching = True
         while searching:
-            if f"{name}{i}" not in list_of_names:
+            if f"{name}{i}" in list_of_names:
+                i += 1
+            else:
                 searching = False
                 return f"{name}{i}"
 
