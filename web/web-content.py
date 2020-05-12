@@ -134,10 +134,14 @@ def generate(web_dir):
     examples_dictionary = get_directory_structure(examples_directory)
     templates_dictionary = get_directory_structure(templates_directory)
 
+    schema_title_description = [] # This is stored during the schema page data generation to be saved and used in the templates page
+
     # Create schema.html
     schema_page_data = OrderedDict()
     for schema_file in sorted(schema_dictionary):
         title, description = get_title_and_description(schema_file, schema_directory)
+        title_description_tupel = (title, description);
+        schema_title_description.append(title_description_tupel)
         schema_page_data[title] = {'title': title, 'description': description, 'schema_file': schema_file}
     generate_page(env, 'schema_template.html', 'schema.html', web_dir, 'JSON Schema (Normative)', schema_page_data)
 
@@ -161,10 +165,12 @@ def generate(web_dir):
     templates_page_data = OrderedDict()
     templates_dictionary.sort()
     i = 0
-    for RS, content in template_content.items():
-        templates_page_data[RS] = []
+    for j, (RS, content) in enumerate(template_content.items()):
+        title, description = schema_title_description[j+1]
+        title_and_description = RS + " : " + title
+        templates_page_data[title_and_description] = []
         for item in content:
-            templates_page_data[RS].append({'title':item['RS'], 'description':item['description'], 'template_file':templates_dictionary[i]})
+            templates_page_data[title_and_description].append({'title':item['RS'], 'description':item['description'], 'template_file':templates_dictionary[i]})
             i += 1
     generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
 
