@@ -88,13 +88,14 @@ def create_files(web_dir):
     # xlsx_template_creation
     tk205.file_io.clear_directory(templates_dir)
     template_content = tk205.load(os.path.join(root_dir, "..", "config", "templates.json"))
-    for template in template_content:
-        file_name_components = [template["RS"]]
-        if template["file-name-suffix"]:
-            file_name_components.append(template["file-name-suffix"])
-        file_name_components.append("template.a205.xlsx")
-        file_name = '-'.join(file_name_components)
-        tk205.template(template["RS"],os.path.join(templates_dir,file_name), **template["keywords"])
+    for RS, templates in template_content.items():
+        for template in templates:
+            file_name_components = [template["RS"]]
+            if template["file-name-suffix"]:
+                file_name_components.append(template["file-name-suffix"])
+            file_name_components.append("template.a205.xlsx")
+            file_name = '-'.join(file_name_components)
+            tk205.template(template["RS"],os.path.join(templates_dir,file_name), **template["keywords"])
 
 
 def clone():
@@ -159,8 +160,12 @@ def generate(web_dir):
 
     templates_page_data = OrderedDict()
     templates_dictionary.sort()
-    for index, template_file in enumerate(templates_dictionary):
-        templates_page_data[template_file] = {'title':template_content[index]['RS'], 'description':template_content[index]['description'], 'template_file':template_file}
+    i = 0
+    for RS, content in template_content.items():
+        templates_page_data[RS] = []
+        for item in content:
+            templates_page_data[RS].append({'title':item['RS'], 'description':item['description'], 'template_file':templates_dictionary[i]})
+            i += 1
     generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
 
     # Create index.html AKA about page
