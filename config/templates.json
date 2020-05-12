@@ -3,7 +3,7 @@
         "RS": "RS0001",
         "keywords": {},
         "file-name-suffix": null,
-        "description": "Water Cooled Chiller"
+        "description": "Liquid-Cooled Chiller"
     },
     {
         "RS": "RS0002",
@@ -33,6 +33,18 @@
         "RS": "RS0004",
         "keywords": {},
         "file-name-suffix": null,
-        "description": "DX Coil System"
+        "description": "Air-to-Air Direct Expansion Refrigerant Coil System"
+    },
+    {
+        "RS": "RS0005",
+        "keywords": {},
+        "file-name-suffix": null,
+        "description": "Motor"
+    },
+    {
+        "RS": "RS0006",
+        "keywords": {},
+        "file-name-suffix": null,
+        "description": "Electronic Motor Drive"
     }
 ]
