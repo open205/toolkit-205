@@ -27,6 +27,9 @@ class A205Schema:
             else:
                 if len(error.path) >= parent_level:
                     messages.append(f"{error.message} ({'.'.join(error.path)})")
+        if len(messages) == 0 and parent_level == 0:
+            for error in errors:
+                messages.append(f"{error.message} ({'.'.join(error.path)})")
         return messages
 
     def validate(self, instance):
