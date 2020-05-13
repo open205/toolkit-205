@@ -3,6 +3,7 @@ import json
 import posixpath
 import jsonschema
 from .util import create_grid_set
+from .util import get_representation_node_and_rs_selections
 
 class A205Schema:
     def __init__(self, schema_path):
@@ -76,7 +77,10 @@ class A205Schema:
             if lineage[0] == item:
                 if len(lineage) == 1:
                     # This is the last node
-                    return self.resolve(node[item],False)
+                    if 'oneOf' in node[item] and options[0] is not None:
+                        return self.resolve(node[item]['oneOf'][options[0]],False)
+                    else:
+                        return self.resolve(node[item],False)
                 else:
                     # Keep digging
 
@@ -119,7 +123,7 @@ class A205Schema:
     def get_rs_title(self, rs):
         return self.resolve_ref(f'{rs}.schema.json#/title')
 
-    def get_grid_variable_order(self, lineage, grid_vars):
+    def get_grid_variable_order(self, rs_selections, lineage, grid_vars):
         '''
         Get the order of grid variables.
 
@@ -127,7 +131,7 @@ class A205Schema:
         '''
         if lineage[-1] != 'grid_variables':
             raise Exception(f"{lineage[-1]} is not a 'grid_variables' data group.")
-        parent_schema_node = self.get_schema_node(lineage[:-1], [None]*(len(lineage) - 1))
+        parent_schema_node = self.get_schema_node(lineage[:-1], rs_selections[:-1])
         if 'oneOf' in parent_schema_node:
             # Alternate performance maps allowed. Make sure we get the right one
             for option in parent_schema_node['oneOf']:
@@ -141,7 +145,7 @@ class A205Schema:
                 if schema_node:
                     break
         else:
-            schema_node = self.get_schema_node(lineage,[None]*len(lineage))['properties']
+            schema_node = self.get_schema_node(lineage, rs_selections)['properties']
         order = []
 
         if not schema_node:
@@ -151,6 +155,7 @@ class A205Schema:
             order.append(item)
         return order
 
-    def create_grid_set(self, grid_var_content, lineage):
-        order = self.get_grid_variable_order(lineage,[x for x in grid_var_content])
+    def create_grid_set(self, representation, lineage):
+        grid_var_content, rs_selections = get_representation_node_and_rs_selections(representation, lineage)
+        order = self.get_grid_variable_order(rs_selections, lineage,[x for x in grid_var_content])
         return create_grid_set(grid_var_content, order)

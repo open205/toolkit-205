@@ -5,7 +5,7 @@ import re
 import enum
 from .__init__ import validate
 from .schema import A205Schema
-from .util import process_grid_set, unique_name_with_index
+from .util import process_grid_set, unique_name_with_index, get_rs_index
 
 class SheetType(enum.Enum):
     FLAT = 0
@@ -489,13 +489,19 @@ class A205XLSXTree:
         else:
             for item in content:
                 if type(content[item]) == dict:
+                    schema_node = parent.get_schema_node()
+                    if 'RS' in schema_node:
+                        parent.inner_rs = schema_node['RS']
                     if "performance_map" in item:
-                        value = '$' + parent.parent.name + '.' + item
+                        if self.rs != parent.inner_rs:
+                            value = '$' + parent.inner_rs + '.' + item
+                        else:
+                            value = '$' + item
                     else:
                         value = None
                     new_node = A205XLSXNode(item, parent=parent, value=value)
                     if item == "grid_variables":
-                        new_node.add_grid_set(self.schema.create_grid_set(content[item],new_node.lineage))
+                        new_node.add_grid_set(self.schema.create_grid_set(self.content,new_node.lineage))
                     self.create_tree_from_content(content[item], new_node)
                 elif type(content[item]) == list:
                     if len(content[item]) == 0:
@@ -516,6 +522,7 @@ class A205XLSXTree:
         '''
         Create tree from Python Dict content
         '''
+        self.content = content
         if "ASHRAE205" in content:
             if "RS_ID" in content["ASHRAE205"]:
                 self.rs = content["ASHRAE205"]["RS_ID"]
@@ -543,11 +550,17 @@ class A205XLSXTree:
         if 'properties' in schema_node:
             for item in schema_node['properties']:
 
+                # Typical cases
+                option = None
+                value = None
+
                 # Special cases
                 if item == 'schema_version':
                     value = self.schema.get_schema_version()
                 elif item == 'RS_ID':
                     value = node.inner_rs
+                elif item == 'RS_instance':
+                    option = get_rs_index(node.inner_rs)
                 elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
                     value = '$' + item
                 elif 'items' in schema_node['properties'][item] and node.sheet_type == SheetType.FLAT:
@@ -559,11 +572,8 @@ class A205XLSXTree:
                 elif item in self.template_args:
                     # General keyword value setting
                     value = self.get_template_arg(item)
-                else:
-                    # Typical cases
-                    value = None
 
-                self.create_tree_from_schema(A205XLSXNode(item, parent=node, value=value))
+                self.create_tree_from_schema(A205XLSXNode(item, parent=node, value=value, option=option))
 
         # List nodes:
         if 'items' in schema_node:
@@ -574,9 +584,7 @@ class A205XLSXTree:
 
         # oneOf nodes
         if 'oneOf' in schema_node:
-            if node.name == 'RS_instance':
-                self.create_tree_from_schema(A205XLSXNode(node.inner_rs, parent = node))
-            elif node.inner_rs == 'RS0003' and node.name == 'performance_map' and 'performance_map_type' in self.template_args:
+            if node.inner_rs == 'RS0003' and node.name == 'performance_map' and 'performance_map_type' in self.template_args:
                 template_arg_value = self.get_template_arg('performance_map_type')
                 if template_arg_value == 'CONTINUOUS':
                     schema_node = self.schema.resolve(schema_node['oneOf'][0],step_in=False)

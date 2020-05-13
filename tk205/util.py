@@ -1,5 +1,20 @@
 import itertools
 
+def get_rs_index(rs):
+    return int(rs[2:]) - 1
+
+def get_representation_node_and_rs_selections(representation, lineage):
+    selections = []
+    node = representation
+    for name in lineage:
+        if name == 'RS_instance':
+            rs = node['RS_ID']
+            selections.append(get_rs_index(rs))
+        else:
+            selections.append(None)
+        node = node[name]
+    return node, selections
+
 def create_grid_set(grid_variables, order):
     lists = []
     if len(grid_variables) != len(order):
