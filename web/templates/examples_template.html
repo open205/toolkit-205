@@ -2,55 +2,75 @@
 
 {% block body %}
 <div class="main">
-		<div class="section">
-			<div class="contained">
+	<div class="section">
+		<div class="contained">
 
-				<h2>{{headline}}</h2>
-				<hr>
+			<h2>{{headline}}</h2>
+			<hr>
 
+			<ul class="accordion">
 				{% for key, item in content.items() %}
-				<div class="row">
-				<div class="column lg-12">
-					<h3 class="featureBlock-subHeading" style="margin-top: 6.5px;">{{item['title']}}</h3>
-					<p>{{item['description']}}</p>
-				</div>
-				{% for file in item['file_list'] %}
-					<div class="column lg-2" style="margin: auto;">
-						<a class="btn btn--hexagon-secondary" href="assets/examples/
-						{% if 'cbor' in file %}
-						cbor
-						{% elif 'json' in file %}
-						json
-						{% elif 'xlsx' in file %}
-						xlsx
-						{% elif 'yaml' in file %}
-						yaml
-						{% elif 'yml' in file %}
-						yaml
-						{% endif %}
-						/{{ file }}">
-							{% if 'cbor' in file %}
-							cbor
-							{% elif 'json' in file %}
-							json
-							{% elif 'xlsx' in file %}
-							xlsx
-							{% elif 'yaml' in file %}
-							yaml
-							{% elif 'yml' in file %}
-							yaml
-							{% endif %}
-						</a>
-					</div>
+				<li class="is-active">
+					<span id="RS" >{{item['title']}} : {{item['description']}}</span>
+						{% for file in item['file_list'] %}
+				
+						<div class="accordion-content">
+							<div style="display: flex; justify-content: space-around; padding-top: 20px" class="row">
+								<div class="col-sm">
+									<h3><a id="personal"></a>{{item['description']}} : 
+										{% if 'cbor' in file %}
+										cbor
+										{% elif 'json' in file %}
+										json
+										{% elif 'xlsx' in file %}
+										xlsx
+										{% elif 'yaml' in file %}
+										yaml
+										{% elif 'yml' in file %}
+										yaml
+										{% endif %}
+									</h3>
+								</div>
+								<div class="col-sm">
+									<a class="btn btn--hexagon-secondary" href="assets/examples/
+									{% if 'cbor' in file %}
+									cbor
+									{% elif 'json' in file %}
+									json
+									{% elif 'xlsx' in file %}
+									xlsx
+									{% elif 'yaml' in file %}
+									yaml
+									{% elif 'yml' in file %}
+									yaml
+									{% endif %}
+									/{{ file }}">
+										{% if 'cbor' in file %}
+										cbor
+										{% elif 'json' in file %}
+										json
+										{% elif 'xlsx' in file %}
+										xlsx
+										{% elif 'yaml' in file %}
+										yaml
+										{% elif 'yml' in file %}
+										yaml
+										{% endif %}
+									</a>							
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</li>
 				{% endfor %}
-				</div>
-				{% endfor %}
-
-				<div class="row">
-					<!-- This must be here to even out the rows -->
-				</div>
-
-			</div>
+				<li></li>
+			</ul>
 		</div>
 	</div>
+</div>
+	<script>
+		$('li').click(function(){
+			$(this).toggleClass("is-active");
+		});
+	</script>
 {% endblock %}

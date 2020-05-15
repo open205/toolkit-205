@@ -14,9 +14,13 @@
 						<span id="RS" class="">{{ key }}</span>
 						{% for item in rs_item %}
 						<div class="accordion-content">
-							<div style="display: flex; justify-content: space-around; align-items: center; padding-top: 20px">
-								<h3><a id="personal"></a>{{item['description']}}</h3>
-								<a class="btn btn--hexagon-secondary" href="assets/templates/{{ item['template_file'] }}">Download</a>
+							<div style="display: flex; justify-content: space-around; padding-top: 20px" class="row">
+								<div class="col-sm">
+									<h3><a id="personal"></a>{{item['description']}}</h3>
+								</div>
+								<div class="col-sm">
+									<a class="btn btn--hexagon-secondary" href="assets/templates/{{ item['template_file'] }}">Download</a>
+								</div>
 							</div>
 						</div>
 						{% endfor %}
