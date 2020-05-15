@@ -79,10 +79,13 @@ def create_files(web_dir):
 
     schema_dir = set_dir(os.path.join(assets_dir, 'schema'))
 
-    tk205.translate_directory('schema-205/examples/json', json_dir)
-    tk205.translate_directory('schema-205/examples/json', cbor_dir)
-    tk205.translate_directory('schema-205/examples/json', xlsx_dir)
-    tk205.translate_directory('schema-205/examples/json', yaml_dir)
+    for rs_folder in os.listdir('schema-205/examples'):
+        tranlate_dir = os.path.join('schema-205/examples', rs_folder)
+        tk205.translate_directory_recursive(tranlate_dir, json_dir, ".json")
+        tk205.translate_directory_recursive(tranlate_dir, cbor_dir, ".cbor")
+        tk205.translate_directory_recursive(tranlate_dir, xlsx_dir, ".xlsx")
+        tk205.translate_directory_recursive(tranlate_dir, yaml_dir, ".yaml")
+
     copy_tree('schema-205/schema', schema_dir)
 
     # xlsx_template_creation
@@ -90,12 +93,12 @@ def create_files(web_dir):
     template_content = tk205.load(os.path.join(root_dir, "..", "config", "templates.json"))
     for RS, templates in template_content.items():
         for template in templates:
-            file_name_components = [template["RS"]]
+            file_name_components = [RS]
             if template["file-name-suffix"]:
                 file_name_components.append(template["file-name-suffix"])
             file_name_components.append("template.a205.xlsx")
             file_name = '-'.join(file_name_components)
-            tk205.template(template["RS"],os.path.join(templates_dir,file_name), **template["keywords"])
+            tk205.template(RS,os.path.join(templates_dir,file_name), **template["keywords"])
 
 
 def clone():
@@ -170,7 +173,7 @@ def generate(web_dir):
         title_and_description = RS + " : " + title
         templates_page_data[title_and_description] = []
         for item in content:
-            templates_page_data[title_and_description].append({'title':item['RS'], 'description':item['description'], 'template_file':templates_dictionary[i]})
+            templates_page_data[title_and_description].append({'title':RS, 'description':item['description'], 'template_file':templates_dictionary[i]})
             i += 1
     generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
 

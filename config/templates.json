@@ -1,21 +1,18 @@
 {
     "RS0001" : [
         {
-            "RS": "RS0001",
             "keywords": {},
             "file-name-suffix": null,
-            "description": "Water Cooled Chiller"
+            "description": "Liquid-Cooled Chiller"
         }
     ],
     "RS0002" : [
         {
-            "RS": "RS0002",
             "keywords": {"performance_map_type": "CONTINUOUS"},
             "file-name-suffix": "continuous-fan",
             "description": "Unitary System with Continuous Fan"
         },
         {
-            "RS": "RS0002",
             "keywords": {"performance_map_type": "DISCRETE"},
             "file-name-suffix": "discrete-fan",
             "description": "Unitary System with Discrete Fan"
@@ -23,13 +20,11 @@
     ],
     "RS0003" : [
         {
-            "RS": "RS0003",
             "keywords": {"performance_map_type": "CONTINUOUS"},
             "file-name-suffix": "continuous",
             "description": "Continuous Fan Assembly"
         },
         {
-            "RS": "RS0003",
             "keywords": {"performance_map_type": "DISCRETE"},
             "file-name-suffix": "discrete",
             "description": "Discrete Fan Assembly"
@@ -37,10 +32,23 @@
     ],
     "RS0004" : [
         {
-            "RS": "RS0004",
             "keywords": {},
             "file-name-suffix": null,
-            "description": "DX Coil System"
+            "description": "Air-to-Air Direct Expansion Refrigerant Coil System"
+        }
+    ],
+    "RS0005" : [
+        {
+            "keywords": {},
+            "file-name-suffix": null,
+            "description": "Motor"
+        }
+    ],
+    "RS0006" : [
+        {
+            "keywords": {},
+            "file-name-suffix": null,
+            "description": "Electronic Motor Drive"
         }
     ]
 }
