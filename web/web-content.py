@@ -79,22 +79,24 @@ def create_files(web_dir):
 
     schema_dir = set_dir(os.path.join(assets_dir, 'schema'))
 
-    tk205.translate_directory('schema-205/examples/json', json_dir)
-    tk205.translate_directory('schema-205/examples/json', cbor_dir)
-    tk205.translate_directory('schema-205/examples/json', xlsx_dir)
-    tk205.translate_directory('schema-205/examples/json', yaml_dir)
+    for rs_folder in os.listdir('schema-205/examples'):
+        tk205.translate_directory(os.path.join('schema-205/examples', rs_folder), json_dir)
+        tk205.translate_directory(os.path.join('schema-205/examples', rs_folder), cbor_dir)
+        tk205.translate_directory(os.path.join('schema-205/examples', rs_folder), xlsx_dir)
+        tk205.translate_directory(os.path.join('schema-205/examples', rs_folder), yaml_dir)
     copy_tree('schema-205/schema', schema_dir)
 
     # xlsx_template_creation
     tk205.file_io.clear_directory(templates_dir)
     template_content = tk205.load(os.path.join(root_dir, "..", "config", "templates.json"))
-    for template in template_content:
-        file_name_components = [template["RS"]]
-        if template["file-name-suffix"]:
-            file_name_components.append(template["file-name-suffix"])
-        file_name_components.append("template.a205.xlsx")
-        file_name = '-'.join(file_name_components)
-        tk205.template(template["RS"],os.path.join(templates_dir,file_name), **template["keywords"])
+    for RS, templates in template_content.items():
+        for template in templates:
+            file_name_components = [RS]
+            if template["file-name-suffix"]:
+                file_name_components.append(template["file-name-suffix"])
+            file_name_components.append("template.a205.xlsx")
+            file_name = '-'.join(file_name_components)
+            tk205.template(RS,os.path.join(templates_dir,file_name), **template["keywords"])
 
 
 def clone():
@@ -133,10 +135,14 @@ def generate(web_dir):
     examples_dictionary = get_directory_structure(examples_directory)
     templates_dictionary = get_directory_structure(templates_directory)
 
+    schema_title_description = [] # This is stored during the schema page data generation to be saved and used in the templates page
+
     # Create schema.html
     schema_page_data = OrderedDict()
     for schema_file in sorted(schema_dictionary):
         title, description = get_title_and_description(schema_file, schema_directory)
+        title_description_tupel = (title, description);
+        schema_title_description.append(title_description_tupel)
         schema_page_data[title] = {'title': title, 'description': description, 'schema_file': schema_file}
     generate_page(env, 'schema_template.html', 'schema.html', web_dir, 'JSON Schema (Normative)', schema_page_data)
 
@@ -159,8 +165,17 @@ def generate(web_dir):
 
     templates_page_data = OrderedDict()
     templates_dictionary.sort()
-    for index, template_file in enumerate(templates_dictionary):
-        templates_page_data[template_file] = {'title':template_content[index]['RS'], 'description':template_content[index]['description'], 'template_file':template_file}
+    i = 0
+    for j, (RS, content) in enumerate(template_content.items()):
+        title, description = schema_title_description[j+1]
+        title_and_description = RS + " : " + title
+        templates_page_data[title_and_description] = []
+        for item in content:
+            print(RS)
+            print(content)
+            print(item)
+            templates_page_data[title_and_description].append({'title':RS, 'description':item['description'], 'template_file':templates_dictionary[i]})
+            i += 1
     generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
 
     # Create index.html AKA about page

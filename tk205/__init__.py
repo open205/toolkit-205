@@ -11,6 +11,8 @@ def translate(input, output):
     dump(load(input),output)
 
 def translate_directory_recursive(source_dir, output_dir, output_extension):
+    if len(os.listdir(source_dir)) ==0: # if directory is empty, do nothing
+        return
     for source in os.listdir(source_dir):
         source_path = os.path.join(source_dir, source)
         if os.path.isdir(source_path):
