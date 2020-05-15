@@ -4,6 +4,8 @@ import posixpath
 import jsonschema
 from .util import create_grid_set
 from .util import get_representation_node_and_rs_selections
+from .util import get_rs_index
+
 
 class A205Schema:
     def __init__(self, schema_path):
@@ -16,14 +18,24 @@ class A205Schema:
 
             self.validator = jsonschema.Draft7Validator(json.load(schema_file), resolver=resolver)
 
-    def process_errors(self, errors, parent_level = 0):
+    def process_errors(self, errors, rs_index, parent_level = 0):
         '''
         This method collects relevant error messages using recursion for 'oneOf' or 'anyOf' validations
         '''
         messages = []
         for error in errors:
             if error.validator in ['oneOf','anyOf']:
-                messages += self.process_errors(error.context, len(error.path))
+                schema_node = self.get_schema_node(list(error.absolute_path))
+                if 'RS' in schema_node:
+                    rs_index = get_rs_index(schema_node['RS'])
+                if rs_index is not None:
+                    rs_errors = []
+                    for rs_error in error.context:
+                        if rs_error.relative_schema_path[0] == rs_index:
+                            rs_errors.append(rs_error)
+                else:
+                    rs_errors = error.context
+                messages += self.process_errors(rs_errors, rs_index, len(error.path))
             else:
                 if len(error.path) >= parent_level:
                     messages.append(f"{error.message} ({'.'.join(error.path)})")
@@ -37,13 +49,15 @@ class A205Schema:
         if len(errors) == 0:
             print(f"Validation successful for {instance['ASHRAE205']['description']}")
         else:
-            messages = self.process_errors(errors)
-            messages = [f"{i}. {message}" for i, message in enumerate(messages, start=1)]
-            message_str = '\n  '.join(messages)
             if 'RS_ID' in instance['ASHRAE205']:
                 rs_id = instance['ASHRAE205']['RS_ID']
+                rs_index = get_rs_index(rs_id)
             else:
                 rs_id = "RS????"
+                rs_index = None
+            messages = self.process_errors(errors, rs_index)
+            messages = [f"{i}. {message}" for i, message in enumerate(messages, start=1)]
+            message_str = '\n  '.join(messages)
             raise Exception(f"Validation failed for \"{instance['ASHRAE205']['description']}\" ({rs_id}) with {len(messages)} errors:\n  {message_str}")
 
     def resolve(self, node, step_in=True):
