@@ -80,10 +80,12 @@ def create_files(web_dir):
     schema_dir = set_dir(os.path.join(assets_dir, 'schema'))
 
     for rs_folder in os.listdir('schema-205/examples'):
-        tk205.translate_directory(os.path.join('schema-205/examples', rs_folder), json_dir)
-        tk205.translate_directory(os.path.join('schema-205/examples', rs_folder), cbor_dir)
-        tk205.translate_directory(os.path.join('schema-205/examples', rs_folder), xlsx_dir)
-        tk205.translate_directory(os.path.join('schema-205/examples', rs_folder), yaml_dir)
+        tranlate_dir = os.path.join('schema-205/examples', rs_folder)
+        tk205.translate_directory_recursive(tranlate_dir, json_dir, ".json")
+        tk205.translate_directory_recursive(tranlate_dir, cbor_dir, ".cbor")
+        tk205.translate_directory_recursive(tranlate_dir, xlsx_dir, ".xlsx")
+        tk205.translate_directory_recursive(tranlate_dir, yaml_dir, ".yaml")
+
     copy_tree('schema-205/schema', schema_dir)
 
     # xlsx_template_creation
