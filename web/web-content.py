@@ -171,9 +171,6 @@ def generate(web_dir):
         title_and_description = RS + " : " + title
         templates_page_data[title_and_description] = []
         for item in content:
-            print(RS)
-            print(content)
-            print(item)
             templates_page_data[title_and_description].append({'title':RS, 'description':item['description'], 'template_file':templates_dictionary[i]})
             i += 1
     generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
