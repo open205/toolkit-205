@@ -4,20 +4,16 @@
 <div class="main">
 	<div class="section">
 		<div class="contained">
-
 			<h2>{{headline}}</h2>
 			<hr>
-
 			<ul class="accordion">
 				{% for key, item in content.items() %}
 				<li class="is-active">
-					<span id="RS" >{{item['title']}} : {{item['description']}}</span>
-						{% for file in item['file_list'] %}
-				
+					<span id="RS" >{{key}}</span>
 						<div class="accordion-content">
 							<div style="display: flex; justify-content: space-around; padding-top: 20px" class="row">
-								<div class="col-sm">
-									<h3><a id="personal"></a>{{item['description']}} : 
+								<div class="col-md-4">
+									<h4><a id="personal"></a>{{item['description']}} : 
 										{% if 'cbor' in file %}
 										cbor
 										{% elif 'json' in file %}
@@ -29,9 +25,10 @@
 										{% elif 'yml' in file %}
 										yaml
 										{% endif %}
-									</h3>
+									</h4>
 								</div>
-								<div class="col-sm">
+								{% for file in item['file_list'] %}
+								<div class="col-md-2">
 									<a class="btn btn--hexagon-secondary" href="assets/examples/
 									{% if 'cbor' in file %}
 									cbor
@@ -58,13 +55,15 @@
 										{% endif %}
 									</a>							
 								</div>
+								{% endfor %}
 							</div>
 						</div>
-						{% endfor %}
 					</li>
 				{% endfor %}
 				<li></li>
 			</ul>
+			<hr>
+            <div class="footer"><p>Generated: {{timestamp}}</p></div>
 		</div>
 	</div>
 </div>

@@ -4,10 +4,8 @@
 <div class="main">
 		<div class="section">
 			<div class="contained">
-
 				<h2>{{headline}}</h2>
 				<hr>
-
 				<ul class="accordion">
 					{% for key, rs_item in content.items() %}
 					<li class="is-active">
@@ -15,10 +13,10 @@
 						{% for item in rs_item %}
 						<div class="accordion-content">
 							<div style="display: flex; justify-content: space-around; padding-top: 20px" class="row">
-								<div class="col-sm">
-									<h3><a id="personal"></a>{{item['description']}}</h3>
+								<div class="col-md-8">
+									<h4><a id="personal"></a>{{item['description']}}</h4>
 								</div>
-								<div class="col-sm">
+								<div class="col-md-4">
 									<a class="btn btn--hexagon-secondary" href="assets/templates/{{ item['template_file'] }}">Download</a>
 								</div>
 							</div>
@@ -27,9 +25,11 @@
 					</li>
 					{% endfor %}
 				</ul>
-
+				<hr>
+				<div class="footer"><p>Generated: {{timestamp}}</p></div>
 			</div>
 		</div>
+		
 	</div>
 	<script>
 		$('li').click(function(){
