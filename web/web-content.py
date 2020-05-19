@@ -175,12 +175,14 @@ def generate(web_dir):
     template_content = tk205.load(os.path.join(root_dir, "..", "config", "templates.json"))
     templates_page_data = OrderedDict()
     templates_dictionary.sort()
+    j=0
     for i, (RS, content) in enumerate(template_content.items()):
         title, description = schema_title_description[i+1]
         title_and_description = RS + ": " + title
         templates_page_data[title_and_description] = []
         for item in content:
-            templates_page_data[title_and_description].append({'title':RS, 'description':item['description'], 'template_file':templates_dictionary[i]})
+            templates_page_data[title_and_description].append({'title':RS, 'description':item['description'], 'template_file':templates_dictionary[j]})
+            j += 1
     generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
 
     # Create index.html AKA about page

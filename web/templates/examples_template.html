@@ -68,8 +68,8 @@
 	</div>
 </div>
 	<script>
-		$('li').click(function(){
-			$(this).toggleClass("is-active");
+		$('span').click(function(){
+			$(this).parent().toggleClass("is-active");
 		});
 	</script>
 {% endblock %}
