@@ -47,10 +47,10 @@ class A205Schema:
     def validate(self, instance):
         errors = sorted(self.validator.iter_errors(instance), key=lambda e: e.path)
         if len(errors) == 0:
-            print(f"Validation successful for {instance['ASHRAE205']['description']}")
+            print(f"Validation successful for {instance['description']}")
         else:
-            if 'RS_ID' in instance['ASHRAE205']:
-                rs_id = instance['ASHRAE205']['RS_ID']
+            if 'RS_ID' in instance:
+                rs_id = instance['RS_ID']
                 rs_index = get_rs_index(rs_id)
             else:
                 rs_id = "RS????"
@@ -58,7 +58,7 @@ class A205Schema:
             messages = self.process_errors(errors, rs_index)
             messages = [f"{i}. {message}" for i, message in enumerate(messages, start=1)]
             message_str = '\n  '.join(messages)
-            raise Exception(f"Validation failed for \"{instance['ASHRAE205']['description']}\" ({rs_id}) with {len(messages)} errors:\n  {message_str}")
+            raise Exception(f"Validation failed for \"{instance['description']}\" ({rs_id}) with {len(messages)} errors:\n  {message_str}")
 
     def resolve(self, node, step_in=True):
         if '$ref' in node:
@@ -126,9 +126,11 @@ class A205Schema:
         raise KeyError(f"'{lineage[0]}' not found in schema.")
 
     def get_schema_node(self, lineage, options=None):
+        if len(lineage) == 0:
+            return self.resolve(self.validator.schema, step_in=False)
         if options is None:
             options = [None]*len(lineage)
-        schema = self.validator.schema['properties']
+        schema = self.resolve(self.validator.schema)
         try:
             return self.trace_lineage(schema, lineage, options)
         except KeyError:

@@ -39,15 +39,15 @@ class A205XLSXNode:
                 self.child_beg = self.beg
         else:
             # Root node
-            self.lineage = [name]
-            self.options = [None]
+            self.lineage = []
+            self.options = []
             self.tree = tree
             self.inner_rs = self.tree.rs
             self.sheet = self.tree.rs
             self.sheet_type = SheetType.FLAT
             self.child_sheet_type = self.sheet_type
             self.beg = 3
-            self.child_beg = 4
+            self.child_beg = 3
 
         if self.sheet not in self.tree.sheets:
             self.tree.sheets.append(self.sheet)
@@ -391,14 +391,11 @@ class A205XLSXNode:
                 value = ws.cell(row=self.end,column=3).value
                 if data_group:
                     lineage = data_group.split(".")
-                    if len(lineage) <= self.get_num_ancestors() + 1:
+                    if len(lineage) <= self.get_num_ancestors() + 1 and len(lineage) > 1:
                         # if lineage the same or shorter, this is not going to be a child node
                         end_node = True
                     else:
-                        if value is not None:
-                            new_node = A205XLSXNode(lineage[-1], parent=self, value=value)
-                        else:
-                            new_node = A205XLSXNode(lineage[-1], parent=self)
+                        new_node = A205XLSXNode(lineage[-1], parent=self, value=value)
                         new_node.read_node()
                 elif data_element:
                     # Determine hierarchy level using number of spaces
@@ -431,9 +428,13 @@ class A205XLSXNode:
                         item[child.name] = child.value[i]
                     content[self.name].append(item)
             else:
-                content[self.name] = {}
-                for child in self.children:
-                    child.collect_content(content[self.name])
+                if self.name:
+                    content[self.name] = {}
+                    for child in self.children:
+                        child.collect_content(content[self.name])
+                else:
+                    for child in self.children:
+                        child.collect_content(content)
         else:
             content[self.name] = self.value
 
@@ -465,7 +466,7 @@ class A205XLSXTree:
             if rs_pattern.match(ws.title):
                 self.rs = ws.title
 
-        self.root_node = A205XLSXNode("ASHRAE205", tree=self)
+        self.root_node = A205XLSXNode(None, tree=self)
         self.root_node.end += 1
         self.root_node.read_node()
         return self
@@ -523,16 +524,13 @@ class A205XLSXTree:
         Create tree from Python Dict content
         '''
         self.content = content
-        if "ASHRAE205" in content:
-            if "RS_ID" in content["ASHRAE205"]:
-                self.rs = content["ASHRAE205"]["RS_ID"]
-            else:
-                raise KeyError("Could not find 'RS_ID' key.")
+        if "RS_ID" in content:
+            self.rs = content["RS_ID"]
         else:
-            raise KeyError("Could not find 'ASHRAE205' object.")
+            raise KeyError("Could not find 'RS_ID' key.")
 
-        self.root_node = A205XLSXNode("ASHRAE205", tree=self)
-        self.create_tree_from_content(content["ASHRAE205"], self.root_node)
+        self.root_node = A205XLSXNode(None, tree=self)
+        self.create_tree_from_content(content, self.root_node)
 
     def create_tree_from_schema(self, node):
         '''
@@ -612,7 +610,7 @@ class A205XLSXTree:
         self.template_args = kwargs
         for arg in self.template_args:
             self.template_args_used[arg] = False
-        self.root_node = A205XLSXNode("ASHRAE205", tree=self)
+        self.root_node = A205XLSXNode(None, tree=self)
         self.create_tree_from_schema(self.root_node)
         for arg in self.template_args_used:
             if not self.template_args_used[arg]:
