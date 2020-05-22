@@ -1,7 +1,7 @@
 import git
 import os
 import json
-import datetime 
+import datetime
 from collections import OrderedDict
 from distutils.dir_util import copy_tree
 from jinja2 import Environment, FileSystemLoader
@@ -26,9 +26,9 @@ def get_title_and_description(json_file, path):
         if "title" in input_json:
             title = input_json["title"]
             description = input_json["description"]
-        elif "ASHRAE205" in input_json:
-            title = input_json["ASHRAE205"]["RS_ID"]
-            description = input_json["ASHRAE205"]["description"]
+        else:
+            title = input_json["RS_ID"]
+            description = input_json["description"]
         return title, description
 
 
@@ -59,7 +59,7 @@ def generate_page(env, template_name, file_name, destination, headline, content)
             nav = file_name,
             headline = headline,
             content = content,
-            timestamp = datetime.datetime.now().replace(tzinfo = datetime.timezone.utc) 
+            timestamp = datetime.datetime.now().replace(tzinfo = datetime.timezone.utc)
         ))
     f.close()
 
