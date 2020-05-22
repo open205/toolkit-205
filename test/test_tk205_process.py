@@ -62,7 +62,7 @@ def test_json_round_trip():
         for example in os.listdir(origin_dir):
             origin_path = os.path.join(origin_dir,example)
             product_path = os.path.join(product_dir,example)
-            assert(tk205.load(origin_path) == tk205.load(product_path))
+            assert(tk205.util.objects_near_equal(tk205.load(origin_path), tk205.load(product_path)))
 
 def test_xlsx_template_creation():
     output_dir = templates_dir

@@ -156,11 +156,12 @@ class A205Schema:
             for option in parent_schema_node['oneOf']:
                 option = self.resolve(option)
                 for var in grid_vars:
-                    if var not in option['grid_variables']['properties']:
+                    option_grid_vars = self.resolve(option['grid_variables'])
+                    if var not in option_grid_vars:
                         schema_node = None
                         break
                     else:
-                        schema_node = option['grid_variables']['properties']
+                        schema_node = option_grid_vars
                 if schema_node:
                     break
         else:
