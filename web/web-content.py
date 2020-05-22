@@ -1,6 +1,7 @@
 import git
 import os
 import json
+import datetime
 from collections import OrderedDict
 from distutils.dir_util import copy_tree
 from jinja2 import Environment, FileSystemLoader
@@ -25,9 +26,9 @@ def get_title_and_description(json_file, path):
         if "title" in input_json:
             title = input_json["title"]
             description = input_json["description"]
-        elif "ASHRAE205" in input_json:
-            title = input_json["ASHRAE205"]["RS_ID"]
-            description = input_json["ASHRAE205"]["description"]
+        else:
+            title = input_json["RS_ID"]
+            description = input_json["description"]
         return title, description
 
 
@@ -57,7 +58,8 @@ def generate_page(env, template_name, file_name, destination, headline, content)
         f.write(template.render(
             nav = file_name,
             headline = headline,
-            content = content
+            content = content,
+            timestamp = datetime.datetime.now().replace(tzinfo = datetime.timezone.utc)
         ))
     f.close()
 
@@ -79,22 +81,26 @@ def create_files(web_dir):
 
     schema_dir = set_dir(os.path.join(assets_dir, 'schema'))
 
-    tk205.translate_directory('schema-205/examples/json', json_dir)
-    tk205.translate_directory('schema-205/examples/json', cbor_dir)
-    tk205.translate_directory('schema-205/examples/json', xlsx_dir)
-    tk205.translate_directory('schema-205/examples/json', yaml_dir)
+    for rs_folder in os.listdir('schema-205/examples'):
+        tranlate_dir = os.path.join('schema-205/examples', rs_folder)
+        tk205.translate_directory_recursive(tranlate_dir, json_dir, ".json")
+        tk205.translate_directory_recursive(tranlate_dir, cbor_dir, ".cbor")
+        tk205.translate_directory_recursive(tranlate_dir, xlsx_dir, ".xlsx")
+        tk205.translate_directory_recursive(tranlate_dir, yaml_dir, ".yaml")
+
     copy_tree('schema-205/schema', schema_dir)
 
     # xlsx_template_creation
     tk205.file_io.clear_directory(templates_dir)
     template_content = tk205.load(os.path.join(root_dir, "..", "config", "templates.json"))
-    for template in template_content:
-        file_name_components = [template["RS"]]
-        if template["file-name-suffix"]:
-            file_name_components.append(template["file-name-suffix"])
-        file_name_components.append("template.a205.xlsx")
-        file_name = '-'.join(file_name_components)
-        tk205.template(template["RS"],os.path.join(templates_dir,file_name), **template["keywords"])
+    for RS, templates in template_content.items():
+        for template in templates:
+            file_name_components = [RS]
+            if template["file-name-suffix"]:
+                file_name_components.append(template["file-name-suffix"])
+            file_name_components.append("template.a205.xlsx")
+            file_name = '-'.join(file_name_components)
+            tk205.template(RS,os.path.join(templates_dir,file_name), **template["keywords"])
 
 
 def clone():
@@ -133,34 +139,50 @@ def generate(web_dir):
     examples_dictionary = get_directory_structure(examples_directory)
     templates_dictionary = get_directory_structure(templates_directory)
 
+    schema_title_description = [] # This is stored during the schema page data generation to be saved and used in the templates page
+
     # Create schema.html
     schema_page_data = OrderedDict()
     for schema_file in sorted(schema_dictionary):
+        schema_file_name = schema_file.split('.')
+        RS = schema_file_name[0]
         title, description = get_title_and_description(schema_file, schema_directory)
-        schema_page_data[title] = {'title': title, 'description': description, 'schema_file': schema_file}
+        title_description_tupel = (title, description)
+        if RS != "ASHRAE205": # if file is the 205 schema itself, use only the schema title
+            title = RS + ": " + title
+        schema_title_description.append(title_description_tupel)
+        schema_page_data[RS] = {'title': title, 'description': description, 'schema_file': schema_file}
     generate_page(env, 'schema_template.html', 'schema.html', web_dir, 'JSON Schema (Normative)', schema_page_data)
 
     # Create examples.html
     examples_page_data = OrderedDict()
-    for index, example_file in enumerate(sorted(examples_dictionary['json'])):
+    for i, example_file in enumerate(sorted(examples_dictionary['json'])):
         file_list = []
-        title, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
-
+        RS, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
+        title_and_description = ""
+        for title, schema_description in schema_title_description:
+            if RS in schema_description:
+                title_and_description = RS + ": " + title
         base_name = os.path.splitext(example_file)[0]
         for key in examples_dictionary:
             for example in examples_dictionary[key]:
                 if base_name in example:
                     file_list.append(example)
-        examples_page_data[example_file]={'title': title, 'description': description, 'file_list': file_list}
+        examples_page_data[title_and_description]={'title': RS, 'description': description, 'file_list': file_list}
     generate_page(env, 'examples_template.html', 'examples.html', web_dir, 'Example Files', examples_page_data)
 
     # Create templates.html
     template_content = tk205.load(os.path.join(root_dir, "..", "config", "templates.json"))
-
     templates_page_data = OrderedDict()
     templates_dictionary.sort()
-    for index, template_file in enumerate(templates_dictionary):
-        templates_page_data[template_file] = {'title':template_content[index]['RS'], 'description':template_content[index]['description'], 'template_file':template_file}
+    j=0
+    for i, (RS, content) in enumerate(template_content.items()):
+        title, description = schema_title_description[i+1]
+        title_and_description = RS + ": " + title
+        templates_page_data[title_and_description] = []
+        for item in content:
+            templates_page_data[title_and_description].append({'title':RS, 'description':item['description'], 'template_file':templates_dictionary[j]})
+            j += 1
     generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
 
     # Create index.html AKA about page

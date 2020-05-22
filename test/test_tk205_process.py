@@ -19,7 +19,7 @@ yaml_dir = set_dir(os.path.join(examples_dir,"yaml"))
 
 templates_dir = set_dir(os.path.join(test_dir,"templates"))
 
-json_source_dir = os.path.join("schema-205","examples","json")
+json_source_dir = os.path.join("schema-205","examples")
 
 '''
 Process tests
@@ -56,22 +56,23 @@ def test_xlsx_to_json_translation():
     tk205.translate_directory(xlsx_dir, json_dir)
 
 def test_json_round_trip():
-    origin_dir = json_source_dir
-    product_dir = json_dir
-    for example in (os.listdir(origin_dir)):
-        origin_path = os.path.join(origin_dir,example)
-        product_path = os.path.join(product_dir,example)
-        assert(tk205.load(origin_path) == tk205.load(product_path))
+    for rs_dir in os.listdir(json_source_dir):
+        origin_dir = os.path.join(json_source_dir,rs_dir)
+        product_dir = os.path.join(json_dir,rs_dir)
+        for example in os.listdir(origin_dir):
+            origin_path = os.path.join(origin_dir,example)
+            product_path = os.path.join(product_dir,example)
+            assert(tk205.util.objects_near_equal(tk205.load(origin_path), tk205.load(product_path)))
 
 def test_xlsx_template_creation():
     output_dir = templates_dir
     tk205.file_io.clear_directory(output_dir)
     rss = tk205.load('config/templates.json')
-    for rs in rss:
-        file_name_components = [rs["RS"]]
-        if rs["file-name-suffix"]:
-            file_name_components.append(rs["file-name-suffix"])
-        file_name_components.append("template.a205.xlsx")
-        file_name = '-'.join(file_name_components)
-        tk205.template(rs["RS"],os.path.join(output_dir,file_name), **rs["keywords"])
-
+    for rs, templates in rss.items():
+        for template in templates:
+            file_name_components = [rs]
+            if template["file-name-suffix"]:
+                file_name_components.append(template["file-name-suffix"])
+            file_name_components.append("template.a205.xlsx")
+            file_name = '-'.join(file_name_components)
+            tk205.template(rs,os.path.join(output_dir,file_name), **template["keywords"])

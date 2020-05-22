@@ -5,7 +5,7 @@ import re
 import enum
 from .__init__ import validate
 from .schema import A205Schema
-from .util import process_grid_set, unique_name_with_index
+from .util import process_grid_set, unique_name_with_index, get_rs_index
 
 class SheetType(enum.Enum):
     FLAT = 0
@@ -39,15 +39,15 @@ class A205XLSXNode:
                 self.child_beg = self.beg
         else:
             # Root node
-            self.lineage = [name]
-            self.options = [None]
+            self.lineage = []
+            self.options = []
             self.tree = tree
             self.inner_rs = self.tree.rs
             self.sheet = self.tree.rs
             self.sheet_type = SheetType.FLAT
             self.child_sheet_type = self.sheet_type
             self.beg = 3
-            self.child_beg = 4
+            self.child_beg = 3
 
         if self.sheet not in self.tree.sheets:
             self.tree.sheets.append(self.sheet)
@@ -391,14 +391,11 @@ class A205XLSXNode:
                 value = ws.cell(row=self.end,column=3).value
                 if data_group:
                     lineage = data_group.split(".")
-                    if len(lineage) <= self.get_num_ancestors() + 1:
+                    if len(lineage) <= self.get_num_ancestors() + 1 and len(lineage) > 1:
                         # if lineage the same or shorter, this is not going to be a child node
                         end_node = True
                     else:
-                        if value is not None:
-                            new_node = A205XLSXNode(lineage[-1], parent=self, value=value)
-                        else:
-                            new_node = A205XLSXNode(lineage[-1], parent=self)
+                        new_node = A205XLSXNode(lineage[-1], parent=self, value=value)
                         new_node.read_node()
                 elif data_element:
                     # Determine hierarchy level using number of spaces
@@ -431,9 +428,13 @@ class A205XLSXNode:
                         item[child.name] = child.value[i]
                     content[self.name].append(item)
             else:
-                content[self.name] = {}
-                for child in self.children:
-                    child.collect_content(content[self.name])
+                if self.name:
+                    content[self.name] = {}
+                    for child in self.children:
+                        child.collect_content(content[self.name])
+                else:
+                    for child in self.children:
+                        child.collect_content(content)
         else:
             content[self.name] = self.value
 
@@ -465,7 +466,7 @@ class A205XLSXTree:
             if rs_pattern.match(ws.title):
                 self.rs = ws.title
 
-        self.root_node = A205XLSXNode("ASHRAE205", tree=self)
+        self.root_node = A205XLSXNode(None, tree=self)
         self.root_node.end += 1
         self.root_node.read_node()
         return self
@@ -489,13 +490,19 @@ class A205XLSXTree:
         else:
             for item in content:
                 if type(content[item]) == dict:
+                    schema_node = parent.get_schema_node()
+                    if 'RS' in schema_node:
+                        parent.inner_rs = schema_node['RS']
                     if "performance_map" in item:
-                        value = '$' + item
+                        if self.rs != parent.inner_rs:
+                            value = '$' + parent.inner_rs + '.' + item
+                        else:
+                            value = '$' + item
                     else:
                         value = None
                     new_node = A205XLSXNode(item, parent=parent, value=value)
                     if item == "grid_variables":
-                        new_node.add_grid_set(self.schema.create_grid_set(content[item],new_node.lineage))
+                        new_node.add_grid_set(self.schema.create_grid_set(self.content,new_node.lineage))
                     self.create_tree_from_content(content[item], new_node)
                 elif type(content[item]) == list:
                     if len(content[item]) == 0:
@@ -516,16 +523,14 @@ class A205XLSXTree:
         '''
         Create tree from Python Dict content
         '''
-        if "ASHRAE205" in content:
-            if "RS_ID" in content["ASHRAE205"]:
-                self.rs = content["ASHRAE205"]["RS_ID"]
-            else:
-                raise KeyError("Could not find 'RS_ID' key.")
+        self.content = content
+        if "RS_ID" in content:
+            self.rs = content["RS_ID"]
         else:
-            raise KeyError("Could not find 'ASHRAE205' object.")
+            raise KeyError("Could not find 'RS_ID' key.")
 
-        self.root_node = A205XLSXNode("ASHRAE205", tree=self)
-        self.create_tree_from_content(content["ASHRAE205"], self.root_node)
+        self.root_node = A205XLSXNode(None, tree=self)
+        self.create_tree_from_content(content, self.root_node)
 
     def create_tree_from_schema(self, node):
         '''
@@ -543,11 +548,17 @@ class A205XLSXTree:
         if 'properties' in schema_node:
             for item in schema_node['properties']:
 
+                # Typical cases
+                option = None
+                value = None
+
                 # Special cases
                 if item == 'schema_version':
                     value = self.schema.get_schema_version()
                 elif item == 'RS_ID':
                     value = node.inner_rs
+                elif item == 'RS_instance':
+                    option = get_rs_index(node.inner_rs)
                 elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
                     value = '$' + item
                 elif 'items' in schema_node['properties'][item] and node.sheet_type == SheetType.FLAT:
@@ -559,11 +570,8 @@ class A205XLSXTree:
                 elif item in self.template_args:
                     # General keyword value setting
                     value = self.get_template_arg(item)
-                else:
-                    # Typical cases
-                    value = None
 
-                self.create_tree_from_schema(A205XLSXNode(item, parent=node, value=value))
+                self.create_tree_from_schema(A205XLSXNode(item, parent=node, value=value, option=option))
 
         # List nodes:
         if 'items' in schema_node:
@@ -574,9 +582,7 @@ class A205XLSXTree:
 
         # oneOf nodes
         if 'oneOf' in schema_node:
-            if node.name == 'RS_instance':
-                self.create_tree_from_schema(A205XLSXNode(node.inner_rs, parent = node))
-            elif node.inner_rs == 'RS0003' and node.name == 'performance_map' and 'performance_map_type' in self.template_args:
+            if node.inner_rs == 'RS0003' and node.name == 'performance_map' and 'performance_map_type' in self.template_args:
                 template_arg_value = self.get_template_arg('performance_map_type')
                 if template_arg_value == 'CONTINUOUS':
                     schema_node = self.schema.resolve(schema_node['oneOf'][0],step_in=False)
@@ -604,7 +610,7 @@ class A205XLSXTree:
         self.template_args = kwargs
         for arg in self.template_args:
             self.template_args_used[arg] = False
-        self.root_node = A205XLSXNode("ASHRAE205", tree=self)
+        self.root_node = A205XLSXNode(None, tree=self)
         self.create_tree_from_schema(self.root_node)
         for arg in self.template_args_used:
             if not self.template_args_used[arg]:
