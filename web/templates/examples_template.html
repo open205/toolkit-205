@@ -13,7 +13,7 @@
 						<div class="accordion-content">
 							<div style="display: flex; justify-content: space-around; padding-top: 20px" class="row">
 								<div class="col-md-4">
-									<h4><a id="personal"></a>{{item['description']}} : 
+									<h4><a id="personal"></a>{{item['description']}}
 										{% if 'cbor' in file %}
 										cbor
 										{% elif 'json' in file %}
@@ -53,7 +53,7 @@
 										{% elif 'yml' in file %}
 										yaml
 										{% endif %}
-									</a>							
+									</a>
 								</div>
 								{% endfor %}
 							</div>
