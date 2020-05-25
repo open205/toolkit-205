@@ -74,8 +74,8 @@ def objects_near_equal(object1, object2, rel_tol=1e-9, abs_tol=0.0):
     elif isinstance(object1, list):
         if len(object1) != len(object2):
             return False
-        for index, item in enumerate(object1):
-            if not objects_near_equal(object1[index], object2[index], rel_tol=rel_tol, abs_tol=abs_tol):
+        for index_item in enumerate(object1):
+            if not objects_near_equal(object1[index_item[0]], object2[index_item[0]], rel_tol=rel_tol, abs_tol=abs_tol):
                 return False
     elif isinstance(object1, Number):
         if not isclose(object1, object2, rel_tol=rel_tol, abs_tol=abs_tol):
