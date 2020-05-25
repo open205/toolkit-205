@@ -146,7 +146,7 @@ class A205XLSXNode:
         Write the header data for a new sheet
         '''
         if self.parent:
-            worksheet.cell(row=1, column=1).value = '.'.join(self.lineage)
+            worksheet.cell(row=1, column=1).value = '.'.join(self.parent.lineage)
             worksheet.cell(row=1, column=1).font = openpyxl.styles.Font(bold=True,sz=14)
         else:
             worksheet.cell(row=1, column=1).value = f"{self.tree.rs}: {self.tree.schema.get_rs_title(self.tree.rs)}"
