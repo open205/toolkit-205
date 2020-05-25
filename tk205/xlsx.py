@@ -70,12 +70,13 @@ class A205XLSXNode:
                     self.child_sheet_type = SheetType.FLAT
                 else:
                     self.child_sheet_type = SheetType.ARRAY
-                self.child_sheet = self.value[1:]
 
                 if self.child_sheet_type == SheetType.FLAT:
-                    self.next_child_beg = 3
+                    self.next_child_beg = 2
                 else:
                     self.next_child_beg = 1
+
+                self.child_sheet = self.value[1:]
 
         if parent:
             self.parent.add_child(self)
@@ -146,8 +147,12 @@ class A205XLSXNode:
         Write the header data for a new sheet
         '''
         if self.parent:
-            worksheet.cell(row=1, column=1).value = '.'.join(self.parent.lineage)
             worksheet.cell(row=1, column=1).font = openpyxl.styles.Font(bold=True,sz=14)
+            if len(self.children) == 0:
+                worksheet.cell(row=1, column=1).value = '.'.join(self.lineage)
+                return
+            else:
+                worksheet.cell(row=1, column=1).value = '.'.join(self.parent.lineage)
         else:
             worksheet.cell(row=1, column=1).value = f"{self.tree.rs}: {self.tree.schema.get_rs_title(self.tree.rs)}"
             worksheet.cell(row=1, column=1).font = openpyxl.styles.Font(bold=True,sz=14)
@@ -216,6 +221,22 @@ class A205XLSXNode:
 
             if self.value is not None:
                 wb[sheet].cell(row=self.beg,column=3).value = self.value
+                if (self.child_sheet_type == SheetType.ARRAY and len(self.children) == 0) and self.sheet_type == SheetType.FLAT:
+                    # Make sheet for holding array values
+                    array_sheet = unique_name_with_index(self.child_sheet,self.tree.sheets)
+                    wb.create_sheet(array_sheet)
+                    self.write_header(wb[array_sheet])
+
+                    wb[array_sheet].cell(row=2,column=1).value = self.name
+                    if schema_node:
+                        if 'units' in schema_node:
+                            wb[array_sheet].cell(row=3,column=1).value = schema_node['units']
+
+                    if type(self.value) == list:
+                        row = 4
+                        for value in self.value:
+                            wb[sheet].cell(row=row,column=self.beg).value = value
+                            row += 1
 
         # TODO: Something better here...a lot of repetition...
         elif self.sheet_type == SheetType.PERFORMANCE_MAP:
@@ -545,6 +566,8 @@ class A205XLSXTree:
         if 'properties' in schema_node:
             for item in schema_node['properties']:
 
+                child_schema_node = self.schema.resolve(schema_node['properties'][item],step_in=False)
+
                 # Typical cases
                 option = None
                 value = None
@@ -558,7 +581,7 @@ class A205XLSXTree:
                     option = get_rs_index(node.inner_rs)
                 elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
                     value = '$' + unique_name_with_index(item, self.sheets)
-                elif 'items' in schema_node['properties'][item] and node.sheet_type == SheetType.FLAT:
+                elif 'items' in child_schema_node and node.sheet_type == SheetType.FLAT:
                     value = '$' + unique_name_with_index(item, self.sheets)
                 elif item[-len('_representation'):] == '_representation':
                     # Embedded rep spec
