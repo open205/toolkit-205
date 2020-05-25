@@ -32,11 +32,11 @@ class A205XLSXNode:
             self.inner_rs = self.parent.inner_rs
             self.sheet = self.parent.child_sheet
             self.sheet_type = self.parent.child_sheet_type
-            self.beg = self.parent.child_beg
+            self.beg = self.parent.next_child_beg
             if self.sheet_type == SheetType.FLAT:
-                self.child_beg = self.beg + 1
+                self.next_child_beg = self.beg + 1
             else:
-                self.child_beg = self.beg
+                self.next_child_beg = self.beg
         else:
             # Root node
             self.lineage = []
@@ -47,14 +47,13 @@ class A205XLSXNode:
             self.sheet_type = SheetType.FLAT
             self.child_sheet_type = self.sheet_type
             self.beg = 3
-            self.child_beg = 3
+            self.next_child_beg = 3
 
         if self.sheet not in self.tree.sheets:
             self.tree.sheets.append(self.sheet)
 
         # These will be changed by any children
         self.end = self.beg
-        self.child_end = self.child_beg
 
         self.increment_ancestors()
 
@@ -74,11 +73,9 @@ class A205XLSXNode:
                 self.child_sheet = self.value[1:]
 
                 if self.child_sheet_type == SheetType.FLAT:
-                    self.child_beg = 3
-                    self.child_end = 3
+                    self.next_child_beg = 3
                 else:
-                    self.child_beg = 1
-                    self.child_end = 1
+                    self.next_child_beg = 1
 
         if parent:
             self.parent.add_child(self)
@@ -113,7 +110,7 @@ class A205XLSXNode:
                 # If parent is in the same sheet increment both
                 self.parent.end = self.end
                 self.parent.increment_ancestors()
-            self.parent.child_beg = self.end + 1
+            self.parent.next_child_beg = self.end + 1
 
     def add_grid_set(self, grid_set):
         '''
@@ -321,8 +318,8 @@ class A205XLSXNode:
         while not end_node:
             if self.child_sheet_type == SheetType.PERFORMANCE_MAP:
                 # Everything from the perspective of parent node
-                data_group = ws.cell(row=2,column=self.child_beg).value
-                data_element = ws.cell(row=3,column=self.child_beg).value
+                data_group = ws.cell(row=2,column=self.next_child_beg).value
+                data_element = ws.cell(row=3,column=self.next_child_beg).value
                 if data_group and data_group != self.name:
                     if data_group == 'grid_variables':
                         new_node = A205XLSXNode(data_group, parent=self)
@@ -357,7 +354,7 @@ class A205XLSXNode:
                     end_of_column = False
                     value = []
                     while not end_of_column:
-                        item = ws.cell(row=row,column=self.child_beg).value
+                        item = ws.cell(row=row,column=self.next_child_beg).value
                         if item is not None:
                             value.append(item)
                             row += 1
@@ -369,13 +366,13 @@ class A205XLSXNode:
                     end_node = True
             elif self.child_sheet_type == SheetType.ARRAY:
                 # Everything from the perspective of parent node
-                data_element = ws.cell(row=2,column=self.child_beg).value
+                data_element = ws.cell(row=2,column=self.next_child_beg).value
                 if data_element:
                     row = 4
                     end_of_column = False
                     value = []
                     while not end_of_column:
-                        item = ws.cell(row=row,column=self.child_beg).value
+                        item = ws.cell(row=row,column=self.next_child_beg).value
                         if item is not None:
                             value.append(item)
                             row += 1
@@ -386,9 +383,9 @@ class A205XLSXNode:
                     # End of sheet
                     end_node = True
             else:  # Flat Sheets
-                data_group = ws.cell(row=self.end,column=1).value
-                data_element = ws.cell(row=self.end,column=2).value
-                value = ws.cell(row=self.end,column=3).value
+                data_group = ws.cell(row=self.next_child_beg,column=1).value
+                data_element = ws.cell(row=self.next_child_beg,column=2).value
+                value = ws.cell(row=self.next_child_beg,column=3).value
                 if data_group:
                     lineage = data_group.split(".")
                     if len(lineage) <= self.get_num_ancestors() + 1 and len(lineage) > 1:
@@ -467,7 +464,6 @@ class A205XLSXTree:
                 self.rs = ws.title
 
         self.root_node = A205XLSXNode(None, tree=self)
-        self.root_node.end += 1
         self.root_node.read_node()
         return self
 
@@ -493,11 +489,12 @@ class A205XLSXTree:
                     schema_node = parent.get_schema_node()
                     if 'RS' in schema_node:
                         parent.inner_rs = schema_node['RS']
+
                     if "performance_map" in item:
-                        if self.rs != parent.inner_rs:
-                            value = '$' + parent.inner_rs + '.' + item
-                        else:
-                            value = '$' + item
+                        value = '$' + unique_name_with_index(item, self.sheets)
+                    elif item[-len('_representation'):] == '_representation':
+                        # Embedded rep spec
+                        value = '$' + item
                     else:
                         value = None
                     new_node = A205XLSXNode(item, parent=parent, value=value)
@@ -560,10 +557,9 @@ class A205XLSXTree:
                 elif item == 'RS_instance':
                     option = get_rs_index(node.inner_rs)
                 elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
-                    value = '$' + item
+                    value = '$' + unique_name_with_index(item, self.sheets)
                 elif 'items' in schema_node['properties'][item] and node.sheet_type == SheetType.FLAT:
-                    name = unique_name_with_index(item, self.sheets)
-                    value = '$' + name
+                    value = '$' + unique_name_with_index(item, self.sheets)
                 elif item[-len('_representation'):] == '_representation':
                     # Embedded rep spec
                     value = '$' + item
