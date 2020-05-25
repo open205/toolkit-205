@@ -63,9 +63,10 @@ class A205Schema:
     def resolve(self, node, step_in=True):
         if '$ref' in node:
             resolution = self.resolve_ref(node['$ref'])
-            # If this node is a reference to a nested representation, append the required RS_ID
-            if 'RS' in node:
-                resolution['RS'] = node['RS']
+            # Carry other contents from location of reference
+            for item in node:
+                if item != '$ref':
+                    resolution[item] = node[item]
         else:
             resolution = node
 
