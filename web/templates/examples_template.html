@@ -7,9 +7,10 @@
 			<h2>{{headline}}</h2>
 			<hr>
 			<ul class="accordion">
-				{% for key, item in content.items() %}
+				{% for key, items in content.items() %}
 				<li class="is-active">
 					<span id="RS" >{{key}}</span>
+					{% for item in items %}
 						<div class="accordion-content">
 							<div style="display: flex; justify-content: space-around; padding-top: 20px" class="row">
 								<div class="col-md-4">
@@ -58,6 +59,7 @@
 								{% endfor %}
 							</div>
 						</div>
+						{% endfor %}
 					</li>
 				{% endfor %}
 				<li></li>

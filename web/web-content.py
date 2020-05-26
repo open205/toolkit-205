@@ -156,6 +156,15 @@ def generate(web_dir):
 
     # Create examples.html
     examples_page_data = OrderedDict()
+    #   The purpose of the below loop is to loop through and initialize the `examples_page_data[title_and_description]` arrays outside of the following loop
+    #   Attempting to do this inside a single loop results in the array being reinitialized, and thus wiping out data. 
+    for i, example_file in enumerate(sorted(examples_dictionary['json'])):
+        RS, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
+        title_and_description = ""
+        for title, schema_description in schema_title_description:
+            if RS in schema_description:
+                title_and_description = RS + ": " + title
+                examples_page_data[title_and_description] = []
     for i, example_file in enumerate(sorted(examples_dictionary['json'])):
         file_list = []
         RS, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
@@ -168,7 +177,7 @@ def generate(web_dir):
             for example in examples_dictionary[key]:
                 if base_name in example:
                     file_list.append(example)
-        examples_page_data[title_and_description]={'title': RS, 'description': description, 'file_list': file_list}
+        examples_page_data[title_and_description].append({'title': RS, 'description': description, 'file_list': file_list})
     generate_page(env, 'examples_template.html', 'examples.html', web_dir, 'Example Files', examples_page_data)
 
     # Create templates.html
