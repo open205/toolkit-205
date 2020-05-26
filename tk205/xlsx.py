@@ -1,8 +1,10 @@
 import openpyxl
+from openpyxl.styles import NamedStyle, PatternFill, Border, Side, Alignment, Protection, Font
 import os
 import json
 import re
 import enum
+import string
 from .__init__ import validate
 from .schema import A205Schema
 from .util import process_grid_set, unique_name_with_index, get_rs_index
@@ -16,6 +18,46 @@ class SheetType(enum.Enum):
 class A205XLSXNode:
 
     white_space_multiplier = 4
+
+    cell_border = Border(
+            left=Side(border_style='thin', color='000000'),
+            right=Side(border_style='thin', color='000000'),
+            top=Side(border_style='thin', color='000000'),
+            bottom=Side(border_style='thin', color='000000')
+        )
+
+    unused_style = NamedStyle(name="Unused",
+        fill=PatternFill(start_color='808B96', end_color='808B96', fill_type='solid')
+    )
+
+    tile_style = NamedStyle(name="Title",
+        fill=PatternFill(start_color='00529B', end_color='00529B', fill_type='solid'),
+        font=Font(color="FFFFFF", bold=True, sz=14)
+    )
+
+    heading_style = NamedStyle(name="Heading",
+        fill=PatternFill(start_color='01AED8', end_color='01AED8', fill_type='solid'),
+        font=Font(bold=True),
+        border=cell_border
+    )
+
+    schema_style = NamedStyle(name="Schema",
+        fill=PatternFill(start_color='D9D9D9', end_color='D9D9D9', fill_type='solid'),
+        font=Font(bold=True),
+        border=cell_border
+    )
+
+    grid_var_style = NamedStyle(name="Grid Variables",
+        fill=PatternFill(start_color='D9D9D9', end_color='D9D9D9', fill_type='solid'),
+        font=Font(bold=True, color='0070C0'),
+        border=cell_border
+    )
+
+
+    value_style = NamedStyle(name="Value",
+        fill=PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid'),
+        border=cell_border
+    )
 
     def __init__(self, name, parent=None, tree=None, value=None, option=None):
         self.children = []  # List of children A205XLSXNodes
@@ -72,7 +114,7 @@ class A205XLSXNode:
                     self.child_sheet_type = SheetType.ARRAY
 
                 if self.child_sheet_type == SheetType.FLAT:
-                    self.next_child_beg = 2
+                    self.next_child_beg = 3
                 else:
                     self.next_child_beg = 1
 
@@ -142,25 +184,30 @@ class A205XLSXNode:
         else:
             return True
 
+    def fill_sheet(self, worksheet):
+        for column in [x for x in string.ascii_uppercase] + ["A" + x for x in string.ascii_uppercase]:
+            worksheet.column_dimensions[column].fill = self.unused_style.fill
+            worksheet[f"{column}1"].style = self.tile_style
+
     def write_header(self, worksheet):
         '''
         Write the header data for a new sheet
         '''
+        self.fill_sheet(worksheet)
         if self.parent:
-            worksheet.cell(row=1, column=1).font = openpyxl.styles.Font(bold=True,sz=14)
-            if len(self.children) == 0:
+            if self.sheet == self.parent.sheet:
+                # A simple array (not a nested object)
                 worksheet.cell(row=1, column=1).value = '.'.join(self.lineage)
                 return
             else:
                 worksheet.cell(row=1, column=1).value = '.'.join(self.parent.lineage)
         else:
             worksheet.cell(row=1, column=1).value = f"{self.tree.rs}: {self.tree.schema.get_rs_title(self.tree.rs)}"
-            worksheet.cell(row=1, column=1).font = openpyxl.styles.Font(bold=True,sz=14)
         if self.sheet_type == SheetType.FLAT:
             xlsx_headers = ['Data Group', 'Data Element', 'Value', 'Units', 'Required']
             for column, header in enumerate(xlsx_headers, start=1):
                 worksheet.cell(row=2, column=column).value = header
-                worksheet.cell(row=2, column=column).font = openpyxl.styles.Font(bold=True)
+                worksheet.cell(row=2, column=column).style = self.heading_style
             worksheet.column_dimensions['B'].width = 50
             worksheet.column_dimensions['C'].width = 31
 
@@ -176,156 +223,212 @@ class A205XLSXNode:
 
         schema_node = self.get_schema_node()
 
-        # TODO: Hyperlink to sheets from '$' values
+        if self.name is not None:
+            if self.sheet_type == SheetType.FLAT:
 
-        if self.sheet_type == SheetType.FLAT:
-
-            if len(self.children) > 0:
-                level_index = 1
-                wb[sheet].cell(row=self.beg,column=level_index).value = '.'.join(self.lineage)
-            else:
-                level_index = 2
-                buffer = ' '*(self.get_num_ancestors() - 1)*self.white_space_multiplier # TODO: get_num_ancestors_to_root for embedded RS sheets?
-                wb[sheet].cell(row=self.beg,column=level_index).value = buffer + self.name
-
-            if schema_node:
-                # Add units
-                if 'units' in schema_node:
-                    wb[sheet].cell(row=self.beg,column=4).value = schema_node['units']
-
-                # Add required
-                    # TODO: Make conditional formatting (e.g. red name if not entered)
-                if self.is_required():
-                    wb[sheet].cell(row=self.beg,column=5).value = u'\u2713'  # Checkmark
-                wb[sheet].cell(row=self.beg,column=5).alignment = openpyxl.styles.Alignment(horizontal='center')
-
-                # Add description
-                # TODO: descriptions for nested RSs isn't right because they resolve to ASHRAE205
-                if 'description' in schema_node:
-                    comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
-                    wb[sheet].cell(row=self.beg,column=level_index).comment = comment
-
-                # Enum validation
-                if 'enum' in schema_node:
-                    enumerants = f'"{",".join(schema_node["enum"])}"'
-                    if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
-                        dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
-                        wb[sheet].add_data_validation(dv)
-                        dv.add(wb[sheet].cell(row=self.beg,column=3))
-
-            else:
-                # Not found in schema
-                comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
-                wb[sheet].cell(row=self.beg,column=level_index).comment = comment
-                wb[sheet].cell(row=self.beg,column=level_index).font = openpyxl.styles.Font(color='FF0001',bold=True)
-
-            if self.value is not None:
-                wb[sheet].cell(row=self.beg,column=3).value = self.value
-                if (self.child_sheet_type == SheetType.ARRAY and len(self.children) == 0) and self.sheet_type == SheetType.FLAT:
-                    # Make sheet for holding array values
-                    array_sheet = unique_name_with_index(self.child_sheet,self.tree.sheets)
-                    wb.create_sheet(array_sheet)
-                    self.write_header(wb[array_sheet])
-
-                    wb[array_sheet].cell(row=2,column=1).value = self.name
-                    if schema_node:
-                        if 'units' in schema_node:
-                            wb[array_sheet].cell(row=3,column=1).value = schema_node['units']
-
-                    if type(self.value) == list:
-                        row = 4
-                        for value in self.value:
-                            wb[sheet].cell(row=row,column=self.beg).value = value
-                            row += 1
-
-        # TODO: Something better here...a lot of repetition...
-        elif self.sheet_type == SheetType.PERFORMANCE_MAP:
-            if len(self.children) > 0:
-                level_index = 2
-            else:
-                level_index = 3
-
-            wb[sheet].cell(row=level_index,column=self.beg).value = self.name
-            if self.name == 'grid_variables':
-                wb[sheet].cell(row=2,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
-
-            if '_variables' in self.parent.name:
-                wb[sheet].cell(row=level_index,column=self.beg).alignment = openpyxl.styles.Alignment(text_rotation=45)
-                if self.parent.name == 'grid_variables':
-                    wb[sheet].cell(row=level_index,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
-                    wb[sheet].cell(row=4,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
-                    if self.parent.grid_set:
-                        row = 5
-                        for value in self.parent.grid_set[self.name]:
-                            wb[sheet].cell(row=row,column=self.beg).value = value
-                            row += 1
+                if len(self.children) > 0:
+                    level_index = 1
+                    wb[sheet].cell(row=self.beg,column=level_index).value = '.'.join(self.lineage)
                 else:
-                    if self.value is not None:
-                        row = 5
-                        for value in self.value:
-                            wb[sheet].cell(row=row,column=self.beg).value = value
-                            row += 1
+                    level_index = 2
+                    buffer = ' '*(self.get_num_ancestors() - 1)*self.white_space_multiplier # TODO: get_num_ancestors_to_root for embedded RS sheets?
+                    wb[sheet].cell(row=self.beg,column=level_index).value = buffer + self.name
 
-            if schema_node:
-                # Add units
-                if 'units' in schema_node:
-                    wb[sheet].cell(row=4,column=self.beg).value = schema_node['units']
+                wb[sheet].cell(row=self.beg,column=1).style = self.schema_style
+                wb[sheet].cell(row=self.beg,column=2).style = self.schema_style
+                wb[sheet].cell(row=self.beg,column=4).style = self.schema_style
+                wb[sheet].cell(row=self.beg,column=5).style = self.schema_style
+                wb[sheet].cell(row=self.beg,column=3).style = self.value_style
 
-                # Add required
-                    # TODO: Make conditional formatting (e.g. red name if not entered)
+                if schema_node:
+                    # Add description
+                    if 'description' in schema_node:
+                        comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                        wb[sheet].cell(row=self.beg,column=level_index).comment = comment
 
-                # Add description
-                if 'description' in schema_node:
-                    comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                    # Enum validation
+                    if 'enum' in schema_node:
+                        enumerants = f'"{",".join(schema_node["enum"])}"'
+                        if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
+                            dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
+                            wb[sheet].add_data_validation(dv)
+                            dv.add(wb[sheet].cell(row=self.beg,column=3))
+
+                    # Add units
+                    if 'units' in schema_node:
+                        wb[sheet].cell(row=self.beg,column=4).value = schema_node['units']
+
+                    # Add required
+                        # TODO: Make conditional formatting (e.g. red name if not entered)
+                    if self.is_required():
+                        wb[sheet].cell(row=self.beg,column=5).value = u'\u2713'  # Checkmark
+                    wb[sheet].cell(row=self.beg,column=5).alignment = Alignment(horizontal='center')
+
+                else:
+                    # Not found in schema
+                    comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
+                    wb[sheet].cell(row=self.beg,column=level_index).comment = comment
+                    wb[sheet].cell(row=self.beg,column=level_index).font = Font(color='FF0001',bold=True)
+
+                if self.value is not None:
+                    wb[sheet].cell(row=self.beg,column=3).value = self.value
+                    if self.value[0] == '$':
+                        # Hyperlink to referenced sheets
+                        wb[sheet].cell(row=self.beg,column=3).hyperlink = f"#{self.value[1:]}!A1"
+                    if (self.child_sheet_type == SheetType.ARRAY and len(self.children) == 0) and self.sheet_type == SheetType.FLAT:
+                        # Make sheet for holding array values
+                        array_sheet = unique_name_with_index(self.child_sheet,self.tree.sheets)
+                        wb.create_sheet(array_sheet)
+                        self.write_header(wb[array_sheet])
+
+                        wb[array_sheet].cell(row=2,column=1).value = self.name
+                        wb[array_sheet].cell(row=2,column=1).style = self.schema_style
+                        wb[array_sheet].cell(row=3,column=1).style = self.schema_style
+
+                        if schema_node:
+                            if 'units' in schema_node:
+                                wb[array_sheet].cell(row=3,column=1).value = schema_node['units']
+
+                        row = 4
+                        if type(self.value) == list:
+                            for value in self.value:
+                                wb[array_sheet].cell(row=row,column=1).value = value
+                                wb[array_sheet].cell(row=row,column=1).style = self.value_style
+                                row += 1
+                        else:
+                            array_length = 5
+                            if schema_node:
+                                if 'maxItems' in schema_node:
+                                    array_length = schema_node['maxItems']
+                            for i in range(array_length):
+                                wb[array_sheet].cell(row=row,column=1).style = self.value_style
+                                row += 1
+
+            # TODO: Something better here...a lot of repetition...
+            elif self.sheet_type == SheetType.PERFORMANCE_MAP:
+                if len(self.children) > 0:
+                    level_index = 2
+                else:
+                    level_index = 3
+
+                wb[sheet].cell(row=level_index,column=self.beg).value = self.name
+
+                if '_variables' in self.parent.name:
+                    if self.parent.name == 'grid_variables':
+                        wb[sheet].cell(row=2,column=self.beg).style = self.grid_var_style
+                        wb[sheet].cell(row=3,column=self.beg).style = self.grid_var_style
+                        wb[sheet].cell(row=4,column=self.beg).style = self.grid_var_style
+                        wb[sheet].cell(row=level_index,column=self.beg).alignment = Alignment(text_rotation=45)
+                        if self.parent.grid_set:
+                            row = 5
+                            for value in self.parent.grid_set[self.name]:
+                                wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                                wb[sheet].cell(row=row,column=self.beg).value = value
+                                row += 1
+                        else:
+                            # 2^n rows for spacing
+                            row = 5
+                            for i in range(2**(len(self.parent.children))):
+                                wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                                row += 1
+                    else:
+                        wb[sheet].cell(row=2,column=self.beg).style = self.schema_style
+                        wb[sheet].cell(row=3,column=self.beg).style = self.schema_style
+                        wb[sheet].cell(row=4,column=self.beg).style = self.schema_style
+                        wb[sheet].cell(row=level_index,column=self.beg).alignment = Alignment(text_rotation=45)
+                        if self.value is not None:
+                            row = 5
+                            for value in self.value:
+                                wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                                wb[sheet].cell(row=row,column=self.beg).value = value
+                                row += 1
+                        else:
+                            # 2^n rows for spacing
+                            row = 5
+                            for i in range(2**(len(self.parent.parent.children[0].children))):
+                                wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                                row += 1
+
+                if schema_node:
+                    # Add units
+                    if 'units' in schema_node:
+                        wb[sheet].cell(row=4,column=self.beg).value = schema_node['units']
+
+                    # Add required
+                        # TODO: Make conditional formatting (e.g. red name if not entered)
+
+                    # Add description
+                    if 'description' in schema_node:
+                        comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                        wb[sheet].cell(row=level_index,column=self.beg).comment = comment
+
+                else:
+                    # Not found in schema
+                    comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
                     wb[sheet].cell(row=level_index,column=self.beg).comment = comment
+                    wb[sheet].cell(row=level_index,column=self.beg).font = Font(color='FF0001',bold=True)
 
-            else:
-                # Not found in schema
-                comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
-                wb[sheet].cell(row=level_index,column=self.beg).comment = comment
-                wb[sheet].cell(row=level_index,column=self.beg).font = openpyxl.styles.Font(color='FF0001',bold=True)
+            # TODO: Something better here...a lot of repetition...
+            elif self.sheet_type == SheetType.ARRAY:
+                if len(self.children) > 0:
+                    raise Exception("Were not handling nested items in an array yet!")
 
-        # TODO: Something better here...a lot of repetition...
-        elif self.sheet_type == SheetType.ARRAY:
-            if len(self.children) > 0:
-                raise Exception("Were not handling nested items in an array yet!")
+                wb[sheet].cell(row=2,column=self.beg).value = self.name
+                wb[sheet].cell(row=2,column=self.beg).style = self.schema_style
+                wb[sheet].cell(row=3,column=self.beg).style = self.schema_style
 
-            wb[sheet].cell(row=2,column=self.beg).value = self.name
-
-            if self.value is not None:
                 row = 4
-                for value in self.value:
-                    wb[sheet].cell(row=row,column=self.beg).value = value
+                if self.value is not None:
+                    for value in self.value:
+                        wb[sheet].cell(row=row,column=self.beg).value = value
+                        wb[sheet].cell(row=row,column=self.beg).style = self.value_style
 
-                    if schema_node:
-                        # Enum validation
-                        if 'enum' in schema_node:
-                            enumerants = f'"{",".join(schema_node["enum"])}"'
-                            if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
-                                dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
-                                wb[sheet].add_data_validation(dv)
-                                dv.add(wb[sheet].cell(row=row,column=self.beg))
+                        if schema_node:
+                            # Enum validation
+                            if 'enum' in schema_node:
+                                enumerants = f'"{",".join(schema_node["enum"])}"'
+                                if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
+                                    dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
+                                    wb[sheet].add_data_validation(dv)
+                                    dv.add(wb[sheet].cell(row=row,column=self.beg))
 
-                    row += 1
+                        row += 1
+                else:
+                    array_length = 5
+                    parent_schema_node = self.parent.get_schema_node()
+                    if parent_schema_node:
+                        if 'maxItems' in parent_schema_node:
+                            array_length = parent_schema_node['maxItems']
+                    for i in range(array_length):
+                        wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                        if schema_node:
+                            # Enum validation
+                            if 'enum' in schema_node:
+                                enumerants = f'"{",".join(schema_node["enum"])}"'
+                                if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
+                                    dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
+                                    wb[sheet].add_data_validation(dv)
+                                    dv.add(wb[sheet].cell(row=row,column=self.beg))
+                        row += 1
 
-            if schema_node:
-                # Add units
-                if 'units' in schema_node:
-                    wb[sheet].cell(row=3,column=self.beg).value = schema_node['units']
+                if schema_node:
+                    # Add units
+                    if 'units' in schema_node:
+                        wb[sheet].cell(row=3,column=self.beg).value = schema_node['units']
 
-                # Add required
-                    # TODO: Make conditional formatting (e.g. red name if not entered)
+                    # Add required
+                        # TODO: Make conditional formatting (e.g. red name if not entered)
 
-                # Add description
-                if 'description' in schema_node:
-                    comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                    # Add description
+                    if 'description' in schema_node:
+                        comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                        wb[sheet].cell(row=2,column=self.beg).comment = comment
+
+                else:
+                    # Not found in schema
+                    comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
                     wb[sheet].cell(row=2,column=self.beg).comment = comment
-
-            else:
-                # Not found in schema
-                comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
-                wb[sheet].cell(row=2,column=self.beg).comment = comment
-                wb[sheet].cell(row=2,column=self.beg).font = openpyxl.styles.Font(color='FF0001',bold=True)
+                    wb[sheet].cell(row=2,column=self.beg).font = Font(color='FF0001',bold=True)
 
         for child in self.children:
             child.write_node()
