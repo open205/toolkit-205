@@ -5,6 +5,7 @@ import datetime
 from collections import OrderedDict
 from distutils.dir_util import copy_tree
 from jinja2 import Environment, FileSystemLoader
+import markdown
 import tk205
 from tk205.file_io import set_dir
 
@@ -195,7 +196,13 @@ def generate(web_dir):
     generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
 
     # Create index.html AKA about page
-    generate_page(env, 'about_template.html', 'index.html', web_dir, '', None)
+    md_file = open(os.path.join(root_dir, '..', "README.md"))
+    md_content = md_file.read()
+    md_file.close()
+    html = markdown.markdown(md_content)
+    about_page_data = OrderedDict()
+    about_page_data['md'] = html
+    generate_page(env, 'about_template.html', 'index.html', web_dir, '', about_page_data)
 
     # Create toolkit205.html
     generate_page(env, 'tk205_template.html', 'tk205.html', web_dir, '', None)
