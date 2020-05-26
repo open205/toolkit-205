@@ -254,6 +254,13 @@ class A205XLSXNode:
                             wb[sheet].add_data_validation(dv)
                             dv.add(wb[sheet].cell(row=self.beg,column=3))
 
+                    # Boolean validation
+                    if 'type' in schema_node:
+                        if schema_node['type'] == 'boolean':
+                            dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1='"TRUE,FALSE"',allow_blank=True)
+                            wb[sheet].add_data_validation(dv)
+                            dv.add(wb[sheet].cell(row=self.beg,column=3))
+
                     # Add units
                     if 'units' in schema_node:
                         wb[sheet].cell(row=self.beg,column=4).value = schema_node['units']
