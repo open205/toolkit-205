@@ -38,7 +38,7 @@ class A205Schema:
                 messages += self.process_errors(rs_errors, rs_index, len(error.path))
             else:
                 if len(error.path) >= parent_level:
-                    messages.append(f"{error.message} ({'.'.join(error.path)})")
+                    messages.append(f"{error.message} ({'.'.join([str(x) for x in error.path])})")
         if len(messages) == 0 and parent_level == 0:
             for error in errors:
                 messages.append(f"{error.message} ({'.'.join(error.path)})")
