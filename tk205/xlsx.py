@@ -272,9 +272,10 @@ class A205XLSXNode:
 
                 if self.value is not None:
                     wb[sheet].cell(row=self.beg,column=3).value = self.value
-                    if self.value[0] == '$':
-                        # Hyperlink to referenced sheets
-                        wb[sheet].cell(row=self.beg,column=3).hyperlink = f"#{self.value[1:]}!A1"
+                    if type(self.value) == str:
+                        if self.value[0] == '$':
+                            # Hyperlink to referenced sheets
+                            wb[sheet].cell(row=self.beg,column=3).hyperlink = f"#{self.value[1:]}!A1"
                     if (self.child_sheet_type == SheetType.ARRAY and len(self.children) == 0) and self.sheet_type == SheetType.FLAT:
                         # Make sheet for holding array values
                         array_sheet = unique_name_with_index(self.child_sheet,self.tree.sheets)
