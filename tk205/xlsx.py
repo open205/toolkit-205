@@ -59,10 +59,11 @@ class A205XLSXNode:
         border=cell_border
     )
 
-    def __init__(self, name, parent=None, tree=None, value=None, option=None):
+    def __init__(self, name, parent=None, tree=None, value=None, sheet_ref=None, option=None):
         self.children = []  # List of children A205XLSXNodes
         self.name = name  # Name of this node
         self.value = value  # Value (if any) of this node
+        self.sheet_ref = sheet_ref  # Reference to another sheet (if applicable)
         self.parent = parent  # Parent A205XLSXNode of this node
         self.grid_set = None  # Ordered arrays of repeated grid variable values (used only for grid_variable nodes)
 
@@ -103,22 +104,21 @@ class A205XLSXNode:
         self.child_sheet_type = self.sheet_type
 
         # Initial detection of new sheets
-        if type(self.value) == str:
-            if self.value[0] == "$":
-                # Indicator of pointer to another sheet
-                if "performance_map" in self.value:
-                    self.child_sheet_type = SheetType.PERFORMANCE_MAP
-                elif "_representation" in self.value:
-                    self.child_sheet_type = SheetType.FLAT
-                else:
-                    self.child_sheet_type = SheetType.ARRAY
+        if self.sheet_ref:
+            # Indicator of pointer to another sheet
+            if "performance_map" in self.sheet_ref:
+                self.child_sheet_type = SheetType.PERFORMANCE_MAP
+            elif "_representation" in self.sheet_ref:
+                self.child_sheet_type = SheetType.FLAT
+            else:
+                self.child_sheet_type = SheetType.ARRAY
 
-                if self.child_sheet_type == SheetType.FLAT:
-                    self.next_child_beg = 3
-                else:
-                    self.next_child_beg = 1
+            if self.child_sheet_type == SheetType.FLAT:
+                self.next_child_beg = 3
+            else:
+                self.next_child_beg = 1
 
-                self.child_sheet = self.value[1:]
+            self.child_sheet = self.sheet_ref
 
         if parent:
             self.parent.add_child(self)
@@ -270,13 +270,13 @@ class A205XLSXNode:
                     wb[sheet].cell(row=self.beg,column=level_index).comment = comment
                     wb[sheet].cell(row=self.beg,column=level_index).font = Font(color='FF0001',bold=True)
 
-                if self.value is not None:
-                    wb[sheet].cell(row=self.beg,column=3).value = self.value
-                    if type(self.value) == str:
-                        if self.value[0] == '$':
-                            # Hyperlink to referenced sheets
-                            wb[sheet].cell(row=self.beg,column=3).hyperlink = f"#{self.value[1:]}!A1"
-                    if (self.child_sheet_type == SheetType.ARRAY and len(self.children) == 0) and self.sheet_type == SheetType.FLAT:
+                if self.sheet_ref:
+                    wb[sheet].cell(row=self.beg,column=3).value = '$' + self.sheet_ref
+
+                    # Hyperlink to referenced sheets
+                    wb[sheet].cell(row=self.beg,column=3).hyperlink = f"#{self.sheet_ref}!A1"
+
+                    if (self.child_sheet_type == SheetType.ARRAY and len(self.children) == 0):
                         # Make sheet for holding array values
                         array_sheet = unique_name_with_index(self.child_sheet,self.tree.sheets)
                         wb.create_sheet(array_sheet)
@@ -291,7 +291,7 @@ class A205XLSXNode:
                                 wb[array_sheet].cell(row=3,column=1).value = schema_node['units']
 
                         row = 4
-                        if type(self.value) == list:
+                        if self.value:
                             for value in self.value:
                                 wb[array_sheet].cell(row=row,column=1).value = value
                                 wb[array_sheet].cell(row=row,column=1).style = self.value_style
@@ -304,6 +304,9 @@ class A205XLSXNode:
                             for i in range(array_length):
                                 wb[array_sheet].cell(row=row,column=1).style = self.value_style
                                 row += 1
+
+                if self.value is not None and self.sheet_ref is None:
+                    wb[sheet].cell(row=self.beg,column=3).value = self.value
 
             # TODO: Something better here...a lot of repetition...
             elif self.sheet_type == SheetType.PERFORMANCE_MAP:
@@ -510,23 +513,42 @@ class A205XLSXNode:
             else:  # Flat Sheets
                 data_group = ws.cell(row=self.next_child_beg,column=1).value
                 data_element = ws.cell(row=self.next_child_beg,column=2).value
-                value = ws.cell(row=self.next_child_beg,column=3).value
+                cell_value = ws.cell(row=self.next_child_beg,column=3).value
+                value = cell_value
+                sheet_ref = None
+                if type(cell_value) == str:
+                    if cell_value[0] == '$':
+                        value = None
+                        sheet_ref = cell_value[1:]
+
                 if data_group:
                     lineage = data_group.split(".")
                     if len(lineage) <= self.get_num_ancestors() + 1 and len(lineage) > 1:
                         # if lineage the same or shorter, this is not going to be a child node
                         end_node = True
                     else:
-                        new_node = A205XLSXNode(lineage[-1], parent=self, value=value)
+                        new_node = A205XLSXNode(lineage[-1], parent=self, value=value, sheet_ref=sheet_ref)
                         new_node.read_node()
                 elif data_element:
+                    if sheet_ref:
+                        # Get array values from another sheet
+                        row = 4
+                        end_of_column = False
+                        value = []
+                        while not end_of_column:
+                            item = self.tree.workbook[sheet_ref].cell(row=row,column=1).value
+                            if item is not None:
+                                value.append(item)
+                                row += 1
+                            else:
+                                end_of_column = True
                     # Determine hierarchy level using number of spaces
                     level = (len(data_element) - len(data_element.lstrip(' ')))/self.white_space_multiplier
                     data_element = data_element.strip(' ')
                     generations = self.get_num_ancestors() - level
                     if generations > 0:
                         end_node = True
-                    A205XLSXNode(data_element, parent=self.get_ancestor(generations), value=value)
+                    A205XLSXNode(data_element, parent=self.get_ancestor(generations), value=value, sheet_ref=sheet_ref)
                 else:
                     # End of sheet
                     end_node = True
@@ -605,9 +627,9 @@ class A205XLSXTree:
                     # Override values given based on first item with empty array
                     for child in parent.children:
                         child.value = []
-            for item in content:
-                for child in parent.children:
-                    child.value.append(item[child.name])
+                    for item in content:
+                        for child in parent.children:
+                            child.value.append(item[child.name])
         else:
             for item in content:
                 if type(content[item]) == dict:
@@ -616,13 +638,13 @@ class A205XLSXTree:
                         parent.inner_rs = schema_node['RS']
 
                     if "performance_map" in item:
-                        value = '$' + unique_name_with_index(item, self.sheets)
+                        sheet_ref = unique_name_with_index(item, self.sheets)
                     elif item[-len('_representation'):] == '_representation':
                         # Embedded rep spec
-                        value = '$' + item
+                        sheet_ref = item
                     else:
-                        value = None
-                    new_node = A205XLSXNode(item, parent=parent, value=value)
+                        sheet_ref = None
+                    new_node = A205XLSXNode(item, parent=parent, sheet_ref=sheet_ref)
                     if item == "grid_variables":
                         new_node.add_grid_set(self.schema.create_grid_set(self.content,new_node.lineage))
                     self.create_tree_from_content(content[item], new_node)
@@ -632,12 +654,17 @@ class A205XLSXTree:
                         A205XLSXNode(item,parent=parent,value=content[item])
                     elif type(content[item][0]) == dict:
                         # Create new sheet for array
-                        name = unique_name_with_index(item, self.sheets)
-                        value = '$' + name
-                        new_node = A205XLSXNode(item,parent=parent,value=value)
+                        sheet_ref = unique_name_with_index(item, self.sheets)
+                        new_node = A205XLSXNode(item,parent=parent,sheet_ref=sheet_ref)
                         self.create_tree_from_content(content[item], new_node)
                     else:
-                        A205XLSXNode(item,parent=parent,value=content[item])
+                        # plain array
+                        if parent.sheet_type == SheetType.FLAT:
+                            # simple array in it's own sheet
+                            sheet_ref = unique_name_with_index(item, self.sheets)
+                            new_node = A205XLSXNode(item,parent=parent,value=content[item],sheet_ref=sheet_ref)
+                        else:
+                            A205XLSXNode(item,parent=parent,value=content[item])
                 else:
                     A205XLSXNode(item,parent=parent,value=content[item])
 
@@ -675,6 +702,7 @@ class A205XLSXTree:
                 # Typical cases
                 option = None
                 value = None
+                sheet_ref = None
 
                 # Special cases
                 if item == 'schema_version':
@@ -684,17 +712,17 @@ class A205XLSXTree:
                 elif item == 'RS_instance':
                     option = get_rs_index(node.inner_rs)
                 elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
-                    value = '$' + unique_name_with_index(item, self.sheets)
+                    sheet_ref = unique_name_with_index(item, self.sheets)
                 elif 'items' in child_schema_node and node.sheet_type == SheetType.FLAT:
-                    value = '$' + unique_name_with_index(item, self.sheets)
+                    sheet_ref = unique_name_with_index(item, self.sheets)
                 elif item[-len('_representation'):] == '_representation':
                     # Embedded rep spec
-                    value = '$' + item
+                    sheet_ref = item
                 elif item in self.template_args:
                     # General keyword value setting
                     value = self.get_template_arg(item)
 
-                self.create_tree_from_schema(A205XLSXNode(item, parent=node, value=value, option=option))
+                self.create_tree_from_schema(A205XLSXNode(item, parent=node, value=value, option=option, sheet_ref=sheet_ref))
 
         # List nodes:
         if 'items' in schema_node:
