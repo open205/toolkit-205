@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/open205/toolkit-205.svg?branch=develop)](https://travis-ci.org/open205/toolkit-205)
+[![Build and Test](https://github.com/open205/toolkit-205/workflows/Build%20and%20Test/badge.svg)](https://github.com/open205/toolkit-205/actions?query=workflow%3A%22Build+and+Test%22)
 
 Toolkit 205
 ===========

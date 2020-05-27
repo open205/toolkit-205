@@ -26,4 +26,6 @@ jobs:
         run: pipenv install --dev
       - name: Test
         run: pipenv run pytest -v
+      - name: Generate web content
+        run: pipenv run python web/web-content.py
 
