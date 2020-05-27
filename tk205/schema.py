@@ -38,7 +38,7 @@ class A205Schema:
                 messages += self.process_errors(rs_errors, rs_index, len(error.path))
             else:
                 if len(error.path) >= parent_level:
-                    messages.append(f"{error.message} ({'.'.join(error.path)})")
+                    messages.append(f"{error.message} ({'.'.join([str(x) for x in error.path])})")
         if len(messages) == 0 and parent_level == 0:
             for error in errors:
                 messages.append(f"{error.message} ({'.'.join(error.path)})")
@@ -63,9 +63,10 @@ class A205Schema:
     def resolve(self, node, step_in=True):
         if '$ref' in node:
             resolution = self.resolve_ref(node['$ref'])
-            # If this node is a reference to a nested representation, append the required RS_ID
-            if 'RS' in node:
-                resolution['RS'] = node['RS']
+            # Carry other contents from location of reference
+            for item in node:
+                if item != '$ref':
+                    resolution[item] = node[item]
         else:
             resolution = node
 

@@ -5,6 +5,12 @@ import os
 Unit tests
 '''
 
+def test_resolve_ref():
+    schema = tk205.A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json"))
+
+    node = schema.resolve_ref("ASHRAE205.schema.json#/definitions/ASHRAE205")
+    assert('title' not in node)
+
 def test_get_schema_node():
     schema = tk205.A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json"))
 
@@ -36,6 +42,10 @@ def test_get_schema_node():
     # Root node
     node = schema.get_schema_node([])
     assert('required' in node)
+
+    # Root node of nested RS
+    node = schema.get_schema_node(['RS_instance','performance','fan_representation'],[1,None,None])
+    assert('ASHRAE 205' not in node['description'])
 
 def test_get_representation_node_and_rs_selections():
     rep = tk205.load('schema-205/examples/RS0002/RS0002SimpleExampleFile.a205.json')
