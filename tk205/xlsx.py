@@ -1,8 +1,10 @@
 import openpyxl
+from openpyxl.styles import NamedStyle, PatternFill, Border, Side, Alignment, Protection, Font
 import os
 import json
 import re
 import enum
+import string
 from .__init__ import validate
 from .schema import A205Schema
 from .util import process_grid_set, unique_name_with_index, get_rs_index
@@ -17,10 +19,51 @@ class A205XLSXNode:
 
     white_space_multiplier = 4
 
-    def __init__(self, name, parent=None, tree=None, value=None, option=None):
+    cell_border = Border(
+            left=Side(border_style='thin', color='000000'),
+            right=Side(border_style='thin', color='000000'),
+            top=Side(border_style='thin', color='000000'),
+            bottom=Side(border_style='thin', color='000000')
+        )
+
+    unused_style = NamedStyle(name="Unused",
+        fill=PatternFill(start_color='808B96', end_color='808B96', fill_type='solid')
+    )
+
+    tile_style = NamedStyle(name="Title",
+        fill=PatternFill(start_color='00529B', end_color='00529B', fill_type='solid'),
+        font=Font(color="FFFFFF", bold=True, sz=14)
+    )
+
+    heading_style = NamedStyle(name="Heading",
+        fill=PatternFill(start_color='01AED8', end_color='01AED8', fill_type='solid'),
+        font=Font(bold=True),
+        border=cell_border
+    )
+
+    schema_style = NamedStyle(name="Schema",
+        fill=PatternFill(start_color='D9D9D9', end_color='D9D9D9', fill_type='solid'),
+        font=Font(bold=True),
+        border=cell_border
+    )
+
+    grid_var_style = NamedStyle(name="Grid Variables",
+        fill=PatternFill(start_color='D9D9D9', end_color='D9D9D9', fill_type='solid'),
+        font=Font(bold=True, color='0070C0'),
+        border=cell_border
+    )
+
+
+    value_style = NamedStyle(name="Value",
+        fill=PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid'),
+        border=cell_border
+    )
+
+    def __init__(self, name, parent=None, tree=None, value=None, sheet_ref=None, option=None):
         self.children = []  # List of children A205XLSXNodes
         self.name = name  # Name of this node
         self.value = value  # Value (if any) of this node
+        self.sheet_ref = sheet_ref  # Reference to another sheet (if applicable)
         self.parent = parent  # Parent A205XLSXNode of this node
         self.grid_set = None  # Ordered arrays of repeated grid variable values (used only for grid_variable nodes)
 
@@ -32,11 +75,11 @@ class A205XLSXNode:
             self.inner_rs = self.parent.inner_rs
             self.sheet = self.parent.child_sheet
             self.sheet_type = self.parent.child_sheet_type
-            self.beg = self.parent.child_beg
+            self.beg = self.parent.next_child_beg
             if self.sheet_type == SheetType.FLAT:
-                self.child_beg = self.beg + 1
+                self.next_child_beg = self.beg + 1
             else:
-                self.child_beg = self.beg
+                self.next_child_beg = self.beg
         else:
             # Root node
             self.lineage = []
@@ -47,14 +90,13 @@ class A205XLSXNode:
             self.sheet_type = SheetType.FLAT
             self.child_sheet_type = self.sheet_type
             self.beg = 3
-            self.child_beg = 3
+            self.next_child_beg = 3
 
         if self.sheet not in self.tree.sheets:
             self.tree.sheets.append(self.sheet)
 
         # These will be changed by any children
         self.end = self.beg
-        self.child_end = self.child_beg
 
         self.increment_ancestors()
 
@@ -62,23 +104,21 @@ class A205XLSXNode:
         self.child_sheet_type = self.sheet_type
 
         # Initial detection of new sheets
-        if type(self.value) == str:
-            if self.value[0] == "$":
-                # Indicator of pointer to another sheet
-                if "performance_map" in self.value:
-                    self.child_sheet_type = SheetType.PERFORMANCE_MAP
-                elif "_representation" in self.value:
-                    self.child_sheet_type = SheetType.FLAT
-                else:
-                    self.child_sheet_type = SheetType.ARRAY
-                self.child_sheet = self.value[1:]
+        if self.sheet_ref:
+            # Indicator of pointer to another sheet
+            if "performance_map" in self.sheet_ref:
+                self.child_sheet_type = SheetType.PERFORMANCE_MAP
+            elif "_representation" in self.sheet_ref:
+                self.child_sheet_type = SheetType.FLAT
+            else:
+                self.child_sheet_type = SheetType.ARRAY
 
-                if self.child_sheet_type == SheetType.FLAT:
-                    self.child_beg = 3
-                    self.child_end = 3
-                else:
-                    self.child_beg = 1
-                    self.child_end = 1
+            if self.child_sheet_type == SheetType.FLAT:
+                self.next_child_beg = 3
+            else:
+                self.next_child_beg = 1
+
+            self.child_sheet = self.sheet_ref
 
         if parent:
             self.parent.add_child(self)
@@ -113,7 +153,7 @@ class A205XLSXNode:
                 # If parent is in the same sheet increment both
                 self.parent.end = self.end
                 self.parent.increment_ancestors()
-            self.parent.child_beg = self.end + 1
+            self.parent.next_child_beg = self.end + 1
 
     def add_grid_set(self, grid_set):
         '''
@@ -144,21 +184,30 @@ class A205XLSXNode:
         else:
             return True
 
+    def fill_sheet(self, worksheet):
+        for column in [x for x in string.ascii_uppercase] + ["A" + x for x in string.ascii_uppercase]:
+            worksheet.column_dimensions[column].fill = self.unused_style.fill
+            worksheet[f"{column}1"].style = self.tile_style
+
     def write_header(self, worksheet):
         '''
         Write the header data for a new sheet
         '''
+        self.fill_sheet(worksheet)
         if self.parent:
-            worksheet.cell(row=1, column=1).value = '.'.join(self.lineage)
-            worksheet.cell(row=1, column=1).font = openpyxl.styles.Font(bold=True,sz=14)
+            if self.sheet == self.parent.sheet:
+                # A simple array (not a nested object)
+                worksheet.cell(row=1, column=1).value = '.'.join(self.lineage)
+                return
+            else:
+                worksheet.cell(row=1, column=1).value = '.'.join(self.parent.lineage)
         else:
             worksheet.cell(row=1, column=1).value = f"{self.tree.rs}: {self.tree.schema.get_rs_title(self.tree.rs)}"
-            worksheet.cell(row=1, column=1).font = openpyxl.styles.Font(bold=True,sz=14)
         if self.sheet_type == SheetType.FLAT:
             xlsx_headers = ['Data Group', 'Data Element', 'Value', 'Units', 'Required']
             for column, header in enumerate(xlsx_headers, start=1):
                 worksheet.cell(row=2, column=column).value = header
-                worksheet.cell(row=2, column=column).font = openpyxl.styles.Font(bold=True)
+                worksheet.cell(row=2, column=column).style = self.heading_style
             worksheet.column_dimensions['B'].width = 50
             worksheet.column_dimensions['C'].width = 31
 
@@ -174,140 +223,223 @@ class A205XLSXNode:
 
         schema_node = self.get_schema_node()
 
-        # TODO: Hyperlink to sheets from '$' values
+        if self.name is not None:
+            if self.sheet_type == SheetType.FLAT:
 
-        if self.sheet_type == SheetType.FLAT:
-
-            if len(self.children) > 0:
-                level_index = 1
-                wb[sheet].cell(row=self.beg,column=level_index).value = '.'.join(self.lineage)
-            else:
-                level_index = 2
-                buffer = ' '*(self.get_num_ancestors() - 1)*self.white_space_multiplier # TODO: get_num_ancestors_to_root for embedded RS sheets?
-                wb[sheet].cell(row=self.beg,column=level_index).value = buffer + self.name
-
-            if schema_node:
-                # Add units
-                if 'units' in schema_node:
-                    wb[sheet].cell(row=self.beg,column=4).value = schema_node['units']
-
-                # Add required
-                    # TODO: Make conditional formatting (e.g. red name if not entered)
-                if self.is_required():
-                    wb[sheet].cell(row=self.beg,column=5).value = u'\u2713'  # Checkmark
-                wb[sheet].cell(row=self.beg,column=5).alignment = openpyxl.styles.Alignment(horizontal='center')
-
-                # Add description
-                # TODO: descriptions for nested RSs isn't right because they resolve to ASHRAE205
-                if 'description' in schema_node:
-                    comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
-                    wb[sheet].cell(row=self.beg,column=level_index).comment = comment
-
-                # Enum validation
-                if 'enum' in schema_node:
-                    enumerants = f'"{",".join(schema_node["enum"])}"'
-                    if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
-                        dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
-                        wb[sheet].add_data_validation(dv)
-                        dv.add(wb[sheet].cell(row=self.beg,column=3))
-
-            else:
-                # Not found in schema
-                comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
-                wb[sheet].cell(row=self.beg,column=level_index).comment = comment
-                wb[sheet].cell(row=self.beg,column=level_index).font = openpyxl.styles.Font(color='FF0001',bold=True)
-
-            if self.value is not None:
-                wb[sheet].cell(row=self.beg,column=3).value = self.value
-
-        # TODO: Something better here...a lot of repetition...
-        elif self.sheet_type == SheetType.PERFORMANCE_MAP:
-            if len(self.children) > 0:
-                level_index = 2
-            else:
-                level_index = 3
-
-            wb[sheet].cell(row=level_index,column=self.beg).value = self.name
-            if self.name == 'grid_variables':
-                wb[sheet].cell(row=2,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
-
-            if '_variables' in self.parent.name:
-                wb[sheet].cell(row=level_index,column=self.beg).alignment = openpyxl.styles.Alignment(text_rotation=45)
-                if self.parent.name == 'grid_variables':
-                    wb[sheet].cell(row=level_index,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
-                    wb[sheet].cell(row=4,column=self.beg).font = openpyxl.styles.Font(color='0070C0')
-                    if self.parent.grid_set:
-                        row = 5
-                        for value in self.parent.grid_set[self.name]:
-                            wb[sheet].cell(row=row,column=self.beg).value = value
-                            row += 1
+                if len(self.children) > 0:
+                    level_index = 1
+                    wb[sheet].cell(row=self.beg,column=level_index).value = '.'.join(self.lineage)
                 else:
-                    if self.value is not None:
-                        row = 5
-                        for value in self.value:
-                            wb[sheet].cell(row=row,column=self.beg).value = value
-                            row += 1
+                    level_index = 2
+                    buffer = ' '*(self.get_num_ancestors() - 1)*self.white_space_multiplier # TODO: get_num_ancestors_to_root for embedded RS sheets?
+                    wb[sheet].cell(row=self.beg,column=level_index).value = buffer + self.name
 
-            if schema_node:
-                # Add units
-                if 'units' in schema_node:
-                    wb[sheet].cell(row=4,column=self.beg).value = schema_node['units']
+                wb[sheet].cell(row=self.beg,column=1).style = self.schema_style
+                wb[sheet].cell(row=self.beg,column=2).style = self.schema_style
+                wb[sheet].cell(row=self.beg,column=4).style = self.schema_style
+                wb[sheet].cell(row=self.beg,column=5).style = self.schema_style
+                wb[sheet].cell(row=self.beg,column=3).style = self.value_style
 
-                # Add required
-                    # TODO: Make conditional formatting (e.g. red name if not entered)
+                if schema_node:
+                    # Add description
+                    if 'description' in schema_node:
+                        comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                        wb[sheet].cell(row=self.beg,column=level_index).comment = comment
 
-                # Add description
-                if 'description' in schema_node:
-                    comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                    # Enum validation
+                    if 'enum' in schema_node:
+                        enumerants = f'"{",".join(schema_node["enum"])}"'
+                        if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
+                            dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
+                            wb[sheet].add_data_validation(dv)
+                            dv.add(wb[sheet].cell(row=self.beg,column=3))
+
+                    # Boolean validation
+                    if 'type' in schema_node:
+                        if schema_node['type'] == 'boolean':
+                            dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1='"TRUE,FALSE"',allow_blank=True)
+                            wb[sheet].add_data_validation(dv)
+                            dv.add(wb[sheet].cell(row=self.beg,column=3))
+
+                    # Add units
+                    if 'units' in schema_node:
+                        wb[sheet].cell(row=self.beg,column=4).value = schema_node['units']
+
+                    # Add required
+                        # TODO: Make conditional formatting (e.g. red name if not entered)
+                    if self.is_required():
+                        wb[sheet].cell(row=self.beg,column=5).value = u'\u2713'  # Checkmark
+                    wb[sheet].cell(row=self.beg,column=5).alignment = Alignment(horizontal='center')
+
+                else:
+                    # Not found in schema
+                    comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
+                    wb[sheet].cell(row=self.beg,column=level_index).comment = comment
+                    wb[sheet].cell(row=self.beg,column=level_index).font = Font(color='FF0001',bold=True)
+
+                if self.sheet_ref:
+                    wb[sheet].cell(row=self.beg,column=3).value = '$' + self.sheet_ref
+
+                    # Hyperlink to referenced sheets
+                    wb[sheet].cell(row=self.beg,column=3).hyperlink = f"#{self.sheet_ref}!A1"
+
+                    if (self.child_sheet_type == SheetType.ARRAY and len(self.children) == 0):
+                        # Make sheet for holding array values
+                        array_sheet = unique_name_with_index(self.child_sheet,self.tree.sheets)
+                        wb.create_sheet(array_sheet)
+                        self.write_header(wb[array_sheet])
+
+                        wb[array_sheet].cell(row=2,column=1).value = self.name
+                        wb[array_sheet].cell(row=2,column=1).style = self.schema_style
+                        wb[array_sheet].cell(row=3,column=1).style = self.schema_style
+
+                        if schema_node:
+                            if 'units' in schema_node:
+                                wb[array_sheet].cell(row=3,column=1).value = schema_node['units']
+
+                        row = 4
+                        if self.value:
+                            for value in self.value:
+                                wb[array_sheet].cell(row=row,column=1).value = value
+                                wb[array_sheet].cell(row=row,column=1).style = self.value_style
+                                row += 1
+                        else:
+                            array_length = 5
+                            if schema_node:
+                                if 'maxItems' in schema_node:
+                                    array_length = schema_node['maxItems']
+                            for i in range(array_length):
+                                wb[array_sheet].cell(row=row,column=1).style = self.value_style
+                                row += 1
+
+                if self.value is not None and self.sheet_ref is None:
+                    wb[sheet].cell(row=self.beg,column=3).value = self.value
+
+            # TODO: Something better here...a lot of repetition...
+            elif self.sheet_type == SheetType.PERFORMANCE_MAP:
+                if len(self.children) > 0:
+                    level_index = 2
+                else:
+                    level_index = 3
+
+                wb[sheet].cell(row=level_index,column=self.beg).value = self.name
+
+                if '_variables' in self.parent.name:
+                    if self.parent.name == 'grid_variables':
+                        wb[sheet].cell(row=2,column=self.beg).style = self.grid_var_style
+                        wb[sheet].cell(row=3,column=self.beg).style = self.grid_var_style
+                        wb[sheet].cell(row=4,column=self.beg).style = self.grid_var_style
+                        wb[sheet].cell(row=level_index,column=self.beg).alignment = Alignment(text_rotation=45)
+                        if self.parent.grid_set:
+                            row = 5
+                            for value in self.parent.grid_set[self.name]:
+                                wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                                wb[sheet].cell(row=row,column=self.beg).value = value
+                                row += 1
+                        else:
+                            # 2^n rows for spacing
+                            row = 5
+                            for i in range(2**(len(self.parent.children))):
+                                wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                                row += 1
+                    else:
+                        wb[sheet].cell(row=2,column=self.beg).style = self.schema_style
+                        wb[sheet].cell(row=3,column=self.beg).style = self.schema_style
+                        wb[sheet].cell(row=4,column=self.beg).style = self.schema_style
+                        wb[sheet].cell(row=level_index,column=self.beg).alignment = Alignment(text_rotation=45)
+                        if self.value is not None:
+                            row = 5
+                            for value in self.value:
+                                wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                                wb[sheet].cell(row=row,column=self.beg).value = value
+                                row += 1
+                        else:
+                            # 2^n rows for spacing
+                            row = 5
+                            for i in range(2**(len(self.parent.parent.children[0].children))):
+                                wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                                row += 1
+
+                if schema_node:
+                    # Add units
+                    if 'units' in schema_node:
+                        wb[sheet].cell(row=4,column=self.beg).value = schema_node['units']
+
+                    # Add required
+                        # TODO: Make conditional formatting (e.g. red name if not entered)
+
+                    # Add description
+                    if 'description' in schema_node:
+                        comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                        wb[sheet].cell(row=level_index,column=self.beg).comment = comment
+
+                else:
+                    # Not found in schema
+                    comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
                     wb[sheet].cell(row=level_index,column=self.beg).comment = comment
+                    wb[sheet].cell(row=level_index,column=self.beg).font = Font(color='FF0001',bold=True)
 
-            else:
-                # Not found in schema
-                comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
-                wb[sheet].cell(row=level_index,column=self.beg).comment = comment
-                wb[sheet].cell(row=level_index,column=self.beg).font = openpyxl.styles.Font(color='FF0001',bold=True)
+            # TODO: Something better here...a lot of repetition...
+            elif self.sheet_type == SheetType.ARRAY:
+                if len(self.children) > 0:
+                    raise Exception("Were not handling nested items in an array yet!")
 
-        # TODO: Something better here...a lot of repetition...
-        elif self.sheet_type == SheetType.ARRAY:
-            if len(self.children) > 0:
-                raise Exception("Were not handling nested items in an array yet!")
+                wb[sheet].cell(row=2,column=self.beg).value = self.name
+                wb[sheet].cell(row=2,column=self.beg).style = self.schema_style
+                wb[sheet].cell(row=3,column=self.beg).style = self.schema_style
 
-            wb[sheet].cell(row=2,column=self.beg).value = self.name
-
-            if self.value is not None:
                 row = 4
-                for value in self.value:
-                    wb[sheet].cell(row=row,column=self.beg).value = value
+                if self.value is not None:
+                    for value in self.value:
+                        wb[sheet].cell(row=row,column=self.beg).value = value
+                        wb[sheet].cell(row=row,column=self.beg).style = self.value_style
 
-                    if schema_node:
-                        # Enum validation
-                        if 'enum' in schema_node:
-                            enumerants = f'"{",".join(schema_node["enum"])}"'
-                            if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
-                                dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
-                                wb[sheet].add_data_validation(dv)
-                                dv.add(wb[sheet].cell(row=row,column=self.beg))
+                        if schema_node:
+                            # Enum validation
+                            if 'enum' in schema_node:
+                                enumerants = f'"{",".join(schema_node["enum"])}"'
+                                if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
+                                    dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
+                                    wb[sheet].add_data_validation(dv)
+                                    dv.add(wb[sheet].cell(row=row,column=self.beg))
 
-                    row += 1
+                        row += 1
+                else:
+                    array_length = 5
+                    parent_schema_node = self.parent.get_schema_node()
+                    if parent_schema_node:
+                        if 'maxItems' in parent_schema_node:
+                            array_length = parent_schema_node['maxItems']
+                    for i in range(array_length):
+                        wb[sheet].cell(row=row,column=self.beg).style = self.value_style
+                        if schema_node:
+                            # Enum validation
+                            if 'enum' in schema_node:
+                                enumerants = f'"{",".join(schema_node["enum"])}"'
+                                if len(enumerants) < 256: # Apparent limitation of written lists (TODO: https://stackoverflow.com/a/33532984/1344457)
+                                    dv = openpyxl.worksheet.datavalidation.DataValidation(type='list',formula1=enumerants,allow_blank=True)
+                                    wb[sheet].add_data_validation(dv)
+                                    dv.add(wb[sheet].cell(row=row,column=self.beg))
+                        row += 1
 
-            if schema_node:
-                # Add units
-                if 'units' in schema_node:
-                    wb[sheet].cell(row=3,column=self.beg).value = schema_node['units']
+                if schema_node:
+                    # Add units
+                    if 'units' in schema_node:
+                        wb[sheet].cell(row=3,column=self.beg).value = schema_node['units']
 
-                # Add required
-                    # TODO: Make conditional formatting (e.g. red name if not entered)
+                    # Add required
+                        # TODO: Make conditional formatting (e.g. red name if not entered)
 
-                # Add description
-                if 'description' in schema_node:
-                    comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                    # Add description
+                    if 'description' in schema_node:
+                        comment = openpyxl.comments.Comment(schema_node['description'],"ASHRAE 205")
+                        wb[sheet].cell(row=2,column=self.beg).comment = comment
+
+                else:
+                    # Not found in schema
+                    comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
                     wb[sheet].cell(row=2,column=self.beg).comment = comment
-
-            else:
-                # Not found in schema
-                comment = openpyxl.comments.Comment("Not found in schema.","ASHRAE 205")
-                wb[sheet].cell(row=2,column=self.beg).comment = comment
-                wb[sheet].cell(row=2,column=self.beg).font = openpyxl.styles.Font(color='FF0001',bold=True)
+                    wb[sheet].cell(row=2,column=self.beg).font = Font(color='FF0001',bold=True)
 
         for child in self.children:
             child.write_node()
@@ -321,8 +453,8 @@ class A205XLSXNode:
         while not end_node:
             if self.child_sheet_type == SheetType.PERFORMANCE_MAP:
                 # Everything from the perspective of parent node
-                data_group = ws.cell(row=2,column=self.child_beg).value
-                data_element = ws.cell(row=3,column=self.child_beg).value
+                data_group = ws.cell(row=2,column=self.next_child_beg).value
+                data_element = ws.cell(row=3,column=self.next_child_beg).value
                 if data_group and data_group != self.name:
                     if data_group == 'grid_variables':
                         new_node = A205XLSXNode(data_group, parent=self)
@@ -357,7 +489,7 @@ class A205XLSXNode:
                     end_of_column = False
                     value = []
                     while not end_of_column:
-                        item = ws.cell(row=row,column=self.child_beg).value
+                        item = ws.cell(row=row,column=self.next_child_beg).value
                         if item is not None:
                             value.append(item)
                             row += 1
@@ -369,13 +501,13 @@ class A205XLSXNode:
                     end_node = True
             elif self.child_sheet_type == SheetType.ARRAY:
                 # Everything from the perspective of parent node
-                data_element = ws.cell(row=2,column=self.child_beg).value
+                data_element = ws.cell(row=2,column=self.next_child_beg).value
                 if data_element:
                     row = 4
                     end_of_column = False
                     value = []
                     while not end_of_column:
-                        item = ws.cell(row=row,column=self.child_beg).value
+                        item = ws.cell(row=row,column=self.next_child_beg).value
                         if item is not None:
                             value.append(item)
                             row += 1
@@ -386,25 +518,44 @@ class A205XLSXNode:
                     # End of sheet
                     end_node = True
             else:  # Flat Sheets
-                data_group = ws.cell(row=self.end,column=1).value
-                data_element = ws.cell(row=self.end,column=2).value
-                value = ws.cell(row=self.end,column=3).value
+                data_group = ws.cell(row=self.next_child_beg,column=1).value
+                data_element = ws.cell(row=self.next_child_beg,column=2).value
+                cell_value = ws.cell(row=self.next_child_beg,column=3).value
+                value = cell_value
+                sheet_ref = None
+                if type(cell_value) == str:
+                    if cell_value[0] == '$':
+                        value = None
+                        sheet_ref = cell_value[1:]
+
                 if data_group:
                     lineage = data_group.split(".")
                     if len(lineage) <= self.get_num_ancestors() + 1 and len(lineage) > 1:
                         # if lineage the same or shorter, this is not going to be a child node
                         end_node = True
                     else:
-                        new_node = A205XLSXNode(lineage[-1], parent=self, value=value)
+                        new_node = A205XLSXNode(lineage[-1], parent=self, value=value, sheet_ref=sheet_ref)
                         new_node.read_node()
                 elif data_element:
+                    if sheet_ref:
+                        # Get array values from another sheet
+                        row = 4
+                        end_of_column = False
+                        value = []
+                        while not end_of_column:
+                            item = self.tree.workbook[sheet_ref].cell(row=row,column=1).value
+                            if item is not None:
+                                value.append(item)
+                                row += 1
+                            else:
+                                end_of_column = True
                     # Determine hierarchy level using number of spaces
                     level = (len(data_element) - len(data_element.lstrip(' ')))/self.white_space_multiplier
                     data_element = data_element.strip(' ')
                     generations = self.get_num_ancestors() - level
                     if generations > 0:
                         end_node = True
-                    A205XLSXNode(data_element, parent=self.get_ancestor(generations), value=value)
+                    A205XLSXNode(data_element, parent=self.get_ancestor(generations), value=value, sheet_ref=sheet_ref)
                 else:
                     # End of sheet
                     end_node = True
@@ -467,7 +618,6 @@ class A205XLSXTree:
                 self.rs = ws.title
 
         self.root_node = A205XLSXNode(None, tree=self)
-        self.root_node.end += 1
         self.root_node.read_node()
         return self
 
@@ -484,23 +634,24 @@ class A205XLSXTree:
                     # Override values given based on first item with empty array
                     for child in parent.children:
                         child.value = []
-            for item in content:
-                for child in parent.children:
-                    child.value.append(item[child.name])
+                    for item in content:
+                        for child in parent.children:
+                            child.value.append(item[child.name])
         else:
             for item in content:
                 if type(content[item]) == dict:
                     schema_node = parent.get_schema_node()
                     if 'RS' in schema_node:
                         parent.inner_rs = schema_node['RS']
+
                     if "performance_map" in item:
-                        if self.rs != parent.inner_rs:
-                            value = '$' + parent.inner_rs + '.' + item
-                        else:
-                            value = '$' + item
+                        sheet_ref = unique_name_with_index(item, self.sheets)
+                    elif item[-len('_representation'):] == '_representation':
+                        # Embedded rep spec
+                        sheet_ref = item
                     else:
-                        value = None
-                    new_node = A205XLSXNode(item, parent=parent, value=value)
+                        sheet_ref = None
+                    new_node = A205XLSXNode(item, parent=parent, sheet_ref=sheet_ref)
                     if item == "grid_variables":
                         new_node.add_grid_set(self.schema.create_grid_set(self.content,new_node.lineage))
                     self.create_tree_from_content(content[item], new_node)
@@ -510,12 +661,17 @@ class A205XLSXTree:
                         A205XLSXNode(item,parent=parent,value=content[item])
                     elif type(content[item][0]) == dict:
                         # Create new sheet for array
-                        name = unique_name_with_index(item, self.sheets)
-                        value = '$' + name
-                        new_node = A205XLSXNode(item,parent=parent,value=value)
+                        sheet_ref = unique_name_with_index(item, self.sheets)
+                        new_node = A205XLSXNode(item,parent=parent,sheet_ref=sheet_ref)
                         self.create_tree_from_content(content[item], new_node)
                     else:
-                        A205XLSXNode(item,parent=parent,value=content[item])
+                        # plain array
+                        if parent.sheet_type == SheetType.FLAT:
+                            # simple array in it's own sheet
+                            sheet_ref = unique_name_with_index(item, self.sheets)
+                            new_node = A205XLSXNode(item,parent=parent,value=content[item],sheet_ref=sheet_ref)
+                        else:
+                            A205XLSXNode(item,parent=parent,value=content[item])
                 else:
                     A205XLSXNode(item,parent=parent,value=content[item])
 
@@ -548,9 +704,12 @@ class A205XLSXTree:
         if 'properties' in schema_node:
             for item in schema_node['properties']:
 
+                child_schema_node = self.schema.resolve(schema_node['properties'][item],step_in=False)
+
                 # Typical cases
                 option = None
                 value = None
+                sheet_ref = None
 
                 # Special cases
                 if item == 'schema_version':
@@ -560,18 +719,17 @@ class A205XLSXTree:
                 elif item == 'RS_instance':
                     option = get_rs_index(node.inner_rs)
                 elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
-                    value = '$' + item
-                elif 'items' in schema_node['properties'][item] and node.sheet_type == SheetType.FLAT:
-                    name = unique_name_with_index(item, self.sheets)
-                    value = '$' + name
+                    sheet_ref = unique_name_with_index(item, self.sheets)
+                elif 'items' in child_schema_node and node.sheet_type == SheetType.FLAT:
+                    sheet_ref = unique_name_with_index(item, self.sheets)
                 elif item[-len('_representation'):] == '_representation':
                     # Embedded rep spec
-                    value = '$' + item
+                    sheet_ref = item
                 elif item in self.template_args:
                     # General keyword value setting
                     value = self.get_template_arg(item)
 
-                self.create_tree_from_schema(A205XLSXNode(item, parent=node, value=value, option=option))
+                self.create_tree_from_schema(A205XLSXNode(item, parent=node, value=value, option=option, sheet_ref=sheet_ref))
 
         # List nodes:
         if 'items' in schema_node:
