@@ -7,8 +7,9 @@
 
 				<h2>{{headline}}</h2>
 				<hr>
-
-				{% for key, item in content.items() %}
+				{{markdown}}
+				<hr>
+					{% for key, item in content.items() %}
 				<div class="row">
 				<div class="column lg-12">
 					<h3 class="featureBlock-subHeading" style="margin-top: 6.5px;">{{item['title']}}</h3>
@@ -22,7 +23,6 @@
 				<div class="row">
 					<!-- This must be here to even out the rows -->
 				</div>
-				{{content.md}}
 				<hr>
 				<div class="footer"><p>Generated: {{timestamp}}</p></div>
 			</div>

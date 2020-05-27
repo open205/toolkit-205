@@ -49,7 +49,7 @@ def get_directory_structure(rootdir):
     return directory_dict
 
 
-def generate_page(env, template_name, file_name, destination, headline, content):
+def generate_page(env, template_name, file_name, destination, headline, markdown=None, content=None):
     """
     Create a specific html page of the open205.github.io website from a Jinja2 template.
     """
@@ -59,6 +59,7 @@ def generate_page(env, template_name, file_name, destination, headline, content)
         f.write(template.render(
             nav = file_name,
             headline = headline,
+            markdown = markdown,
             content = content,
             timestamp = datetime.datetime.now().replace(tzinfo = datetime.timezone.utc)
         ))
@@ -143,6 +144,10 @@ def generate(web_dir):
     schema_title_description = [] # This is stored during the schema page data generation to be saved and used in the templates page
 
     # Create schema.html
+    with open(os.path.join(root_dir, 'markdown-content', 'schema.md')) as md_file:
+        md_content = md_file.read()
+    markdown_html = markdown.markdown(md_content)
+
     schema_page_data = OrderedDict()
     for schema_file in sorted(schema_dictionary):
         schema_file_name = schema_file.split('.')
@@ -153,12 +158,17 @@ def generate(web_dir):
             title = RS + ": " + title
         schema_title_description.append(title_description_tupel)
         schema_page_data[RS] = {'title': title, 'description': description, 'schema_file': schema_file}
-    generate_page(env, 'schema_template.html', 'schema.html', web_dir, 'JSON Schema (Normative)', schema_page_data)
+
+    generate_page(env, 'schema_template.html', 'schema.html', web_dir, 'JSON Schema (Normative)', markdown=markdown_html, content=schema_page_data)
 
     # Create examples.html
+    with open(os.path.join(root_dir, 'markdown-content', 'examples.md')) as md_file:
+        md_content = md_file.read()
+    markdown_html = markdown.markdown(md_content)
+
     examples_page_data = OrderedDict()
     #   The purpose of the below loop is to loop through and initialize the `examples_page_data[title_and_description]` arrays outside of the following loop
-    #   Attempting to do this inside a single loop results in the array being reinitialized, and thus wiping out data. 
+    #   Attempting to do this inside a single loop results in the array being reinitialized, and thus wiping out data.
     for i, example_file in enumerate(sorted(examples_dictionary['json'])):
         RS, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
         title_and_description = ""
@@ -179,9 +189,14 @@ def generate(web_dir):
                 if base_name in example:
                     file_list.append(example)
         examples_page_data[title_and_description].append({'title': RS, 'description': description, 'file_list': file_list})
-    generate_page(env, 'examples_template.html', 'examples.html', web_dir, 'Example Files', examples_page_data)
+
+    generate_page(env, 'examples_template.html', 'examples.html', web_dir, 'Example Files', markdown=markdown_html, content=examples_page_data)
 
     # Create templates.html
+    with open(os.path.join(root_dir, 'markdown-content', 'templates.md')) as md_file:
+        md_content = md_file.read()
+    markdown_html = markdown.markdown(md_content)
+
     template_content = tk205.load(os.path.join(root_dir, "..", "config", "templates.json"))
     templates_page_data = OrderedDict()
     templates_dictionary.sort()
@@ -193,19 +208,22 @@ def generate(web_dir):
         for item in content:
             templates_page_data[title_and_description].append({'title':RS, 'description':item['description'], 'template_file':templates_dictionary[j]})
             j += 1
-    generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', templates_page_data)
+
+    generate_page(env, 'templates_template.html', 'templates.html', web_dir, 'XLSX Templates', markdown=markdown_html, content=templates_page_data)
 
     # Create index.html AKA about page
-    md_file = open(os.path.join(root_dir, '..', "README.md"))
-    md_content = md_file.read()
-    md_file.close()
-    html = markdown.markdown(md_content)
-    about_page_data = OrderedDict()
-    about_page_data['md'] = html
-    generate_page(env, 'about_template.html', 'index.html', web_dir, '', about_page_data)
+    with open(os.path.join(root_dir, 'markdown-content', 'about.md')) as md_file:
+        md_content = md_file.read()
+    markdown_html = markdown.markdown(md_content)
+
+    generate_page(env, 'about_template.html', 'index.html', web_dir, '', markdown=markdown_html)
 
     # Create toolkit205.html
-    generate_page(env, 'tk205_template.html', 'tk205.html', web_dir, '', None)
+    with open(os.path.join(root_dir, 'markdown-content', 'tk205.md')) as md_file:
+        md_content = md_file.read()
+    markdown_html = markdown.markdown(md_content)
+
+    generate_page(env, 'tk205_template.html', 'tk205.html', web_dir, '', markdown=markdown_html)
 
 
 def main():

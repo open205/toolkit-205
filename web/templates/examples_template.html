@@ -6,6 +6,8 @@
 		<div class="contained">
 			<h2>{{headline}}</h2>
 			<hr>
+			{{markdown}}
+			<hr>
 			<ul class="accordion">
 				{% for key, items in content.items() %}
 				<li class="is-active">
@@ -64,7 +66,6 @@
 				{% endfor %}
 				<li></li>
 			</ul>
-			{{content.md}}
 			<hr>
             <div class="footer"><p>Generated: {{timestamp}}</p></div>
 		</div>

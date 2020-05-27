@@ -1,0 +1,1 @@
+***Informative note:*** The schema is maintained in the [schema-205](https://github.com/open205/schema-205) GitHub repository.
