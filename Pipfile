@@ -7,11 +7,15 @@ verify_ssl = true
 pylint = "*"
 pytest = "*"
 pipenv = "*"
+atomicwrites = "*"
+Jinja2 = "*"
+gitpython = "*"
 
 [packages]
 click = "*"
 jsonschema = "*"
 cbor2 = "*"
 openpyxl = "*"
+pyyaml = "*"
 
 tk205 = {editable = true,path = "."}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="main">
+		<div class="section">
+			<div class="contained">
+				<h2>{{headline}}</h2>
+				<hr>
+				<ul class="accordion">
+					{% for key, rs_item in content.items() %}
+					<li class="is-active">
+						<span id="RS" class="">{{ key }}</span>
+						{% for item in rs_item %}
+						<div class="accordion-content">
+							<div style="display: flex; justify-content: space-around; padding-top: 20px" class="row">
+								<div class="col-md-8">
+									<h4><a id="personal"></a>{{item['description']}}</h4>
+								</div>
+								<div class="col-md-4">
+									<a class="btn btn--hexagon-secondary" href="assets/templates/{{ item['template_file'] }}">Download</a>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</li>
+					{% endfor %}
+				</ul>
+				<hr>
+				<div class="footer"><p>Generated: {{timestamp}}</p></div>
+			</div>
+		</div>
+		
+	</div>
+	<script>
+		$('span').click(function(){
+			$(this).parent().toggleClass("is-active");
+		});
+	</script>
+{% endblock %}

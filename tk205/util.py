@@ -1,4 +1,21 @@
 import itertools
+from numbers import Number
+from math import isclose
+
+def get_rs_index(rs):
+    return int(rs[2:]) - 1
+
+def get_representation_node_and_rs_selections(representation, lineage):
+    selections = []
+    node = representation
+    for name in lineage:
+        if name == 'RS_instance':
+            rs = node['RS_ID']
+            selections.append(get_rs_index(rs))
+        else:
+            selections.append(None)
+        node = node[name]
+    return node, selections
 
 def create_grid_set(grid_variables, order):
     lists = []
@@ -35,9 +52,35 @@ def unique_name_with_index(name, list_of_names):
         i = 0
         searching = True
         while searching:
-            if f"{name}{i}" not in list_of_names:
+            if f"{name}{i}" in list_of_names:
+                i += 1
+            else:
                 searching = False
                 return f"{name}{i}"
 
 
-
+def objects_near_equal(object1, object2, rel_tol=1e-9, abs_tol=0.0):
+    if type(object1) != type(object2):
+        if not isinstance(object1, Number) or not isinstance(object2, Number):
+            return False
+    if isinstance(object1, dict):
+        if len(object1) != len(object2):
+            return False
+        for key in object1:
+            if key not in object2:
+                return False
+            if not objects_near_equal(object1[key], object2[key], rel_tol=rel_tol, abs_tol=abs_tol):
+                return False
+    elif isinstance(object1, list):
+        if len(object1) != len(object2):
+            return False
+        for index_item in enumerate(object1):
+            if not objects_near_equal(object1[index_item[0]], object2[index_item[0]], rel_tol=rel_tol, abs_tol=abs_tol):
+                return False
+    elif isinstance(object1, Number):
+        if not isclose(object1, object2, rel_tol=rel_tol, abs_tol=abs_tol):
+            return False
+    else:
+        if not (object1 == object2):
+            return False
+    return True

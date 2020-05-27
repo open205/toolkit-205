@@ -5,5 +5,10 @@
   "ID": "bcf8b859-67a3-42f4-8f8d-4e57af1ccf22",
   "data_timestamp": "2019-09-10T00:00Z",
   "data_version": 1,
-  "description": "Nothing to see here!"
+  "description": "After burner!",
+  "RS_instance": {
+    "performance": {
+      "after_bruner_power": 42
+    }
+  }
 }

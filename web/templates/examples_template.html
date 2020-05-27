@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="main">
+	<div class="section">
+		<div class="contained">
+			<h2>{{headline}}</h2>
+			<hr>
+			<ul class="accordion">
+				{% for key, item in content.items() %}
+				<li class="is-active">
+					<span id="RS" >{{key}}</span>
+						<div class="accordion-content">
+							<div style="display: flex; justify-content: space-around; padding-top: 20px" class="row">
+								<div class="col-md-4">
+									<h4><a id="personal"></a>{{item['description']}}
+										{% if 'cbor' in file %}
+										cbor
+										{% elif 'json' in file %}
+										json
+										{% elif 'xlsx' in file %}
+										xlsx
+										{% elif 'yaml' in file %}
+										yaml
+										{% elif 'yml' in file %}
+										yaml
+										{% endif %}
+									</h4>
+								</div>
+								{% for file in item['file_list'] %}
+								<div class="col-md-2">
+									<a class="btn btn--hexagon-secondary" href="assets/examples/
+									{% if 'cbor' in file %}
+									cbor
+									{% elif 'json' in file %}
+									json
+									{% elif 'xlsx' in file %}
+									xlsx
+									{% elif 'yaml' in file %}
+									yaml
+									{% elif 'yml' in file %}
+									yaml
+									{% endif %}
+									/{{ file }}">
+										{% if 'cbor' in file %}
+										cbor
+										{% elif 'json' in file %}
+										json
+										{% elif 'xlsx' in file %}
+										xlsx
+										{% elif 'yaml' in file %}
+										yaml
+										{% elif 'yml' in file %}
+										yaml
+										{% endif %}
+									</a>
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+					</li>
+				{% endfor %}
+				<li></li>
+			</ul>
+			<hr>
+            <div class="footer"><p>Generated: {{timestamp}}</p></div>
+		</div>
+	</div>
+</div>
+	<script>
+		$('span').click(function(){
+			$(this).parent().toggleClass("is-active");
+		});
+	</script>
+{% endblock %}
