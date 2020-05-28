@@ -48,14 +48,14 @@ def test_get_schema_node():
     assert('ASHRAE 205' not in node['description'])
 
 def test_get_representation_node_and_rs_selections():
-    rep = tk205.load('schema-205/examples/RS0002/RS0002SimpleExampleFile.a205.json')
+    rep = tk205.load('schema-205/examples/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json')
     node, rs_selections = tk205.util.get_representation_node_and_rs_selections(rep, ['RS_instance','performance','DX_system_representation','RS_instance','performance','performance_map_cooling','grid_variables'])
     assert(len(node) == 6)
     assert(rs_selections[0] == tk205.util.get_rs_index('RS0002'))
     assert(rs_selections[3] == tk205.util.get_rs_index('RS0004'))
 
 def test_create_grid_set():
-    rep = tk205.load('schema-205/examples/RS0004/RS0004SimpleExampleFile.a205.json')
+    rep = tk205.load('schema-205/examples/RS0004/DX-Constant-Efficiency.RS0004.a205.json')
     schema = tk205.A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json"))
     grid_set = schema.create_grid_set(rep, ['RS_instance','performance','performance_map_cooling','grid_variables'])
     table_length = 1
@@ -94,7 +94,7 @@ def test_get_grid_variable_order():
     assert(order == grid_vars_names)
 
 def test_process_grid_set():
-    rep = tk205.load('schema-205/examples/RS0004/RS0004SimpleExampleFile.a205.json')
+    rep = tk205.load('schema-205/examples/RS0004/DX-Constant-Efficiency.RS0004.a205.json')
     grid_vars = rep['RS_instance']['performance']['performance_map_cooling']['grid_variables']
     schema = tk205.A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json"))
     grid_set = schema.create_grid_set(rep, ['RS_instance','performance','performance_map_cooling','grid_variables'])
