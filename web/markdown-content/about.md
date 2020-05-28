@@ -14,7 +14,7 @@ ASHRAE Standard 205P defines common data models and serialization formats for fa
 
 Review copies of Standard 205P are available until July 29, 2020 at [ASHRAE’s online review portal](https://osr.ashrae.org/default.aspx).
 
-Standard 205 defines the term representation to mean a Concise Binary Object Representation (CBOR) file conforming to a JSON schema defined by a human-readable (text) document called a representation specification.  Representation specifications are included in Standard 205P appended as an open-ended set.
+Standard 205 defines the term *representation* to mean a Concise Binary Object Representation (CBOR) file conforming to a JSON schema defined by a human-readable (text) document called a *representation specification*.  Representation specifications are included in Standard 205P appended as an open-ended set.
 
 Standard 205 structure and application can be visualized as follows:
 
@@ -28,6 +28,6 @@ This web site hosts supporting material for each representation specification, i
 
 - [***XLSX templates***](templates.html) can be downloaded, populated by hand, and then process with [Toolkit 205](tk205.html) procedures to convert to a standard CBOR representation.
 
-All representations have common structures and elements.  An open source project https://github.com/open205 is underway to provide software components for use by data publishers and application developers.
+All representations have common structures and elements.  An open source project [open205](https://github.com/open205) is underway to provide software components for use by data publishers and application developers.
 
 SPC 205 is developing representation specifications for additional equipment types.  These will be published in future revisions of the standard.
