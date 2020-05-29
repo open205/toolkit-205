@@ -6,6 +6,8 @@
 			<div class="contained">
 				<h2>{{headline}}</h2>
 				<hr>
+				{{markdown}}
+				<hr>
 				<ul class="accordion">
 					{% for key, rs_item in content.items() %}
 					<li class="is-active">
@@ -29,7 +31,7 @@
 				<div class="footer"><p>Generated: {{timestamp}}</p></div>
 			</div>
 		</div>
-		
+
 	</div>
 	<script>
 		$('span').click(function(){
