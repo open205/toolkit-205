@@ -28,6 +28,6 @@ This web site hosts supporting material for each representation specification, i
 
 - [***XLSX templates***](templates.html) can be downloaded, populated by hand, and then process with [Toolkit 205](tk205.html) procedures to convert to a standard CBOR representation.
 
-All representations have common structures and elements.  An open source project [open205](https://github.com/open205) is underway to provide software components for use by data publishers and application developers.
+All representations have common structures and elements.  An open source project, [open205](https://github.com/open205), is underway to provide software components for use by data publishers and application developers.
 
 SPC 205 is developing representation specifications for additional equipment types.  These will be published in future revisions of the standard.
