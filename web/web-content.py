@@ -18,11 +18,11 @@ def is_git_repo(path):
     except git.InvalidGitRepositoryError:
         return False
 
-def get_title_and_description(json_file, path):
+def get_title_and_description(json_path):
     """
     Open an ASHRAE205 json schema or example file and return the title and description.
     """
-    with open(os.path.join(path, json_file), 'r')as input_file:
+    with open(os.path.join(json_path), 'r')as input_file:
         input_json = json.load(input_file)
         if "title" in input_json:
             title = input_json["title"]
@@ -72,6 +72,7 @@ def create_files(web_dir):
     """
     assets_dir = set_dir(os.path.join(web_dir, 'assets'))
 
+    # examples
     examples_dir = set_dir(os.path.join(assets_dir, 'examples'))
 
     json_dir = set_dir(os.path.join(examples_dir, 'json'))
@@ -79,20 +80,15 @@ def create_files(web_dir):
     xlsx_dir = set_dir(os.path.join(examples_dir, 'xlsx'))
     yaml_dir = set_dir(os.path.join(examples_dir, 'yaml'))
 
+    tranlate_dir = os.path.join('schema-205/examples')
+    tk205.translate_directory(tranlate_dir, json_dir)
+    tk205.translate_directory(tranlate_dir, cbor_dir)
+    tk205.translate_directory(tranlate_dir, xlsx_dir)
+    tk205.translate_directory(tranlate_dir, yaml_dir)
+
+    # templates
     templates_dir = set_dir(os.path.join(assets_dir, 'templates'))
 
-    schema_dir = set_dir(os.path.join(assets_dir, 'schema'))
-
-    for rs_folder in os.listdir('schema-205/examples'):
-        tranlate_dir = os.path.join('schema-205/examples', rs_folder)
-        tk205.translate_directory_recursive(tranlate_dir, json_dir, ".json")
-        tk205.translate_directory_recursive(tranlate_dir, cbor_dir, ".cbor")
-        tk205.translate_directory_recursive(tranlate_dir, xlsx_dir, ".xlsx")
-        tk205.translate_directory_recursive(tranlate_dir, yaml_dir, ".yaml")
-
-    copy_tree('schema-205/schema', schema_dir)
-
-    # xlsx_template_creation
     tk205.file_io.clear_directory(templates_dir)
     template_content = tk205.load(os.path.join(root_dir, "..", "config", "templates.json"))
     for RS, templates in template_content.items():
@@ -103,6 +99,10 @@ def create_files(web_dir):
             file_name_components.append("template.a205.xlsx")
             file_name = '-'.join(file_name_components)
             tk205.template(RS,os.path.join(templates_dir,file_name), **template["keywords"])
+
+    # schema
+    schema_dir = set_dir(os.path.join(assets_dir, 'schema'))
+    copy_tree('schema-205/schema', schema_dir)
 
 
 def clone():
@@ -152,7 +152,7 @@ def generate(web_dir):
     for schema_file in sorted(schema_dictionary):
         schema_file_name = schema_file.split('.')
         RS = schema_file_name[0]
-        title, description = get_title_and_description(schema_file, schema_directory)
+        title, description = get_title_and_description(os.path.join(schema_directory,schema_file))
         title_description_tupel = (title, description)
         if RS != "ASHRAE205": # if file is the 205 schema itself, use only the schema title
             title = RS + ": " + title
@@ -167,28 +167,19 @@ def generate(web_dir):
     markdown_html = markdown.markdown(md_content)
 
     examples_page_data = OrderedDict()
-    #   The purpose of the below loop is to loop through and initialize the `examples_page_data[title_and_description]` arrays outside of the following loop
-    #   Attempting to do this inside a single loop results in the array being reinitialized, and thus wiping out data.
-    for i, example_file in enumerate(sorted(examples_dictionary['json'])):
-        RS, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
-        title_and_description = ""
-        for title, schema_description in schema_title_description:
-            if RS in schema_description:
-                title_and_description = RS + ": " + title
-                examples_page_data[title_and_description] = []
-    for i, example_file in enumerate(sorted(examples_dictionary['json'])):
-        file_list = []
-        RS, description = get_title_and_description(example_file, os.path.join(examples_directory, "json"))
-        title_and_description = ""
-        for title, schema_description in schema_title_description:
-            if RS in schema_description:
-                title_and_description = RS + ": " + title
-        base_name = os.path.splitext(example_file)[0]
-        for key in examples_dictionary:
-            for example in examples_dictionary[key]:
-                if base_name in example:
-                    file_list.append(example)
-        examples_page_data[title_and_description].append({'title': RS, 'description': description, 'file_list': file_list})
+
+    for file_type in examples_dictionary:
+        for RS in sorted(examples_dictionary[file_type]):
+            for file_name in examples_dictionary[file_type][RS]:
+                base_name = os.path.splitext(file_name)[0]
+                RS, description = get_title_and_description(os.path.join(examples_directory, "json", RS, base_name + '.json'))
+                if RS not in examples_page_data:
+                    for title, schema_description in schema_title_description:
+                        if RS in schema_description:
+                            examples_page_data[RS] = {'title': title, 'files': {}}
+                if description not in examples_page_data[RS]['files']:
+                    examples_page_data[RS]['files'][description] = {}
+                examples_page_data[RS]['files'][description][file_type] = file_name
 
     generate_page(env, 'examples_template.html', 'examples.html', web_dir, 'Example Files', markdown=markdown_html, content=examples_page_data)
 

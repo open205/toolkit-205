@@ -9,53 +9,21 @@
 			{{markdown}}
 			<hr>
 			<ul class="accordion">
-				{% for key, items in content.items() %}
+				{% for RS in content %}
 				<li class="is-active">
-					<span id="RS" >{{key}}</span>
-					{% for item in items %}
+					<span id="RS" >{{RS}}: {{content[RS]['title']}}</span>
+					{% for file in content[RS]['files'] %}
 						<div class="accordion-content">
 							<div style="display: flex; justify-content: space-around; padding-top: 20px" class="row">
-								<div class="col-md-4">
-									<h4><a id="personal"></a>{{item['description']}}
-										{% if 'cbor' in file %}
-										cbor
-										{% elif 'json' in file %}
-										json
-										{% elif 'xlsx' in file %}
-										xlsx
-										{% elif 'yaml' in file %}
-										yaml
-										{% elif 'yml' in file %}
-										yaml
-										{% endif %}
+								<div class="col-md-5">
+									<h4><a id="personal"></a>
+										{{file}}
 									</h4>
 								</div>
-								{% for file in item['file_list'] %}
-								<div class="col-md-2">
-									<a class="btn btn--hexagon-secondary" href="assets/examples/
-									{% if 'cbor' in file %}
-									cbor
-									{% elif 'json' in file %}
-									json
-									{% elif 'xlsx' in file %}
-									xlsx
-									{% elif 'yaml' in file %}
-									yaml
-									{% elif 'yml' in file %}
-									yaml
-									{% endif %}
-									/{{ file }}">
-										{% if 'cbor' in file %}
-										cbor
-										{% elif 'json' in file %}
-										json
-										{% elif 'xlsx' in file %}
-										xlsx
-										{% elif 'yaml' in file %}
-										yaml
-										{% elif 'yml' in file %}
-										yaml
-										{% endif %}
+								{% for file_type in content[RS]['files'][file] %}
+								<div class="col-md-1.25">
+									<a class="btn btn--hexagon-secondary" href="assets/examples/{{ file_type }}/{{RS}}/{{ content[RS]['files'][file][file_type] }}">
+										{{ file_type }}
 									</a>
 								</div>
 								{% endfor %}
