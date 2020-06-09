@@ -60,3 +60,8 @@ def set_dir(path):
     if not os.path.isdir(path):
         os.mkdir(path)
     return path
+
+def view_metaschema(input_file_path, output):
+    metaschema = load(input_file_path)
+    print(metaschema)
+
