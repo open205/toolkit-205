@@ -84,3 +84,13 @@ def objects_near_equal(object1, object2, rel_tol=1e-9, abs_tol=0.0):
         if not (object1 == object2):
             return False
     return True
+
+def iterdict(d, dict_as_list, level=0):
+    for key in d:
+        preamble = 'Level ' + str(level) + ' ' + '  '*level + ' ' + key
+        if isinstance(d[key], dict):
+            dict_as_list.append(preamble + ': [dict]')
+            iterdict(d[key], dict_as_list, level+1)
+        else:
+            dict_as_list.append(preamble + ': ' + str(d[key]))
+

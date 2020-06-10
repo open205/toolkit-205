@@ -3,6 +3,7 @@ import json
 import cbor2
 import yaml
 from .xlsx import template, A205XLSXTree
+from .util import iterdict
 
 def get_extension(file):
     return os.path.splitext(file)[1]
@@ -61,7 +62,13 @@ def set_dir(path):
         os.mkdir(path)
     return path
 
-def view_metaschema(input_file_path, output):
+def view_metaschema(input_file_path, output_file_path):
     metaschema = load(input_file_path)
-    print(metaschema)
+    d_list = list()
+    iterdict(metaschema, d_list)
+    for item in d_list:
+        print(item)
+    current_ext = get_extension(output_file_path)
+    output_file = output_file_path[:-len(current_ext)] + '.json'
+    dump(metaschema, output_file)
 

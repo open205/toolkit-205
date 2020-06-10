@@ -97,7 +97,7 @@ help_text = short_help_text
 @click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
 @click.option('-o', '--output', help="Output path with extension.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
 def viewmeta(input, output):
-    tk205.view_metaschema(input.name, output)
+    tk205.view_metaschema(input.name, output.name)
 
 if __name__ == '__main__':
     cli()
