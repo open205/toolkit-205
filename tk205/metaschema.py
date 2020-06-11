@@ -38,10 +38,13 @@ class Enumeration:
         entry = OrderedDict()
         z = list(zip(*self.enumerants))
         enums = {'type': 'string', 
-                 'enum' : z[0], 
-                 'descriptions' : z[1], 
-                 'enum_text' : z[2], 
-                 'notes' : z[3]}
+                 'enum' : z[0]}
+        if any(z[1]):
+            enums['descriptions'] = z[1]
+        if any(z[2]):
+            enums['enum_text'] = z[2]
+        if any(z[3]):
+            enums['notes'] = z[3]
         entry[self.name] = enums
         return entry
 
