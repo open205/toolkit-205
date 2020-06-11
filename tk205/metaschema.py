@@ -1,7 +1,8 @@
 import json
 import yaml
-from tk205.file_io import load
+from tk205.file_io import load, dump
 import os
+from collections import OrderedDict
 
 # -------------------------------------------------------------------------------------------------
 class DataElement:
@@ -30,41 +31,19 @@ class Enumeration:
         self.description = description
         self.enumerants = list() # list of tuple:[value, description, display_text, notes]
 
-    def __str__(self):
-        key_line = '"' + self.name + '": {\n'
-        conclusion = '}'
-        descr = '\t"description":' + self.description + ',\n' if self.description else ''
-        typ   = '\t"type": "string",\n'
-        enum = ''
-        enumtext = ''
-        enumdesc = ''
-        notes = ''
-        z = list(zip(*self.enumerants))
-        if len(z) == 4:
-            if any(z[0]):
-                enum  = '\t"enum: [\n'
-                for e in z[0]:
-                    enum += 2*'\t' + '"' + (e if e else '') + '",\n'
-                enum += 2*'\t' + '],\n'
-            if any(z[1]):
-                enumdesc  = '\t"descriptions: [\n'
-                for e in z[1]:
-                    enumdesc += 2*'\t' + '"' + (e if e else '') + '",\n'
-                enumdesc += 2*'\t' + '],\n'
-            if any(z[2]):
-                enumtext  = '\t"enum_text: [\n'
-                for e in z[2]:
-                    enumtext += 2*'\t' + '"' + (e if e else '') + '",\n'
-                enumtext += 2*'\t' + '],\n'
-            if any(z[3]):
-                notes  = '\t"notes: [\n'
-                for e in z[3]:
-                    notes += 2*'\t' + '"' + (e if e else '') + '",\n'
-                notes += 2*'\t' + '],\n'
-        return (key_line + descr + typ + enum + enumtext + enumdesc + notes + conclusion)
-
     def add_enumerator(self, value, description=None, display_text=None, notes=None):
         self.enumerants.append((value, description, display_text, notes))
+
+    def create_dictionary_entry(self):
+        entry = OrderedDict()
+        z = list(zip(*self.enumerants))
+        enums = {'type': 'string', 
+                 'enum' : z[0], 
+                 'descriptions' : z[1], 
+                 'enum_text' : z[2], 
+                 'notes' : z[3]}
+        entry[self.name] = enums
+        return entry
 
 # -------------------------------------------------------------------------------------------------
 class JSON_translator:
@@ -86,6 +65,10 @@ class JSON_translator:
                 self._contents[base_level_tag]['type'] == 'Enumeration'):
                 self._process_enumerations(base_level_tag, 
                                            self._contents[base_level_tag]['Enumerators'])
+            if ('type' in self._contents[base_level_tag] and 
+                self._contents[base_level_tag]['type'] == 'DataGroup'):
+                self._process_datagroup(base_level_tag, 
+                                           self._contents[base_level_tag]['Data Elements'])
 
     def _process_enumerations(self, name_key, subdict):
         definition = Enumeration(name_key)
@@ -100,13 +83,15 @@ class JSON_translator:
                 definition.add_enumerator(key)
         self._enumerations.append(definition)
 
+    def _process_datagroup(self, name_key, subdict):
+        pass
 
 # -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     j = JSON_translator()
     j.load_metaschema(os.path.join('..', 'schema-205', 'src', 'ASHRAE205.schema.yml'))
-    for e in j._enumerations:
-        print(e)
+    for i, e in enumerate(j._enumerations):
+        dump(e.create_dictionary_entry(), 'out'+str(i)+'.json')
 
 
 
