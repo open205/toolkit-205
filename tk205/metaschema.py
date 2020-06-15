@@ -3,27 +3,29 @@ import yaml
 from tk205.file_io import load, dump
 import os
 from collections import OrderedDict
-
-# -------------------------------------------------------------------------------------------------
-class DataElement:
-
-    def __init__(self):
-        self._Description = ''
-        self._DataType    = 'String'
-        self._Units       = 'h-ft2-F/Btu'
-        self._Range       = '>0'
-        self._Required    = True
-        self._Notes       = ''
-
+import re
+import enum
 
 # -------------------------------------------------------------------------------------------------
 class DataGroup:
+
+    class Index(enum.IntEnum):
+        name = 0
+        descriptor = 1
+        datatype = 2
+        required = 3
+        notes = 4
+        units = 5
+        minimum = 6
+        maximum = 7
 
     def __init__(self, name):
         self._name = name
         self._data_elements = list()
 
+
     def add_data_element(self, element_name, **kwargs):
+        ''' Construct a list of descriptors associated with a data element. '''
         desc = None
         datatype = None
         required = False
@@ -52,12 +54,13 @@ class DataGroup:
             for r in ranges:
                 try:
                     if '>' in r:
-                        minimum = float(r)
+                        minimum = r 
                     elif '<' in r:
-                        maximum = float(r)
+                        maximum = r
                 except ValueError:
                     pass
 
+        # Append list with order preserved as prescribed in enum Index
         self._data_elements.append((element_name,
                                     desc, 
                                     datatype, 
@@ -67,25 +70,46 @@ class DataGroup:
                                     minimum,
                                     maximum))
 
+
     def create_dictionary_entry(self):
+        ''' From the stored list of data elements, create data group dictionary entry.'''
         entry = OrderedDict()
         elements = {'type': 'string',
                     'properties' : dict()}
         for e in self._data_elements:
-            elements['properties'][e[0]] = {'description' : e[1]}
-            if e[2]:
-                elements['properties'][e[0]]['type'] = e[2]
-            if e[4]:
-                elements['properties'][e[0]]['notes'] = e[4]
-            if e[5]:
-                elements['properties'][e[0]]['units'] = e[5]
-            if e[6]:
-                elements['properties'][e[0]]['minimum'] = e[6]
-            if e[7]:
-                elements['properties'][e[0]]['maximum'] = e[7]
+            elements['properties'][e[self.Index.name]] = {'description' : e[self.Index.descriptor]}
+
+            if e[self.Index.datatype]:
+                elements['properties'][e[self.Index.name]]['type'] = e[self.Index.datatype]
+
+            if e[self.Index.notes]:
+                elements['properties'][e[self.Index.name]]['notes'] = e[self.Index.notes]
+
+            if e[self.Index.units]:
+                elements['properties'][e[self.Index.name]]['units'] = e[self.Index.units]
+
+            if e[6] is not None: # Explicitly check for "not None," because zero is allowed
+                minimum = (float(re.findall(r'\d+', e[self.Index.minimum])[0]) 
+                           if e[self.Index.datatype] == 'number' 
+                           else int(re.findall(r'\d+', e[self.Index.minimum])[0]))
+                if '=' not in e[self.Index.minimum]:
+                    elements['properties'][e[self.Index.name]]['exclusiveMinimum'] = minimum
+                else:
+                    elements['properties'][e[self.Index.name]]['minimum'] = minimum
+
+            if e[7] is not None: # Explicitly check for "not None," because zero is allowed
+                maximum = (float(re.findall(r'\d+', e[self.Index.maximum])[0]) 
+                           if e[self.Index.datatype] == 'number' 
+                           else int(re.findall(r'\d+', e[self.Index.maximum])[0]))
+                if '=' not in e[7]:
+                    elements['properties'][e[self.Index.name]]['exclusiveMaximum'] = maximum
+                else:
+                    elements['properties'][e[self.Index.name]]['maximum'] = maximum
+
         z = list(zip(*self._data_elements))
         if any(z[3]):
-            elements['required'] = [reqd_item for reqd_item in z[0] if z[3]]
+            elements['required'] = ([reqd_item for reqd_item in z[self.Index.name] 
+                                    if z[self.Index.required]])
 
         entry[self._name] = elements
         return entry
@@ -175,7 +199,7 @@ class JSON_translator:
 # -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     j = JSON_translator()
-    sch = j.load_metaschema(os.path.join('..', 'schema-205', 'src', 'ASHRAE205.schema.yml'))
+    sch = j.load_metaschema(os.path.join('..', 'schema-205', 'src', 'RS0001.schema.yml'))
     dump(sch, 'out.json')
     # for i, e in enumerate(j._enumerations):
     #     dump(e.create_dictionary_entry(), 'out'+str(i)+'.json')
