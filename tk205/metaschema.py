@@ -24,95 +24,86 @@ class DataGroup:
         self._data_elements = list()
 
 
-    def add_data_element(self, element_name, **kwargs):
-        ''' Construct a list of descriptors associated with a data element. '''
-        desc = None
-        datatype = None
-        required = False
-        notes = None
-        units = None
-        minimum = None
-        maximum = None
+    def add_data_group(self, group_name, group_subdict):
+        elements = {'type': 'object',
+                    'properties' : dict(),
+                    'additionalProperties' : False}
+        required = list()
+        for e in group_subdict:
+            element = group_subdict[e]
+            if 'Description' in element:
+                elements['properties'][e] = {'description' : element['Description']}
+            if 'Data Type' in element:
+                self._create_type_entry(group_subdict[e], elements['properties'][e])
+            if 'Units' in element:
+                elements['properties'][e]['units'] = element['Units']
+            if 'Notes' in element:
+                elements['properties'][e]['notes'] = element['Notes']
+            if 'Required' in element:
+                required.append(e)
+            elements['required'] = required
 
-        if kwargs and 'description' in kwargs and kwargs['description'] is not None:
-            desc = kwargs['description']
-        if kwargs and 'data_type' in kwargs:
-            if kwargs['data_type'] == 'String':
-                datatype = 'string'
-            elif kwargs['data_type'] == 'Numeric':
-                datatype = 'number'
-            elif kwargs['data_type'] == 'Integer':
-                datatype = 'integer'
-        if kwargs and 'required' in kwargs and kwargs['required'] is not None:
-            required = kwargs['required']
-        if kwargs and 'notes' in kwargs:
-            notes = kwargs['notes']
-        if kwargs and 'units' in kwargs:
-            units = kwargs['units']
-        if kwargs and 'range' in kwargs and kwargs['range'] is not None:
-            ranges = kwargs['range'].split(',')
+        return {group_name : elements}
+
+
+    def _create_type_entry(self, parent_dict, target_dict):
+        try:
+            # If the type is an array, extract the surrounding [] first (using non-greedy qualifier "?")
+            m = re.match(r'\[(.*?)\]', parent_dict['Data Type'])
+            if m:
+                target_dict['type'] = 'array'
+                target_dict['items'] = dict()
+                target_dict['items']['type'] = self._get_simple_type(m.group(1))
+                self._get_simple_minmax(parent_dict['Range'], target_dict['items'])
+                if len(m.groups()) > 1:
+                    target_dict['minItems'] = int(m.group(2))
+                    target_dict['maxItems'] = int(m.group(2))
+                else:
+                    target_dict['minItems'] = 1
+            else:
+                target_dict['type'] = self._get_simple_type(parent_dict['Data Type'])
+                self._get_simple_minmax(parent_dict['Range'], target_dict)
+        except KeyError:
+            # some good error msg for two keys, esp. Range
+            pass
+
+
+    def _get_simple_type(self, type_str):
+        m = re.match(r'\{(.*)\}', type_str)
+        if m: # Enum type
+            internal_type = m.group(1)
+            return internal_type
+        if type_str == 'String':
+            return 'string'
+        elif type_str == 'Numeric':
+            return 'number'
+        elif type_str == 'Integer':
+            return 'integer'
+        elif type_str == 'Boolean':
+            return 'boolean'
+        else:
+            # Validation error
+            return None
+
+
+    def _get_simple_minmax(self, range_str, target_dict):
+        if range_str is not None:
+            ranges = range_str.split(',')
+            minimum=None
+            maximum=None
             for r in ranges:
                 try:
+                    numerical_value = re.findall(r'\d+', r)[0]
                     if '>' in r:
-                        minimum = r 
+                        minimum = (float(numerical_value) if target_dict['type'] == 'number' else int(numerical_value))
+                        mn = 'exclusiveMinimum' if '=' not in r else 'minimum'
+                        target_dict[mn] = minimum
                     elif '<' in r:
-                        maximum = r
+                        maximum = (float(numerical_value) if target_dict['type'] == 'number' else int(numerical_value))
+                        mx = 'exclusiveMaximum' if '=' not in r else 'maximum'
+                        target_dict[mx] = maximum
                 except ValueError:
                     pass
-
-        # Append list with order preserved as prescribed in enum Index
-        self._data_elements.append((element_name,
-                                    desc, 
-                                    datatype, 
-                                    required, 
-                                    notes, 
-                                    units, 
-                                    minimum,
-                                    maximum))
-
-
-    def create_dictionary_entry(self):
-        ''' From the stored list of data elements, create data group dictionary entry.'''
-        entry = OrderedDict()
-        elements = {'type': 'string',
-                    'properties' : dict()}
-        for e in self._data_elements:
-            elements['properties'][e[self.Index.name]] = {'description' : e[self.Index.descriptor]}
-
-            if e[self.Index.datatype]:
-                elements['properties'][e[self.Index.name]]['type'] = e[self.Index.datatype]
-
-            if e[self.Index.notes]:
-                elements['properties'][e[self.Index.name]]['notes'] = e[self.Index.notes]
-
-            if e[self.Index.units]:
-                elements['properties'][e[self.Index.name]]['units'] = e[self.Index.units]
-
-            if e[6] is not None: # Explicitly check for "not None," because zero is allowed
-                minimum = (float(re.findall(r'\d+', e[self.Index.minimum])[0]) 
-                           if e[self.Index.datatype] == 'number' 
-                           else int(re.findall(r'\d+', e[self.Index.minimum])[0]))
-                if '=' not in e[self.Index.minimum]:
-                    elements['properties'][e[self.Index.name]]['exclusiveMinimum'] = minimum
-                else:
-                    elements['properties'][e[self.Index.name]]['minimum'] = minimum
-
-            if e[7] is not None: # Explicitly check for "not None," because zero is allowed
-                maximum = (float(re.findall(r'\d+', e[self.Index.maximum])[0]) 
-                           if e[self.Index.datatype] == 'number' 
-                           else int(re.findall(r'\d+', e[self.Index.maximum])[0]))
-                if '=' not in e[7]:
-                    elements['properties'][e[self.Index.name]]['exclusiveMaximum'] = maximum
-                else:
-                    elements['properties'][e[self.Index.name]]['maximum'] = maximum
-
-        z = list(zip(*self._data_elements))
-        if any(z[3]):
-            elements['required'] = ([reqd_item for reqd_item in z[self.Index.name] 
-                                    if z[self.Index.required]])
-
-        entry[self._name] = elements
-        return entry
 
 
 # -------------------------------------------------------------------------------------------------
@@ -139,33 +130,35 @@ class Enumeration:
         entry[self.name] = enums
         return entry
 
+
 # -------------------------------------------------------------------------------------------------
 class JSON_translator:
     def __init__(self):
-        self._heading = {"$schema": "http://json-schema.org/draft-07/schema#",
-                   "title": "Liquid-Cooled Chiller",
-                   "description": "Schema for ASHRAE 205 annex RS0001: Liquid-Cooled Chiller",
-                   "definitions" : None}
-        self._data_groups = list()
-        self._enumerations = list()
-        self._ref_declarations = list()
+        self._schema = {'$schema': 'http://json-schema.org/draft-07/schema#',
+                   'title': 'Liquid-Cooled Chiller',
+                   'description': 'Schema for ASHRAE 205 annex RS0001: Liquid-Cooled Chiller',
+                   'definitions' : dict()}
 
     def load_metaschema(self, input_file_path):
+        ''' '''
         self._contents = load(input_file_path)
         # Iterate through the dictionary, looking for fixed types
-        sch = dict()
+        sch = self._schema['definitions']
         for base_level_tag in self._contents:
             # try/except here instead of checking for 'type'?
-            if ('type' in self._contents[base_level_tag] and 
-                self._contents[base_level_tag]['type'] == 'Enumeration'):
+            if ('Object Type' in self._contents[base_level_tag] and 
+                self._contents[base_level_tag]['Object Type'] == 'Enumeration'):
                 sch = {**sch, **(self._process_enumeration(base_level_tag))}
-            if ('type' in self._contents[base_level_tag] and 
-                self._contents[base_level_tag]['type'] == 'DataGroup'):
-                sch = {**sch, **(self._process_datagroup(base_level_tag))}
-        return sch
+            if ('Object Type' in self._contents[base_level_tag] and 
+                self._contents[base_level_tag]['Object Type'] == 'Data Group'):
+                #sch = {**sch, **(self._process_datagroup(base_level_tag))}
+                dg = DataGroup(base_level_tag)
+                sch = {**sch, **(dg.add_data_group(base_level_tag, self._contents[base_level_tag]['Data Elements']))}
+        self._schema['definitions'] = sch
+        return self._schema
 
     def _process_enumeration(self, name_key):
-        ''' Collect all Enumerators in one Enumeration block. '''
+        ''' Collect all Enumerators in an Enumeration block. '''
         definition = Enumeration(name_key)
         enums = self._contents[name_key]['Enumerators']
         for key in enums:
@@ -201,8 +194,6 @@ if __name__ == '__main__':
     j = JSON_translator()
     sch = j.load_metaschema(os.path.join('..', 'schema-205', 'src', 'RS0001.schema.yml'))
     dump(sch, 'out.json')
-    # for i, e in enumerate(j._enumerations):
-    #     dump(e.create_dictionary_entry(), 'out'+str(i)+'.json')
 
 
 
