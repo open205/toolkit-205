@@ -5,23 +5,14 @@ import os
 from collections import OrderedDict
 import re
 import enum
+import sys
 
 # -------------------------------------------------------------------------------------------------
 class DataGroup:
 
-    class Index(enum.IntEnum):
-        name = 0
-        descriptor = 1
-        datatype = 2
-        required = 3
-        notes = 4
-        units = 5
-        minimum = 6
-        maximum = 7
-
-    def __init__(self, name):
+    def __init__(self, name, ref_list=None):
         self._name = name
-        self._data_elements = list()
+        self._refs = ref_list
 
 
     def add_data_group(self, group_name, group_subdict):
@@ -67,20 +58,21 @@ class DataGroup:
                 target_dict[k] = v
                 self._get_simple_minmax(parent_dict['Range'], target_dict)
         except KeyError as ke:
-            print('KeyError; no key exists called', ke)
-            # some better error msg for two keys, esp. Range
+            #print('KeyError; no key exists called', ke)
+            pass
 
 
     def _get_simple_type(self, type_str):
-        m = re.match(r'\{(.*)\}', type_str)
-        if m: # Definition type
-            internal_type = m.group(1)
+        enum_or_def = r'(\{|\<)(.*)(\}|\>)'
+
+        m = re.match(enum_or_def, type_str)
+        if m:
+            internal_type = m.group(2)
+            for key in self._refs:
+                if internal_type in self._refs[key]:
+                    internal_type = key + '.schema.json#/definitions/' + internal_type
             return ('$ref', internal_type)
-        else:
-            m = re.match(r'\<(.*)\>', type_str)
-            if m: # Enum  type
-                internal_type = m.group(1)
-                return ('$ref', internal_type)
+
         if type_str == 'String':
             return ('type', 'string')
         elif type_str == 'Numeric':
@@ -91,7 +83,7 @@ class DataGroup:
             return ('type', 'boolean')
         else:
             # Validation error
-            print(type_str)
+            print('Type not processed:', type_str)
             return (None, None)
 
 
@@ -118,75 +110,97 @@ class DataGroup:
 # -------------------------------------------------------------------------------------------------
 class Enumeration:
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, name, description=None):
+        self._name = name
+        self._description = description
         self._enumerants = list() # list of tuple:[value, description, display_text, notes]
+        self.entry = dict()
+        self.entry[self._name] = dict()
+        self.entry[self._name]['description'] = self._description
 
     def add_enumerator(self, value, description=None, display_text=None, notes=None):
         self._enumerants.append((value, description, display_text, notes))
 
     def create_dictionary_entry(self):
-        entry = OrderedDict()
         z = list(zip(*self._enumerants))
         enums = {'type': 'string', 
                  'enum' : z[0]}
-        if any(z[1]):
-            enums['descriptions'] = z[1]
         if any(z[2]):
             enums['enum_text'] = z[2]
+        if any(z[1]):
+            enums['descriptions'] = z[1]
         if any(z[3]):
             enums['notes'] = z[3]
-        entry[self.name] = enums
-        return entry
+        self.entry[self._name] = {**self.entry[self._name], **enums}
+        return self.entry
 
 
 # -------------------------------------------------------------------------------------------------
 class JSON_translator:
     def __init__(self):
         self._schema = {'$schema': 'http://json-schema.org/draft-07/schema#',
-                   'title': 'Liquid-Cooled Chiller',
-                   'description': 'Schema for ASHRAE 205 annex RS0001: Liquid-Cooled Chiller',
-                   'definitions' : dict()}
+                        'title': None,
+                        'description': None,
+                        'definitions' : dict()}
+        self._references = dict()
 
-    def load_metaschema(self, input_file_path):
+
+    def load_metaschema(self, input_rs):
         ''' '''
+        self._input_rs = input_rs
+        input_file_path = os.path.join('..', 'schema-205', 'src', input_rs + '.schema.yml')
         self._contents = load(input_file_path)
-        # Iterate through the dictionary, looking for fixed types
-        sch = self._schema['definitions']
+        sch = dict()
+        # Iterate through the dictionary, looking for known types
         for base_level_tag in self._contents:
-            # try/except here instead of checking for 'type'?
-            if ('Object Type' in self._contents[base_level_tag] and 
-                self._contents[base_level_tag]['Object Type'] == 'Enumeration'):
-                sch = {**sch, **(self._process_enumeration(base_level_tag))}
-            if ('Object Type' in self._contents[base_level_tag] and 
-                self._contents[base_level_tag]['Object Type'] == 'Data Group'):
-                dg = DataGroup(base_level_tag)
-                sch = {**sch, **(dg.add_data_group(base_level_tag, 
-                                                   self._contents[base_level_tag]['Data Elements']))}
-            if ('Object Type' in self._contents[base_level_tag] and 
-                self._contents[base_level_tag]['Object Type'] == 'Performance Map'):
-                dg = DataGroup(base_level_tag)
-                sch = {**sch, **(dg.add_data_group(base_level_tag, 
-                                                   self._contents[base_level_tag]['Data Elements']))}
-            if ('Object Type' in self._contents[base_level_tag] and 
-                self._contents[base_level_tag]['Object Type'] == 'Grid Variables'):
-                dg = DataGroup(base_level_tag)
-                sch = {**sch, **(dg.add_data_group(base_level_tag, 
-                                                   self._contents[base_level_tag]['Data Elements']))}
-            if ('Object Type' in self._contents[base_level_tag] and 
-                self._contents[base_level_tag]['Object Type'] == 'Lookup Variables'):
-                dg = DataGroup(base_level_tag)
-                sch = {**sch, **(dg.add_data_group(base_level_tag, 
-                                                   self._contents[base_level_tag]['Data Elements']))}
+            if 'Object Type' in self._contents[base_level_tag]:
+                obj_type = self._contents[base_level_tag]['Object Type']
+                if obj_type == 'Meta':
+                    self._load_meta_info(self._contents[base_level_tag])
+                if obj_type == 'Enumeration':
+                    sch = {**sch, **(self._process_enumeration(base_level_tag))}
+                if obj_type == 'Data Group':
+                    dg = DataGroup(base_level_tag, self._references)
+                    sch = {**sch, **(dg.add_data_group(base_level_tag, 
+                                     self._contents[base_level_tag]['Data Elements']))}
+                if obj_type == 'Performance Map':
+                    dg = DataGroup(base_level_tag, self._references)
+                    sch = {**sch, **(dg.add_data_group(base_level_tag, 
+                                     self._contents[base_level_tag]['Data Elements']))}
+                if obj_type == 'Grid Variables':
+                    dg = DataGroup(base_level_tag, self._references)
+                    sch = {**sch, **(dg.add_data_group(base_level_tag, 
+                                     self._contents[base_level_tag]['Data Elements']))}
+                if obj_type == 'Lookup Variables':
+                    dg = DataGroup(base_level_tag, self._references)
+                    sch = {**sch, **(dg.add_data_group(base_level_tag, 
+                                     self._contents[base_level_tag]['Data Elements']))}
         self._schema['definitions'] = sch
         return self._schema
 
+
+    def _load_meta_info(self, schema_section):
+        self._schema['title'] = schema_section['Title']
+        self._schema['description'] = schema_section['Description']
+        # Create a dictionary of available external objects for reference
+        if 'References' in schema_section:
+            refs = schema_section['References']
+            refs.append(self._input_rs)
+            for ref_file in schema_section['References']:
+                ext_dict = load(os.path.join('..', 'schema-205', 'src', ref_file + '.schema.yml'))
+                external_objects = list()
+                for base_item in ext_dict:
+                    external_objects.append(base_item)
+                self._references[ref_file] = external_objects
+
+
     def _process_enumeration(self, name_key):
         ''' Collect all Enumerators in an Enumeration block. '''
-        definition = Enumeration(name_key)
         enums = self._contents[name_key]['Enumerators']
+        description = self._contents[name_key].get('Description')
+        definition = Enumeration(name_key, description)
         for key in enums:
-            try: #if enums[key]:
+            try:
                 descr = enums[key]['Description']  if 'Description'  in enums[key] else None
                 displ = enums[key]['Display Text'] if 'Display Text' in enums[key] else None
                 notes = enums[key]['Notes']        if 'Notes'        in enums[key] else None
@@ -199,7 +213,7 @@ class JSON_translator:
 # -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     j = JSON_translator()
-    sch = j.load_metaschema(os.path.join('..', 'schema-205', 'src', 'RS0001.schema.yml'))
+    sch = j.load_metaschema('RS0001')
     dump(sch, 'out.json')
 
 
