@@ -148,7 +148,7 @@ class JSON_translator:
     def load_metaschema(self, input_rs):
         ''' '''
         self._input_rs = input_rs
-        input_file_path = os.path.join('..', 'schema-205', 'src', input_rs + '.schema.yml')
+        input_file_path = os.path.join('..', 'schema-205', 'src', input_rs + '.schema.yaml')
         self._contents = load(input_file_path)
         sch = dict()
         # Iterate through the dictionary, looking for known types
@@ -187,7 +187,7 @@ class JSON_translator:
             refs = schema_section['References']
             refs.append(self._input_rs)
             for ref_file in schema_section['References']:
-                ext_dict = load(os.path.join('..', 'schema-205', 'src', ref_file + '.schema.yml'))
+                ext_dict = load(os.path.join('..', 'schema-205', 'src', ref_file + '.schema.yaml'))
                 external_objects = list()
                 for base_item in ext_dict:
                     external_objects.append(base_item)
