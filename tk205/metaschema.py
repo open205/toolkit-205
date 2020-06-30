@@ -31,7 +31,8 @@ class DataGroup:
                 elements['properties'][e]['notes'] = element['Notes']
             if 'Required' in element:
                 required.append(e)
-            elements['required'] = required
+            if required:
+                elements['required'] = required
             elements['additionalProperties'] = False
 
         return {group_name : elements}
@@ -143,6 +144,7 @@ class JSON_translator:
                         'description': None,
                         'definitions' : dict()}
         self._references = dict()
+        self._datatypes = list()
 
 
     def load_metaschema(self, input_rs):
@@ -157,6 +159,10 @@ class JSON_translator:
                 obj_type = self._contents[base_level_tag]['Object Type']
                 if obj_type == 'Meta':
                     self._load_meta_info(self._contents[base_level_tag])
+                if obj_type == 'Data Type' and 'Is Regex' in self._contents[base_level_tag]:
+                    sch = {**sch, **({base_level_tag : {"type":"string", "regex":True}})}
+                elif obj_type == 'Data Type':
+                    pass
                 if obj_type == 'Enumeration':
                     sch = {**sch, **(self._process_enumeration(base_level_tag))}
                 if obj_type == 'Data Group':
@@ -202,7 +208,8 @@ class JSON_translator:
         for key in enums:
             try:
                 descr = enums[key]['Description']  if 'Description'  in enums[key] else None
-                displ = enums[key]['Display Text'] if 'Display Text' in enums[key] else None
+                displ = (enums[key]['Display Text'] if 'Display Text' in enums[key] else
+                        (descr if descr else None))
                 notes = enums[key]['Notes']        if 'Notes'        in enums[key] else None
                 definition.add_enumerator(key, descr, displ, notes)
             except TypeError: # key's value is None
@@ -213,7 +220,7 @@ class JSON_translator:
 # -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     j = JSON_translator()
-    sch = j.load_metaschema('RS0001')
+    sch = j.load_metaschema('ASHRAE205')
     dump(sch, 'out.json')
 
 
