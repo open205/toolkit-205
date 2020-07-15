@@ -641,8 +641,8 @@ class A205XLSXTree:
             for item in content:
                 if type(content[item]) == dict:
                     schema_node = parent.get_schema_node()
-                    if 'RS' in schema_node:
-                        parent.inner_rs = schema_node['RS']
+                    if 'RS_ID' in schema_node:
+                        parent.inner_rs = schema_node['RS_ID']
 
                     if "performance_map" in item:
                         sheet_ref = unique_name_with_index(item, self.sheets)
@@ -697,8 +697,8 @@ class A205XLSXTree:
         schema_node = node.get_schema_node()
 
         # Handle nested RSs
-        if 'RS' in schema_node:
-            node.inner_rs = schema_node['RS']
+        if 'RS_ID' in schema_node:
+            node.inner_rs = schema_node['RS_ID']
 
         # typical nodes
         if 'properties' in schema_node:
