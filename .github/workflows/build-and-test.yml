@@ -29,5 +29,5 @@ jobs:
       - name: Upload web content
         uses: actions/upload-artifact@v2
         with:
-          name: markdown-tables-${{ matrix.os }}
+          name: web-content-${{ matrix.os }}
           path: build/web
