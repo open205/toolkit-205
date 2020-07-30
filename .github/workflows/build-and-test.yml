@@ -24,8 +24,10 @@ jobs:
         run: python -m pip install pipenv
       - name: Install project
         run: pipenv install --dev
-      - name: Test
-        run: pipenv run pytest -v
-      - name: Generate web content
-        run: pipenv run python web/web-content.py
-
+      - name: Build and test
+        run: pipenv run doit
+      - name: Upload web content
+        uses: actions/upload-artifact@v2
+        with:
+          name: markdown-tables-${{ matrix.os }}
+          path: build/web
