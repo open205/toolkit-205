@@ -102,7 +102,7 @@ def create_files(web_dir):
 
     # schema
     schema_dir = set_dir(os.path.join(assets_dir, 'schema'))
-    copy_tree('schema-205/schema', schema_dir)
+    copy_tree(os.path.join('schema-205','build','schema'), schema_dir)
 
 
 def clone():
@@ -133,7 +133,7 @@ def generate(web_dir):
     jinja_templates_dir = os.path.join(root_dir, 'templates')
     env = Environment( loader = FileSystemLoader(jinja_templates_dir) )
 
-    schema_directory = os.path.join(root_dir, "..", "schema-205", "schema")
+    schema_directory = os.path.join(root_dir, "..", "schema-205", "build", "schema")
     examples_directory = os.path.join(web_dir, "assets", "examples")
     templates_directory = os.path.join(web_dir, "assets", "templates")
 

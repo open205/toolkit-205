@@ -5,8 +5,9 @@ build/
 .eggs/
 *.egg-info/
 */.vscode/
-*/__pycache__
+__pycache__/
 env/
 .vscode/
 .pytest_cache/
 sandbox/
+.doit.db.db

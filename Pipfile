@@ -6,11 +6,11 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 pytest = "*"
-pipenv = "*"
 atomicwrites = "*"
 Jinja2 = "*"
-gitpython = "*"
 markdown = "*"
+doit = "*"
+gitpython = "*"
 
 [packages]
 click = "*"
@@ -18,5 +18,5 @@ jsonschema = "*"
 cbor2 = "*"
 openpyxl = "*"
 pyyaml = "*"
-
 tk205 = {editable = true,path = "."}
+schema205 = {editable = true,path = "schema-205"}

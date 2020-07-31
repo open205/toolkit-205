@@ -12,8 +12,6 @@ This standard applies to performance data for any HVAC&R or other facility syste
 
 ASHRAE Standard 205P defines common data models and serialization formats for facility equipment performance data needed for engineering applications such as energy simulation.  The formats allow automated exchange among data sources (manufacturers), simulation models, and other engineering applications. The formats and procedures specified in the standard are developed by SPC (Standard Project Committee) 205 under ASHRAE and ANSI consensus processes. SPC-205 membership includes equipment manufacturers, application software developers, and engineering practitioners.
 
-Review copies of Standard 205P are available until July 29, 2020 at [ASHRAE’s online review portal](https://osr.ashrae.org/default.aspx).
-
 Standard 205 defines the term *representation* to mean a Concise Binary Object Representation (CBOR) file conforming to a JSON schema defined by a human-readable (text) document called a *representation specification*.  Representation specifications are included in Standard 205P appended as an open-ended set.
 
 Standard 205 structure and application can be visualized as follows:
