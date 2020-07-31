@@ -5,9 +5,8 @@ import json
 import re
 import enum
 import string
-from .__init__ import validate
-from .schema import A205Schema
-from .util import process_grid_set, unique_name_with_index, get_rs_index
+from schema205 import A205Schema
+from schema205 import process_grid_set, unique_name_with_index, get_rs_index
 
 class SheetType(enum.Enum):
     FLAT = 0
@@ -595,7 +594,7 @@ class A205XLSXTree:
     def __init__(self):
         self.content = {}
         self.rs = ""
-        schema_path = os.path.join(os.path.dirname(__file__),'..','schema-205',"schema","ASHRAE205.schema.json")
+        schema_path = os.path.join(os.path.dirname(__file__),'..','schema-205',"build","schema","ASHRAE205.schema.json")
         self.schema = A205Schema(schema_path)
         self.root_node = None
         self.sheets = []
@@ -641,8 +640,8 @@ class A205XLSXTree:
             for item in content:
                 if type(content[item]) == dict:
                     schema_node = parent.get_schema_node()
-                    if 'RS' in schema_node:
-                        parent.inner_rs = schema_node['RS']
+                    if 'RS_ID' in schema_node:
+                        parent.inner_rs = schema_node['RS_ID']
 
                     if "performance_map" in item:
                         sheet_ref = unique_name_with_index(item, self.sheets)
@@ -697,8 +696,8 @@ class A205XLSXTree:
         schema_node = node.get_schema_node()
 
         # Handle nested RSs
-        if 'RS' in schema_node:
-            node.inner_rs = schema_node['RS']
+        if 'RS_ID' in schema_node:
+            node.inner_rs = schema_node['RS_ID']
 
         # typical nodes
         if 'properties' in schema_node:
@@ -811,3 +810,13 @@ def template(repspec, output_path, **kwargs):
     '''
     tree = A205XLSXTree()
     tree.template(repspec, output_path, **kwargs)
+
+def generate_templates(output_dir, config):
+    for rs, templates in config.items():
+        for t in templates:
+            file_name_components = [rs]
+            if t["file-name-suffix"]:
+                file_name_components.append(t["file-name-suffix"])
+            file_name_components.append("template.a205.xlsx")
+            file_name = '-'.join(file_name_components)
+            template(rs,os.path.join(output_dir,file_name), **t["keywords"])

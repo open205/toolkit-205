@@ -90,5 +90,14 @@ help_text = short_help_text
 def export(syntax, input, output):
     print("Export functionality not yet implemented.")
 
+# View meta-schema
+short_help_text = "Create human-readable heirarchy from schema metaschema."
+help_text = short_help_text
+@cli.command('viewmeta', short_help=short_help_text, help=help_text, hidden=True)
+@click.option('-i', '--input', help="Input file with extension.", type=click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
+@click.option('-o', '--output', help="Output path with extension.",  type=click.File(mode='w', encoding=None, errors='strict', lazy=None, atomic=False), required=True)
+def viewmeta(input, output):
+    tk205.view_metaschema(input.name, output.name)
+
 if __name__ == '__main__':
     cli()
