@@ -51,11 +51,14 @@ Install `pipenv` through `pip`:
 
 `pip install pipenv`
 
-With `pipenv` installed, you may now create the virtual environment (defined in the `Pipfile`) needed to install and test `tk205`:
+With `pipenv` installed, you may now create the virtual environment (defined in the `Pipfile`) where you will install the project and developer dependencies:
 
-1. `pipenv install --dev`
-2. `pipenv run pytest`
+`pipenv install --dev`
 
+
+Finally, you can build (generate the schema, translate examples, generate templates, and generate web content) and test the toolkit:
+
+`pipenv run doit`
 
 ### Products
 
