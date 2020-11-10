@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <btwxt.h>
 
 // ------------------------------------------------------------------------------------------------
 /// @class performance_map_base performance_map_base.h
