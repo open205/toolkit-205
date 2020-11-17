@@ -7,11 +7,14 @@ include(CTest)
 enable_testing()
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 
+
 include_directories(vendor/btwxt/src)
 include_directories(vendor/json/single_include)
 include_directories(vendor/json/include)
 include_directories(src/build/cpp)
 include_directories(include)
+
+add_subdirectory(vendor/btwxt)
 
 list(APPEND Factory_SOURCES "./src/RS_instance_factory.cpp"
                             "./src/RS0001_factory.cpp"
@@ -31,7 +34,10 @@ list(APPEND RS_SOURCES "./src/build/cpp/ASHRAE205.cpp"
 )
 
 set (SOURCES ${Factory_SOURCES} ${RS_SOURCES})
-add_executable(libtk205 src/load.cpp ${SOURCES})
+add_library(libtk205 src/libtk205.cpp ${SOURCES})
+target_link_libraries(libtk205 btwxt)
+add_executable(libtktest src/load.cpp)
+target_link_libraries(libtktest libtk205)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

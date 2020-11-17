@@ -20,8 +20,21 @@ public:
 
     virtual void Initialize(const nlohmann::json& j) {}
 
-    //private btwxt instance to collect grid and tables for a single performance map
+    inline void Add_grid_axis(std::vector<double>& axis) const {
+    }
+
+    inline void Add_grid_axis(std::vector<int>& axis) const {
+    }
+
+    inline void Add_data_table(std::vector<double>& table) {
+        _btwxt.add_value_table(table);
+    }
+    
     //public Calculate_performance(target)
+
+private:
+    Btwxt::RegularGridInterpolator _btwxt;
+
 };
 
 #endif

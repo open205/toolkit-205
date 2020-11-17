@@ -18,10 +18,11 @@ public:
     lookup_variables_base(const lookup_variables_base& other) = default;
     lookup_variables_base& operator=(const lookup_variables_base& other) = default;
 
-    virtual void Populate_performance_map(const performance_map_base* performance_map) = 0;
+    virtual void Populate_performance_map(performance_map_base* performance_map) = 0;
 
-    inline void Add_data_table(const performance_map_base* performance_map, std::vector<double>& table)
+    inline void Add_data_table(performance_map_base* performance_map, std::vector<double>& table)
     {
+        performance_map->Add_data_table(table);
         std::cout << "Adding grid table with size " << table.size() << "\n";
     }
 };
