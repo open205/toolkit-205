@@ -27,7 +27,7 @@ public:
     }
 
     inline void Add_data_table(std::vector<double>& table) {
-        _btwxt.add_value_table(table);
+        //_btwxt.add_value_table(table);
     }
     
     //public Calculate_performance(target)

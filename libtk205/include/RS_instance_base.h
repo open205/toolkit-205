@@ -22,10 +22,10 @@ public:
 
     RS_instance_base() = default;
     virtual ~RS_instance_base() = default;
-    RS_instance_base(const RS_instance_base& other) = delete;
-    RS_instance_base& operator=(const RS_instance_base& other) = delete;
-    RS_instance_base(RS_instance_base&&) = delete;
-    RS_instance_base& operator=(RS_instance_base&&) = delete;
+    RS_instance_base(const RS_instance_base& other) = default;
+    RS_instance_base& operator=(const RS_instance_base& other) = default;
+    RS_instance_base(RS_instance_base&&) = default;
+    RS_instance_base& operator=(RS_instance_base&&) = default;
 
     virtual void Initialize(const nlohmann::json& j) = 0;
 };

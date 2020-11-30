@@ -34,6 +34,8 @@ list(APPEND RS_SOURCES "./src/build/cpp/ASHRAE205.cpp"
 )
 
 set (SOURCES ${Factory_SOURCES} ${RS_SOURCES})
+# add_executable(libtktest src/load.cpp ${SOURCES})
+# target_link_libraries(libtktest btwxt)
 add_library(libtk205 src/libtk205.cpp ${SOURCES})
 target_link_libraries(libtk205 btwxt)
 add_executable(libtktest src/load.cpp)
