@@ -18,7 +18,7 @@ public:
     performance_map_base(const performance_map_base& other) = default;
     performance_map_base& operator=(const performance_map_base& other) = default;
 
-    virtual void Initialize(const nlohmann::json& j) {}
+    virtual void Initialize(const nlohmann::json& j) = 0;
 
     inline void Add_grid_axis(std::vector<double>& axis) const {
     }

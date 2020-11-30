@@ -16,18 +16,21 @@ namespace ASHRAE205_NS {
 	}
 }
 
-class RS_instance_base
-{
-public:
+namespace ASHRAE205_NS  {
 
-    RS_instance_base() = default;
-    virtual ~RS_instance_base() = default;
-    RS_instance_base(const RS_instance_base& other) = default;
-    RS_instance_base& operator=(const RS_instance_base& other) = default;
-    RS_instance_base(RS_instance_base&&) = default;
-    RS_instance_base& operator=(RS_instance_base&&) = default;
+    class RS_instance_base
+    {
+    public:
 
-    virtual void Initialize(const nlohmann::json& j) = 0;
-};
+        RS_instance_base() = default;
+        virtual ~RS_instance_base() = default;
+        RS_instance_base(const RS_instance_base& other) = default;
+        RS_instance_base& operator=(const RS_instance_base& other) = default;
+        RS_instance_base(RS_instance_base&&) = default;
+        RS_instance_base& operator=(RS_instance_base&&) = default;
+
+        virtual void Initialize(const nlohmann::json& j) = 0;
+    };
+}
 
 #endif

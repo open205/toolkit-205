@@ -11,6 +11,8 @@ using json = nlohmann::json;
 
 int main(int argc, char* argv[])
 {
+    using namespace ASHRAE205_NS;
+
     RS_instance_factory::Register_factory("RS0003", std::make_shared<RS0003_factory>());  
 
     if (argc > 1)

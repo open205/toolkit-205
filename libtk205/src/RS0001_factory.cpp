@@ -2,8 +2,7 @@
 #include "RS0001.h"
 #include <memory>
 
-// A little trickery here: https://www.learncpp.com/cpp-tutorial/811-static-member-variables/
-// "static members exist even if no objects of the class have been instantiated"
+using namespace ASHRAE205_NS;
 
 bool RS0001_factory::s_registered = RS_instance_factory::Register_factory("RS0001", std::make_shared<RS0001_factory>());
 

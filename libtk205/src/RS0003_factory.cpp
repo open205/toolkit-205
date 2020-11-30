@@ -1,7 +1,8 @@
 #include "RS0003_factory.h"
 #include "RS0003.h"
 #include <memory>
-//#include <iostream>
+
+using namespace ASHRAE205_NS;
 
 bool RS0003_factory::s_registered = RS_instance_factory::Register_factory("RS0003", std::make_shared<RS0003_factory>());
 

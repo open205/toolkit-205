@@ -3,16 +3,19 @@
 
 #include "RS_instance_factory.h"
 
-class RS0001_factory : public RS_instance_factory
-{
-   public:
+namespace ASHRAE205_NS {
 
-      std::unique_ptr<RS_instance_base> Create_instance() const override;
+   class RS0001_factory : public RS_instance_factory
+   {
+      public:
 
-   private:
-      // Implementation of self-registering class
-      // a la https://www.bfilipek.com/2018/02/factory-selfregister.html
-      static bool s_registered;
-};
+         std::unique_ptr<RS_instance_base> Create_instance() const override;
+
+      private:
+         // Implementation of self-registering class
+         // a la https://www.bfilipek.com/2018/02/factory-selfregister.html
+         static bool s_registered;
+   };
+}
 
 #endif
