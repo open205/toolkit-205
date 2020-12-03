@@ -715,7 +715,7 @@ class A205XLSXTree:
                     value = self.schema.get_schema_version()
                 elif item == 'rs_id':
                     value = node.inner_rs
-                elif item == 'RS_instance':
+                elif item == 'rs_instance':
                     option = get_rs_index(node.inner_rs)
                 elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
                     sheet_ref = unique_name_with_index(item, self.sheets)
