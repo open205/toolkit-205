@@ -20,20 +20,28 @@ public:
 
     virtual void Initialize(const nlohmann::json& j) = 0;
 
-    inline void Add_grid_axis(std::vector<double>& axis) const {
+    inline void Add_grid_axis(std::vector<double>& axis) {
+        _grid_axes.emplace_back(Btwxt::GridAxis(axis));
     }
 
-    inline void Add_grid_axis(std::vector<int>& axis) const {
+    inline void Add_grid_axis(std::vector<int>& axis) {
+        _grid_axes.emplace_back(Btwxt::GridAxis(std::vector<double>(axis.begin(), axis.end())));
     }
 
     inline void Add_data_table(std::vector<double>& table) {
-        //_btwxt.add_value_table(table);
+        _btwxt.add_value_table(table);
     }
     
-    //public Calculate_performance(target)
+    inline void Finalize_grid() {
+        auto gd = Btwxt::GriddedData(_grid_axes);
+        _btwxt = Btwxt::RegularGridInterpolator(gd);
+    }
+
+    inline void Calculate_performance(std::vector<double>& target);
 
 private:
     Btwxt::RegularGridInterpolator _btwxt;
+    std::vector<Btwxt::GridAxis>   _grid_axes;
 
 };
 
