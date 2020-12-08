@@ -11,18 +11,18 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 include_directories(vendor/btwxt/src)
 include_directories(vendor/json/single_include)
 include_directories(vendor/json/include)
-include_directories(src/build/cpp)
+include_directories(src/build/include)
 include_directories(include)
 
 add_subdirectory(vendor/btwxt)
 
 list(APPEND Factory_SOURCES "./src/RS_instance_factory.cpp"
-                            "./src/RS0001_factory.cpp"
-                            "./src/RS0002_factory.cpp"
-                            "./src/RS0003_factory.cpp"
-                            "./src/RS0004_factory.cpp"
-                            "./src/RS0005_factory.cpp"
-                            "./src/RS0006_factory.cpp"
+                            "./src/build/cpp/RS0001_factory.cpp"
+                            "./src/build/cpp/RS0002_factory.cpp"
+                            "./src/build/cpp/RS0003_factory.cpp"
+                            "./src/build/cpp/RS0004_factory.cpp"
+                            "./src/build/cpp/RS0005_factory.cpp"
+                            "./src/build/cpp/RS0006_factory.cpp"
 )
 list(APPEND RS_SOURCES "./src/build/cpp/ASHRAE205.cpp"
                        "./src/build/cpp/RS0001.cpp"

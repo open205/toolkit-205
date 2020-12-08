@@ -18,5 +18,6 @@ jsonschema = "*"
 cbor2 = "*"
 openpyxl = "*"
 pyyaml = "*"
+jinja2 = "*"
 tk205 = {editable = true,path = "."}
 schema205 = {editable = true,path = "schema-205"}
