@@ -5,7 +5,7 @@
 #include "libtk205.h"
 
 #include "RS_instance_factory.h"
-#include "RS0003_factory.h"
+//#include "RS0003_factory.h"
 
 using json = nlohmann::json;
 
@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 {
     using namespace ASHRAE205_NS;
 
-    RS_instance_factory::Register_factory("RS0003", std::make_shared<RS0003_factory>());  
+    //RS_instance_factory::Register_factory("RS0003", std::make_shared<RS0003_factory>());  
 
     if (argc > 1)
     {

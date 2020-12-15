@@ -7,9 +7,4 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "MinSizeRel" "RelWithDebInfo")
 endif()
 
-# TODO: 'pipenv run doit' or 'doit' ?
-add_custom_target(generate_cpp ALL doit headers
-                               COMMAND doit cpp
-                               WORKING_DIRECTORY "../schema-205")
-
 add_subdirectory(libtk205)

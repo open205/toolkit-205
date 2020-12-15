@@ -63,10 +63,10 @@ namespace libtk205_NS {
         return dynamic_cast<RS0002_NS::RS0002 *>(a205.RS_instance.get());
     }
 
-    // const RS0003_NS::RS0003* A205_SDK::Get_RS0003(const ASHRAE205& a205)
-    // {
-    //     return dynamic_cast<RS0003_NS::RS0003 *>(a205.RS_instance.get());
-    // }
+    const RS0003_NS::RS0003* A205_SDK::Get_RS0003(const ASHRAE205& a205)
+    {
+        return dynamic_cast<RS0003_NS::RS0003 *>(a205.RS_instance.get());
+    }
 
     const RS0004_NS::RS0004* A205_SDK::Get_RS0004(const ASHRAE205& a205)
     {
