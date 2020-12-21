@@ -640,8 +640,8 @@ class A205XLSXTree:
             for item in content:
                 if type(content[item]) == dict:
                     schema_node = parent.get_schema_node()
-                    if 'RS_ID' in schema_node:
-                        parent.inner_rs = schema_node['RS_ID']
+                    if 'rs_id' in schema_node:
+                        parent.inner_rs = schema_node['rs_id']
 
                     if "performance_map" in item:
                         sheet_ref = unique_name_with_index(item, self.sheets)
@@ -679,10 +679,10 @@ class A205XLSXTree:
         Create tree from Python Dict content
         '''
         self.content = content
-        if "RS_ID" in content:
-            self.rs = content["RS_ID"]
+        if "rs_id" in content:
+            self.rs = content["rs_id"]
         else:
-            raise KeyError("Could not find 'RS_ID' key.")
+            raise KeyError("Could not find 'rs_id' key.")
 
         self.root_node = A205XLSXNode(None, tree=self)
         self.create_tree_from_content(content, self.root_node)
@@ -696,8 +696,8 @@ class A205XLSXTree:
         schema_node = node.get_schema_node()
 
         # Handle nested RSs
-        if 'RS_ID' in schema_node:
-            node.inner_rs = schema_node['RS_ID']
+        if 'rs_id' in schema_node:
+            node.inner_rs = schema_node['rs_id']
 
         # typical nodes
         if 'properties' in schema_node:
@@ -713,9 +713,9 @@ class A205XLSXTree:
                 # Special cases
                 if item == 'schema_version':
                     value = self.schema.get_schema_version()
-                elif item == 'RS_ID':
+                elif item == 'rs_id':
                     value = node.inner_rs
-                elif item == 'RS_instance':
+                elif item == 'rs_instance':
                     option = get_rs_index(node.inner_rs)
                 elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
                     sheet_ref = unique_name_with_index(item, self.sheets)

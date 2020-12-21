@@ -28,7 +28,7 @@ def get_title_and_description(json_path):
             title = input_json["title"]
             description = input_json["description"]
         else:
-            title = input_json["RS_ID"]
+            title = input_json["rs_id"]
             description = input_json["description"]
         return title, description
 
