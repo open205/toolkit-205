@@ -3,6 +3,7 @@ import tk205
 from doit.tools import create_folder
 
 BUILD_PATH = "build"
+SCHEMA_SOURCE_PATH = os.path.join("schema-205","schema-source")
 JSON_SCHEMA_PATH = os.path.join("schema-205","build","schema")
 EXAMPLES_SOURCE_PATH = os.path.join("schema-205","examples")
 EXAMPLES_OUTPUT_PATH = os.path.join(BUILD_PATH,"examples")
@@ -17,9 +18,10 @@ def task_build_schema():
 
 def collect_schema_files():
   file_list = []
-  for file_name in sorted(os.listdir(JSON_SCHEMA_PATH)):
-    if '.schema.json' in file_name:
-      file_list.append(os.path.join(JSON_SCHEMA_PATH,file_name))
+  for file_name in sorted(os.listdir(SCHEMA_SOURCE_PATH)):
+    if '.schema.yaml' in file_name:
+      file_name_root = os.path.splitext(os.path.splitext(file_name)[0])[0]
+      file_list.append(os.path.join(JSON_SCHEMA_PATH,f'{file_name_root}.schema.json'))
   return file_list
 
 def collect_examples(example_dir):
