@@ -13,9 +13,6 @@
 
 namespace libtk205_NS {
 
-    enum class msg_severity { DEBUG, INFO, WARN, ERR };
-    void Set_error_handler(std::function<void(msg_severity, const std::string, void *)> handler);
-
     class A205_SDK 
     {
     public:
@@ -31,8 +28,6 @@ namespace libtk205_NS {
 
     private:
         void Read_binary_file(const char* filename, std::vector<uint8_t> &bytes);
-
-        std::vector<ASHRAE205_NS::ASHRAE205> _a205_instances;
     };
 }
 

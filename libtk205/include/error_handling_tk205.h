@@ -4,7 +4,12 @@
 #include <functional>
 
 namespace ASHRAE205_NS {
-    enum class msg_severity { DEBUG, INFO, WARN, ERR };
+   enum class msg_severity : unsigned int {
+       DEBUG, 
+       INFO, 
+       WARN, 
+       ERR
+   };
 
     using msg_handler = std::function<void(msg_severity, const std::string &, void *)>;
 

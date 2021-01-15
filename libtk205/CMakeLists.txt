@@ -7,11 +7,11 @@ include(CTest)
 enable_testing()
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 
-include_directories(vendor/btwxt/src)
-include_directories(vendor/json/single_include)
-include_directories(vendor/json/include)
-include_directories(src/build/include)
-include_directories(include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/btwxt/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/single_include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/build/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(vendor/btwxt)
 
@@ -53,8 +53,20 @@ target_link_libraries(libtk205 btwxt)
 add_dependencies(libtk205 copy_generated_source)
 add_dependencies(copy_generated_source generate_cpp)
 
-add_executable(libtktest src/load.cpp)
-target_link_libraries(libtktest libtk205)
+# add_executable(libtktest src/load.cpp)
+# target_link_libraries(libtktest libtk205)
+
+option( BUILD_TK205_TESTING "Build libtk205 testing targets" ON )
+
+# Set up testing/coverage
+if (BUILD_TK205_TESTING)
+  enable_testing()
+endif()
+
+add_subdirectory(vendor)
+if (BUILD_TK205_TESTING)
+  add_subdirectory(test)
+endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
