@@ -1,7 +1,9 @@
-/* Copyright (c) 2018 Big Ladder Software LLC. All rights reserved.
+/* Copyright (c) 2021 Big Ladder Software LLC. All rights reserved.
  * See the LICENSE file for additional terms and conditions. */
 
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
+
 #include "fixtures_libtk205.hpp"
 #include "libtk205.h"
 
@@ -15,12 +17,30 @@ TEST_F(RS0001_fixture, Create_RS01)
 
 TEST_F(RS0001_fixture, Calculate_performance_cooling)
 {
-   auto rs = const_cast<ASHRAE205_NS::RS0001_NS::RS0001*>(_sdk.Get_RS0001(_a205));
+   auto rs = _sdk.Get_RS0001(_a205);
    std::vector<double> target {0.0755, 280.0, 0.0957, 295.0, 0.5};
    auto result = rs->performance.performance_map_cooling.Calculate_performance(target);
    EXPECT_EQ(result.size(), 9u);
    //EXPECT_THAT(result, testing::ElementsAre(testing::DoubleEq(3.189), testing::DoubleEq(6.378), ...));
    }
+
+TEST_F(RS0005_fixture, Calculate_embedded_RS_performance)
+{
+   auto rs05 = _sdk.Get_RS0005(_a205);
+   EXPECT_TRUE(rs05 != nullptr);
+
+   if (rs05)
+   {
+      auto rs06 = _sdk.Get_RS0006(rs05->performance.drive_representation);
+      EXPECT_TRUE(rs06 != nullptr);
+      if (rs06)
+      {
+         std::vector<double> target {5550.0};
+         auto result = rs06->performance.performance_map.Calculate_performance(target);
+         EXPECT_THAT(result, testing::ElementsAre(testing::DoubleEq(0.985)));
+      }
+   }
+}
 
 TEST_F(RS0002_fixture, Create_RS02)
 {
