@@ -53,32 +53,32 @@ namespace libtk205_NS {
         return std::move(a205);
     }
 
-    const RS0001_NS::RS0001* A205_SDK::Get_RS0001(const ASHRAE205& a205)
+    RS0001_NS::RS0001* A205_SDK::Get_RS0001(const ASHRAE205& a205)
     {
         return dynamic_cast<RS0001_NS::RS0001 *>(a205.RS_instance.get());
     }
 
-    const RS0002_NS::RS0002* A205_SDK::Get_RS0002(const ASHRAE205& a205)
+    RS0002_NS::RS0002* A205_SDK::Get_RS0002(const ASHRAE205& a205)
     {
         return dynamic_cast<RS0002_NS::RS0002 *>(a205.RS_instance.get());
     }
 
-    const RS0003_NS::RS0003* A205_SDK::Get_RS0003(const ASHRAE205& a205)
+    RS0003_NS::RS0003* A205_SDK::Get_RS0003(const ASHRAE205& a205)
     {
         return dynamic_cast<RS0003_NS::RS0003 *>(a205.RS_instance.get());
     }
 
-    const RS0004_NS::RS0004* A205_SDK::Get_RS0004(const ASHRAE205& a205)
+    RS0004_NS::RS0004* A205_SDK::Get_RS0004(const ASHRAE205& a205)
     {
         return dynamic_cast<RS0004_NS::RS0004 *>(a205.RS_instance.get());
     }
 
-    const RS0005_NS::RS0005* A205_SDK::Get_RS0005(const ASHRAE205& a205)
+    RS0005_NS::RS0005* A205_SDK::Get_RS0005(const ASHRAE205& a205)
     {
         return dynamic_cast<RS0005_NS::RS0005 *>(a205.RS_instance.get());
     }
 
-    const RS0006_NS::RS0006* A205_SDK::Get_RS0006(const ASHRAE205& a205)
+    RS0006_NS::RS0006* A205_SDK::Get_RS0006(const ASHRAE205& a205)
     {
         return dynamic_cast<RS0006_NS::RS0006 *>(a205.RS_instance.get());
     }
