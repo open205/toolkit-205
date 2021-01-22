@@ -14,6 +14,7 @@ protected:
    RS_fixture(const char * filename) : _sdk() 
    {
       _a205 = _sdk.Load_A205(filename);
+      std::cout << "Fixture gets ID " << static_cast<int>(_a205.rs_id) << ": shared_ptr value " << _a205.rs_instance << std::endl;
    }
    A205_SDK _sdk;
    ASHRAE205_NS::ASHRAE205 _a205;
@@ -21,42 +22,42 @@ protected:
 
 class RS0001_fixture : public RS_fixture {
 protected:
-   RS0001_fixture() : RS_fixture("../build/examples/cbor/RS0001/Chiller-Constant-Efficiency.RS0001.a205.cbor") 
+   RS0001_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0001/Chiller-Constant-Efficiency.RS0001.a205.json") 
    {
    }
 };
 
 class RS0002_fixture : public RS_fixture {
 protected:
-   RS0002_fixture() : RS_fixture("../build/examples/cbor/RS0002/Unitary-Constant-Efficiency.RS0002.a205.cbor") 
+   RS0002_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json") 
    {
    }
 };
 
 class RS0003_fixture : public RS_fixture {
 protected:
-   RS0003_fixture() : RS_fixture("../build/examples/cbor/RS0003/Fan-Continuous.RS0003.a205.cbor") 
+   RS0003_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0003/Fan-Continuous.RS0003.a205.json") 
    {
    }
 };
 
 class RS0004_fixture : public RS_fixture {
 protected:
-   RS0004_fixture() : RS_fixture("../build/examples/cbor/RS0004/DX-Constant-Efficiency.RS0004.a205.cbor") 
+   RS0004_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0004/DX-Constant-Efficiency.RS0004.a205.json") 
    {
    }
 };
 
 class RS0005_fixture : public RS_fixture {
 protected:
-   RS0005_fixture() : RS_fixture("../build/examples/cbor/RS0005/Motor-Constant-Efficiency.RS0005.a205.cbor") 
+   RS0005_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0005/Motor-Constant-Efficiency.RS0005.a205.json") 
    {
    }
 };
 
 class RS0006_fixture : public RS_fixture {
 protected:
-   RS0006_fixture() : RS_fixture("../build/examples/cbor/RS0006/Drive-Constant-Efficiency.RS0006.a205.cbor") 
+   RS0006_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/cbor/RS0006/Drive-Constant-Efficiency.RS0006.a205.cbor") 
    {
    }
 };

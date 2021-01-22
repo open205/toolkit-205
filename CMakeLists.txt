@@ -9,4 +9,12 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "MinSizeRel" "RelWithDebInfo")
 endif()
 
+option( BUILD_TK205_TESTING "Build libtk205 testing targets" ON )
+
+# Set up testing/coverage
+if (BUILD_TK205_TESTING)
+  set(TEST205_INPUT_EXAMPLES_DIR ${PROJECT_SOURCE_DIR}) # TODO Upgrade to configure_file method?
+  enable_testing()
+endif()
+
 add_subdirectory(libtk205)

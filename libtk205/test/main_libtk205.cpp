@@ -6,6 +6,7 @@
 
 #include "fixtures_libtk205.hpp"
 #include "libtk205.h"
+#include <stdexcept>
 
 using namespace libtk205_NS;
 
@@ -81,10 +82,14 @@ void Display_message(ASHRAE205_NS::msg_severity severity, const std::string &mes
       {msg_severity::WARN, "WARN"},
       {msg_severity::ERR, "ERR"}
    };
-   if (severity >= msg_severity::WARN)
+   if (severity <= msg_severity::WARN)
    {
       std::cout << severity_str[severity] << ": " << message << std::endl;
    }
+   else
+   {
+      throw std::invalid_argument(message);
+   }   
 }
 
 void Btwxt_message(const Btwxt::MsgLevel messageType, const std::string message,

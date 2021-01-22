@@ -4,9 +4,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(libtk205)
 
 include(CTest)
-enable_testing()
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 
+# include_directories adds locations to the -I command line
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/btwxt/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/single_include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include)
@@ -15,9 +15,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(vendor/btwxt)
 
-list(APPEND Factory_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/include/RS_instance_factory.h"
-                            "${CMAKE_CURRENT_SOURCE_DIR}/src/RS_instance_factory.cpp"
-                            "${CMAKE_CURRENT_SOURCE_DIR}/include/RS_instance_base.h"
+list(APPEND Factory_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/include/rs_instance_factory.h"
+                            "${CMAKE_CURRENT_SOURCE_DIR}/src/rs_instance_factory.cpp"
+                            "${CMAKE_CURRENT_SOURCE_DIR}/include/rs_instance_base.h"
                             "${CMAKE_CURRENT_SOURCE_DIR}/include/performance_map_base.h"
                             "${CMAKE_CURRENT_SOURCE_DIR}/include/grid_variables_base.h"
                             "${CMAKE_CURRENT_SOURCE_DIR}/include/lookup_variables_base.h"
@@ -77,15 +77,9 @@ add_dependencies(copy_generated_source generate_cpp)
 # add_executable(libtktest src/load.cpp)
 # target_link_libraries(libtktest libtk205)
 
-option( BUILD_TK205_TESTING "Build libtk205 testing targets" ON )
-
-# Set up testing/coverage
-if (BUILD_TK205_TESTING)
-  enable_testing()
-endif()
-
 add_subdirectory(vendor)
 if (BUILD_TK205_TESTING)
+  add_compile_definitions(TEST205_INPUT_EXAMPLES_DIR="${TEST205_INPUT_EXAMPLES_DIR}")
   add_subdirectory(test)
 endif()
 
