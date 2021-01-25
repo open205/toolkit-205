@@ -22,42 +22,42 @@ protected:
 
 class RS0001_fixture : public RS_fixture {
 protected:
-   RS0001_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0001/Chiller-Constant-Efficiency.RS0001.a205.json") 
+   RS0001_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0001/Chiller-Constant-Efficiency.RS0001.a205.json") 
    {
    }
 };
 
 class RS0002_fixture : public RS_fixture {
 protected:
-   RS0002_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json") 
+   RS0002_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json") 
    {
    }
 };
 
 class RS0003_fixture : public RS_fixture {
 protected:
-   RS0003_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0003/Fan-Continuous.RS0003.a205.json") 
+   RS0003_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0003/Fan-Continuous.RS0003.a205.json") 
    {
    }
 };
 
 class RS0004_fixture : public RS_fixture {
 protected:
-   RS0004_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0004/DX-Constant-Efficiency.RS0004.a205.json") 
+   RS0004_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0004/DX-Constant-Efficiency.RS0004.a205.json") 
    {
    }
 };
 
 class RS0005_fixture : public RS_fixture {
 protected:
-   RS0005_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/json/RS0005/Motor-Constant-Efficiency.RS0005.a205.json") 
+   RS0005_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0005/Motor-Constant-Efficiency.RS0005.a205.json") 
    {
    }
 };
 
 class RS0006_fixture : public RS_fixture {
 protected:
-   RS0006_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/build/examples/cbor/RS0006/Drive-Constant-Efficiency.RS0006.a205.cbor") 
+   RS0006_fixture() : RS_fixture(TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0006/Drive-Constant-Efficiency.RS0006.a205.json") 
    {
    }
 };
