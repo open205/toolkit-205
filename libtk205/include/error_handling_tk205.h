@@ -2,6 +2,7 @@
 #define ERROR_HANDLING_TK205_H_
 
 #include <functional>
+#include <string>
 
 namespace ASHRAE205_NS {
    enum class msg_severity : unsigned int {
