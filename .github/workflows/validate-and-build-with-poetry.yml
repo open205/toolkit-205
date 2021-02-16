@@ -7,7 +7,7 @@ jobs:
     name: Build
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest] #, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.6", "3.7", "3.8", "3.9"]
     defaults:
       run:
@@ -41,9 +41,19 @@ jobs:
       #     source $VENV
       #     poetry run doit
       - name: generate and make libtk205
+        if: matrix.os != 'windows-latest'
         run: |
           source $VENV
           mkdir build
           cd build
           poetry run cmake ..
           poetry run make
+      - name: generate and make libtk205 (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          source $VENV
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build . --config Release
