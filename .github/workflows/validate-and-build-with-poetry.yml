@@ -53,7 +53,7 @@ jobs:
         shell: bash
         working-directory: schema-205
         run: |
-          source $VENV
+          # source $VENV
           poetry run doit headers
           poetry run doit cpp
       - name: generate and build libtk205 (Windows)
