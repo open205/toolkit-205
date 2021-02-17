@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.14.0)
 project(toolkit-205)
 
 # Set a default build type if none was specified
