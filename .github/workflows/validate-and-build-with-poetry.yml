@@ -48,9 +48,9 @@ jobs:
           cd build
           poetry run cmake ..
           poetry run make
-      - name: generate and make libtk205 (Windows)
+      - name: generate and build libtk205 (Windows)
         if: matrix.os == 'windows-latest'
-        shell: cmd
+        shell: bash
         run: |
           source $VENV
           mkdir build
