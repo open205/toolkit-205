@@ -51,8 +51,8 @@ list(APPEND RS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/build/cpp/ASHRAE205.cpp"
 )
 
 add_custom_target(generate_cpp ALL 
-                  COMMAND poetry run doit headers
-                  COMMAND poetry run doit cpp
+                  COMMAND doit headers
+                  COMMAND doit -s cpp
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../schema-205")
 
 # copy_directory will create the destination if it does not exist

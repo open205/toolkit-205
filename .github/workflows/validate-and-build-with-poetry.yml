@@ -48,20 +48,11 @@ jobs:
           cd build
           poetry run cmake ..
           poetry run make
-      - name: test wd (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: bash
-        run: |
-          source $VENV
-          cd schema-205
-          poetry run doit headers
-          poetry run doit cpp
       - name: generate and build libtk205 (Windows)
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
           source $VENV
           mkdir build
-          cd build
-          cmake ..
-          cmake --build . --config Release
+          poetry run cmake -B build
+          poetry run cmake --build build --config Release
