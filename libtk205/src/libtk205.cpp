@@ -92,7 +92,7 @@ namespace libtk205_NS {
         {
             // get length of file:
             is.seekg(0, is.end);
-            int length = is.tellg();
+            size_t length = static_cast<size_t>(is.tellg());
             is.seekg(0, is.beg);
 
             bytes.resize(length);
