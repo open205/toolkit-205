@@ -49,6 +49,10 @@ target_link_libraries(libtk205 btwxt)
 add_dependencies(libtk205 copy_generated_source)
 add_dependencies(copy_generated_source generate_cpp)
 
+add_custom_command(TARGET libtk205 POST_BUILD
+                   COMMAND doit clean
+                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../schema-205")
+
 add_subdirectory(vendor)
 if (BUILD_TK205_TESTING)
   add_compile_definitions(TEST205_INPUT_EXAMPLES_DIR="${TEST205_INPUT_EXAMPLES_DIR}")
