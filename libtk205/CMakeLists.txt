@@ -16,8 +16,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/build/include)
 add_subdirectory(vendor/btwxt)
 
 add_custom_target(generate_cpp ALL 
-                  COMMAND doit headers
-                  COMMAND doit -s cpp
+                  COMMAND poetry doit headers
+                  COMMAND poetry doit -s cpp
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../schema-205")
 
 # copy_directory will create the destination if it does not exist
@@ -50,7 +50,7 @@ add_dependencies(libtk205 copy_generated_source)
 add_dependencies(copy_generated_source generate_cpp)
 
 add_custom_command(TARGET libtk205 POST_BUILD
-                   COMMAND doit clean
+                   COMMAND poetry doit clean
                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../schema-205")
 
 add_subdirectory(vendor)
