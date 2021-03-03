@@ -16,3 +16,7 @@ add_executable(libtk205_tests ${library_sources})
 include(GoogleTest)
 
 gtest_discover_tests(libtk205_tests TEST_PREFIX libtk205:)
+
+# add_custom_command(TARGET libtk205_tests POST_BUILD
+#                    COMMAND doit clean
+#                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../schema-205")

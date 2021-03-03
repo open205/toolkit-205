@@ -36,7 +36,7 @@ TEST_F(RS0005_fixture, Calculate_embedded_RS_performance)
       EXPECT_TRUE(rs06 != nullptr);
       if (rs06)
       {
-         std::vector<double> target {5550.0};
+         std::vector<double> target {5550.0, 10.0};
          auto result = rs06->performance.performance_map.Calculate_performance(target);
          EXPECT_THAT(result, testing::ElementsAre(testing::DoubleEq(0.985)));
       }

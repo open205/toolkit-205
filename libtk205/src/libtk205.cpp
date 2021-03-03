@@ -18,12 +18,12 @@ namespace libtk205_NS {
 
     A205_SDK::A205_SDK()
     {
-        rs_instance_factory::Register_factory("RS0001", std::make_shared<RS0001_factory>());  
-        rs_instance_factory::Register_factory("RS0002", std::make_shared<RS0002_factory>());  
-        rs_instance_factory::Register_factory("RS0003", std::make_shared<RS0003_factory>());  
-        rs_instance_factory::Register_factory("RS0004", std::make_shared<RS0004_factory>());  
-        rs_instance_factory::Register_factory("RS0005", std::make_shared<RS0005_factory>());  
-        rs_instance_factory::Register_factory("RS0006", std::make_shared<RS0006_factory>());  
+        rs_instance_factory::Register_factory("RS0001", std::make_unique<RS0001_factory>());  
+        rs_instance_factory::Register_factory("RS0002", std::make_unique<RS0002_factory>());  
+        rs_instance_factory::Register_factory("RS0003", std::make_unique<RS0003_factory>());  
+        rs_instance_factory::Register_factory("RS0004", std::make_unique<RS0004_factory>());  
+        rs_instance_factory::Register_factory("RS0005", std::make_unique<RS0005_factory>());  
+        rs_instance_factory::Register_factory("RS0006", std::make_unique<RS0006_factory>());  
     }
 
     ASHRAE205 A205_SDK::Load_A205(const char* input_file)
