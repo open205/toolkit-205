@@ -14,7 +14,6 @@ protected:
    RS_fixture(const char * filename) : _sdk() 
    {
       _a205 = _sdk.Load_A205(filename);
-      std::cout << "Fixture gets ID " << static_cast<int>(_a205.rs_id) << ": shared_ptr value " << _a205.rs_instance << std::endl;
    }
    A205_SDK _sdk;
    ASHRAE205_NS::ASHRAE205 _a205;
