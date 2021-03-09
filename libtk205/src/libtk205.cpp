@@ -52,7 +52,7 @@ namespace libtk205_NS {
 
             a205.Initialize(j);
         }
-        return std::move(a205);
+        return a205;
     }
 
     RS0001_NS::RS0001* A205_SDK::Get_RS0001(const ASHRAE205& a205)
