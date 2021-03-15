@@ -1,12 +1,17 @@
 # Test Executable
 
 include_directories("${libtk205_SOURCE_DIR}/include"
-                    "${libtk205_SOURCE_DIR}/src/build/include"
+                    "${libtk205_SOURCE_DIR}/../schema-205/build/include"
                     "${gtest_SOURCE_DIR}/include")
+
+file(GLOB RS_SOURCES "${libtk205_SOURCE_DIR}/../schema-205/build/cpp/*.cpp")
+file(GLOB RS_HEADERS "${libtk205_SOURCE_DIR}/../schema-205/build/include/*.h")
 
 set(library_sources
   fixtures_libtk205.hpp
   main_libtk205.cpp
+  ${RS_HEADERS} 
+  ${RS_SOURCES}
 )
 
 link_libraries(libtk205 gtest gmock)

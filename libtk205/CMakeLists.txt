@@ -33,13 +33,13 @@ add_custom_target(copy_generated_source ALL
 # GLOB is deemed acceptable for this build.
 
 file(GLOB RS_SOURCES "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/*.cpp")
-file(GLOB Factory_SOURCES "${PROJECT_SOURCE_DIR}/../schema-205/build/include/*.h")
+file(GLOB RS_HEADERS "${PROJECT_SOURCE_DIR}/../schema-205/build/include/*.h")
 file(GLOB Class_declarations "${PROJECT_SOURCE_DIR}/include/*.h")
 
 set (SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/libtk205.cpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/error_handling_tk205.cpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/rs_instance_factory.cpp"
-             ${Factory_SOURCES} 
+             ${RS_HEADERS} 
              ${RS_SOURCES}
              ${Class_declarations})
 
