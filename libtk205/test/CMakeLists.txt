@@ -13,6 +13,7 @@ set(library_sources
   ${RS_HEADERS} 
   ${RS_SOURCES}
 )
+message(STATUS "${library_sources}")
 
 link_libraries(libtk205 gtest gmock)
 
