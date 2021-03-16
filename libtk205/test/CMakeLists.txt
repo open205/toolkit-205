@@ -1,11 +1,11 @@
 # Test Executable
 
-include_directories("${libtk205_SOURCE_DIR}/include"
-                    "${libtk205_SOURCE_DIR}/../schema-205/build/include"
+include_directories("${PROJECT_SOURCE_DIR}/include"
+                    "${PROJECT_SOURCE_DIR}/../schema-205/build/include"
                     "${gtest_SOURCE_DIR}/include")
 
-file(GLOB RS_SOURCES "${libtk205_SOURCE_DIR}/../schema-205/build/cpp/*.cpp")
-file(GLOB RS_HEADERS "${libtk205_SOURCE_DIR}/../schema-205/build/include/*.h")
+file(GLOB RS_SOURCES "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/*.cpp")
+file(GLOB RS_HEADERS "${PROJECT_SOURCE_DIR}/../schema-205/build/include/*.h")
 
 set(library_sources
   fixtures_libtk205.hpp
@@ -13,7 +13,8 @@ set(library_sources
   ${RS_HEADERS} 
   ${RS_SOURCES}
 )
-message(STATUS "Source_dir: ${libtk205_SOURCE_DIR}/../schema-205/build/cpp/*.cpp")
+get_filename_component(source_dir "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp" ABSOLUTE)
+message(STATUS "Source_dir: ${source_dir}")
 message(STATUS "${library_sources}")
 
 link_libraries(libtk205 gtest gmock)
