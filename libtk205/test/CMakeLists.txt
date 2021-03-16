@@ -13,6 +13,7 @@ set(library_sources
   ${RS_HEADERS} 
   ${RS_SOURCES}
 )
+message(STATUS "Source_dir: ${libtk205_SOURCE_DIR}/../schema-205/build/cpp/*.cpp")
 message(STATUS "${library_sources}")
 
 link_libraries(libtk205 gtest gmock)
