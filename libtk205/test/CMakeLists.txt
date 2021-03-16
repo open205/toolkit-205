@@ -13,6 +13,9 @@ set(library_sources
   ${RS_HEADERS} 
   ${RS_SOURCES}
 )
+# The GENERATED property prevents the source files being used before they exist.
+set_source_files_properties(${library_sources} PROPERTIES GENERATED TRUE)
+
 get_filename_component(source_dir "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp" ABSOLUTE)
 message(STATUS "Source_dir: ${source_dir}")
 message(STATUS "${library_sources}")
