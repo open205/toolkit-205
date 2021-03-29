@@ -1,28 +1,34 @@
 # Test Executable
 
-include_directories("${libtk205_SOURCE_DIR}/include"
-                    "${libtk205_SOURCE_DIR}/../schema-205/build/include"
-                    "${gtest_SOURCE_DIR}/include")
+include_directories(${PROJECT_SOURCE_DIR}/vendor/json/single_include)
+include_directories(${PROJECT_SOURCE_DIR}/vendor/json/include)
 
-file(GLOB RS_SOURCES "${libtk205_SOURCE_DIR}/../schema-205/build/cpp/*.cpp")
-file(GLOB RS_HEADERS "${libtk205_SOURCE_DIR}/../schema-205/build/include/*.h")
-
-set(library_sources
-  fixtures_libtk205.hpp
-  main_libtk205.cpp
-  ${RS_HEADERS} 
-  ${RS_SOURCES}
-)
-message(STATUS "${library_sources}")
-
-link_libraries(libtk205 gtest gmock)
-
-add_executable(libtk205_tests ${library_sources})
+include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/../schema-205/build/include)
+include_directories(${gtest_SOURCE_DIR}/include)
 
 include(GoogleTest)
 
+execute_process(COMMAND doit headers cpp
+                WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/../schema-205")
+file(GLOB RS_headers "${PROJECT_SOURCE_DIR}/../schema-205/build/include/*.h")
+file(GLOB RS_src "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/*.cpp")
+
+set (SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/fixtures_libtk205.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/main_libtk205.cpp
+             ${RS_headers}
+             ${RS_src})
+message(STATUS "libtk205_tests sources: ${SOURCES}")
+
+#Does the following command do anything?
+set_source_files_properties(${SOURCES} PROPERTIES GENERATED TRUE)
+
+add_executable(libtk205_tests ${SOURCES})
+target_link_libraries(libtk205_tests libtk205 btwxt gtest gmock)
+
 gtest_discover_tests(libtk205_tests TEST_PREFIX libtk205:)
 
-# add_custom_command(TARGET libtk205_tests POST_BUILD
-#                    COMMAND doit clean
-#                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../schema-205")
+add_custom_command(TARGET libtk205_tests POST_BUILD
+                   COMMAND doit clean
+                   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/../schema-205")
+
