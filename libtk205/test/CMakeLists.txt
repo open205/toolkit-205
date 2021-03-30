@@ -28,7 +28,8 @@ target_link_libraries(libtk205_tests libtk205 btwxt gtest gmock)
 
 gtest_discover_tests(libtk205_tests TEST_PREFIX libtk205:)
 
+# Optional clean: Copy files to distributable directory first, if desired
 add_custom_command(TARGET libtk205_tests POST_BUILD
-                   COMMAND doit clean
+                   COMMAND doit clean headers cpp
                    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/../schema-205")
 
