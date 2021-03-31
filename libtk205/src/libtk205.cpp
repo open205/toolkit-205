@@ -11,10 +11,48 @@
 
 #include <type_traits>
 
+#include <valijson/adapters/nlohmann_json_adapter.hpp>
+#include <valijson/utils/nlohmann_json_utils.hpp>
+#include <valijson/schema.hpp>
+#include <valijson/schema_parser.hpp>
+#include <valijson/validator.hpp>
+
 namespace libtk205_NS {
 
     using json = nlohmann::json;
     using namespace ASHRAE205_NS;
+    using valijson::Schema;
+    using valijson::SchemaParser;
+    using valijson::Validator;
+    using valijson::adapters::NlohmannJsonAdapter;
+
+    bool A205_SDK::Validate_A205(const char* schema_file, const char* input_file)
+    {
+        json schema_doc;
+        if (!valijson::utils::loadDocument(schema_file, schema_doc))
+        {
+            throw std::runtime_error("Failed to load schema document");
+        }
+
+        Schema schema;
+        SchemaParser parser;
+        NlohmannJsonAdapter schema_adapter(schema_doc);
+        parser.populateSchema(schema_adapter, schema);
+
+        json input_doc;
+        if (!valijson::utils::loadDocument(input_file, input_doc))
+        {
+            throw std::runtime_error("Failed to load input document");
+        }
+
+        Validator validator;
+        NlohmannJsonAdapter input_adapter(input_doc);
+        if (!validator.validate(schema, input_adapter, NULL))
+        {
+            throw std::runtime_error("Validation failed.");
+        }
+        return true;
+    }
 
     A205_SDK::A205_SDK()
     {

@@ -18,6 +18,7 @@ namespace libtk205_NS {
     public:
         A205_SDK();
         
+        static bool Validate_A205(const char* schema, const char* input_file);
         ASHRAE205_NS::ASHRAE205 Load_A205(const char* input_file);
         ASHRAE205_NS::RS0001_NS::RS0001* Get_RS0001(const ASHRAE205_NS::ASHRAE205& a205);
         ASHRAE205_NS::RS0002_NS::RS0002* Get_RS0002(const ASHRAE205_NS::ASHRAE205& a205);

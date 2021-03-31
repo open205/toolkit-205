@@ -7,3 +7,6 @@
 [submodule "libtk205/vendor/btwxt"]
 	path = libtk205/vendor/btwxt
 	url = https://github.com/bigladder/btwxt.git
+[submodule "libtk205/vendor/valijson"]
+	path = libtk205/vendor/valijson
+	url = https://github.com/tristanpenman/valijson.git

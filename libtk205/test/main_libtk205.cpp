@@ -16,6 +16,12 @@ TEST_F(RS0001_fixture, Create_RS01)
    EXPECT_TRUE(rs != nullptr);
 }
 
+TEST(A205, Validate_RS01)
+{
+   EXPECT_TRUE(A205_SDK::Validate_A205(TEST205_INPUT_EXAMPLES_DIR"/schema-205/build/schema/RS0001.schema.json", 
+                                       TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0001/Chiller-Constant-Efficiency.RS0001.a205.json"));
+}
+
 TEST_F(RS0001_fixture, Calculate_performance_cooling)
 {
    auto rs = _sdk.Get_RS0001(_a205);
