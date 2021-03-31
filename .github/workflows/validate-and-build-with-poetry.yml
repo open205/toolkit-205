@@ -56,3 +56,5 @@ jobs:
           mkdir build
           poetry run cmake -B build
           poetry run cmake --build build --config Release
+      - name: test
+        run: source $VENV && cd build && ctest
