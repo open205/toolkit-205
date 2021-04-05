@@ -61,5 +61,6 @@ jobs:
           source $VENV
           cd schema-205
           poetry run doit schema
-          cd ..\build
+          cd ..
+          cd build
           ctest
