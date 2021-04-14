@@ -28,8 +28,8 @@ The Standard is intended to support the following use cases:
 
 Generally, a data publisher (e.g., manufacturer) provides an ASHRAE Standard 205 representation of a specific piece of equipment that the application user can load into compliant performance simulation software.
 
-Building
---------
+Building the Toolkit
+--------------------
 
 Toolkit 205 uses git submodules. To clone the submodules, you will either have to:
 
@@ -63,6 +63,23 @@ Finally, you can build (generate the schema, translate examples, generate templa
 ### Products
 
 tk205 is both a python module and a command line tool.
+
+Building the Toolkit C++ library
+--------------------------------
+
+The toolkit can additionally build a C++ library suitable for import into C++ modeling tools. The library (libtk205) uses elements of the schema-205 submodule to auto-generate source code for Representation Specifications, and includes other source files from this repository.
+
+To build the library, use
+
+`cmake -B build` 
+
+to generate build files for an "out-of-source" build directory, then
+
+`cmake --build build --config [Debug/Release]`
+
+to build libtk205.
+
+**Note:** Because the tests for libtk205 automatically clean all auto-generated files after the build, the cmake generator must be run fresh each time. This ensures that no Representations are out of date.
 
 Example Usage
 -------------
