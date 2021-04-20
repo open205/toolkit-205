@@ -10,4 +10,4 @@ env/
 .vscode/
 .pytest_cache/
 sandbox/
-.doit.db.db
+.doit.db*

@@ -656,8 +656,9 @@ class A205XLSXTree:
                     self.create_tree_from_content(content[item], new_node)
                 elif type(content[item]) == list:
                     if len(content[item]) == 0:
-                        # effectively leave blank
-                        A205XLSXNode(item,parent=parent,value=content[item])
+                        # Create new sheet for blank array
+                        sheet_ref = unique_name_with_index(item, self.sheets)
+                        A205XLSXNode(item,parent=parent,sheet_ref=sheet_ref)
                     elif type(content[item][0]) == dict:
                         # Create new sheet for array
                         sheet_ref = unique_name_with_index(item, self.sheets)
@@ -717,7 +718,7 @@ class A205XLSXTree:
                     value = node.inner_rs
                 elif item == 'rs_instance':
                     option = get_rs_index(node.inner_rs)
-                elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
+                elif 'performance_map' == item[:len('performance_map')]:
                     sheet_ref = unique_name_with_index(item, self.sheets)
                 elif 'items' in child_schema_node and node.sheet_type == SheetType.FLAT:
                     sheet_ref = unique_name_with_index(item, self.sheets)
@@ -739,8 +740,8 @@ class A205XLSXTree:
 
         # oneOf nodes
         if 'oneOf' in schema_node:
-            if node.inner_rs == 'RS0003' and node.name == 'performance_map' and 'performance_map_type' in self.template_args:
-                template_arg_value = self.get_template_arg('performance_map_type')
+            if node.inner_rs == 'RS0003' and node.name == 'performance_map' and 'operation_speed_control_type' in self.template_args:
+                template_arg_value = self.get_template_arg('operation_speed_control_type')
                 if template_arg_value == 'CONTINUOUS':
                     schema_node = self.schema.resolve(schema_node['oneOf'][0],step_in=False)
                     node.options[-1] = 0
@@ -769,9 +770,9 @@ class A205XLSXTree:
             self.template_args_used[arg] = False
         self.root_node = A205XLSXNode(None, tree=self)
         self.create_tree_from_schema(self.root_node)
-        for arg in self.template_args_used:
-            if not self.template_args_used[arg]:
-                raise Exception(f"Unused template argument: \"{arg}\".")
+        #for arg in self.template_args_used:
+        #    if not self.template_args_used[arg]:
+        #        raise Exception(f"Unused template argument: \"{arg}\".")
 
     def template(self, repspec, output_path, **kwargs):
         '''

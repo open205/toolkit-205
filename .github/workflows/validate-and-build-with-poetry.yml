@@ -36,31 +36,7 @@ jobs:
       - name: Install dependencies if cache does not exist
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      # - name: Validate, generate, and test
-      #   run: |
-      #     source $VENV
-      #     poetry run doit
-      - name: generate and make libtk205
-        if: matrix.os != 'windows-latest'
-        run: |
-          source $VENV
-          mkdir build
-          cd build
-          poetry run cmake ..
-          poetry run make
-      - name: generate and build libtk205 (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: bash
-        run: |
-          source $VENV
-          mkdir build
-          poetry run cmake -B build
-          poetry run cmake --build build --config Release
-      - name: test
-        run: |
-          source $VENV
-          cd schema-205
-          poetry run doit schema
-          cd ..
-          cd build
-          ctest
+       - name: Validate, generate, and test
+         run: |
+           source $VENV
+           poetry run doit

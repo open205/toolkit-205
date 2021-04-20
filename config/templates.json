@@ -8,24 +8,24 @@
     ],
     "RS0002" : [
         {
-            "keywords": {"performance_map_type": "CONTINUOUS"},
+            "keywords": {"operation_speed_control_type": "CONTINUOUS"},
             "file-name-suffix": "continuous-fan",
             "description": "Unitary System with Continuous Fan"
         },
         {
-            "keywords": {"performance_map_type": "DISCRETE"},
+            "keywords": {"operation_speed_control_type": "DISCRETE"},
             "file-name-suffix": "discrete-fan",
             "description": "Unitary System with Discrete Fan"
         }
     ],
     "RS0003" : [
         {
-            "keywords": {"performance_map_type": "CONTINUOUS"},
+            "keywords": {"operation_speed_control_type": "CONTINUOUS"},
             "file-name-suffix": "continuous",
             "description": "Continuous Fan Assembly"
         },
         {
-            "keywords": {"performance_map_type": "DISCRETE"},
+            "keywords": {"operation_speed_control_type": "DISCRETE"},
             "file-name-suffix": "discrete",
             "description": "Discrete Fan Assembly"
         }

@@ -9,6 +9,7 @@ EXAMPLES_SOURCE_PATH = os.path.join("schema-205","examples")
 EXAMPLES_OUTPUT_PATH = os.path.join(BUILD_PATH,"examples")
 TEMPLATE_OUTPUT_PATH = os.path.join(BUILD_PATH,"templates")
 TEMPLATE_CONFIG = os.path.join('config','templates.json')
+LIB_BUILD_PATH = os.path.join(BUILD_PATH,"libtk205")
 
 def task_build_schema():
   '''Build the schema'''
@@ -148,12 +149,34 @@ def task_templates():
     'clean': True
   }
 
-def task_test():
+def task_python_tests():
   '''Performs unit tests and example file validation tests'''
   return {
     'task_dep': ['build_schema','cbor','yaml','xlsx','json'],
     'file_dep': cbor_examples + yaml_examples + xlsx_examples + json_examples,
-    'actions': ['pytest -v test']
+    'actions': [
+      'pytest -v test',
+      ]
+  }
+
+def task_libtk205():
+  '''Build libtk205'''
+  return {
+    'task_dep': ['build_schema'],
+    'actions': [
+      (create_folder, [LIB_BUILD_PATH]),
+      f'cmake -B {LIB_BUILD_PATH}',
+      f'cmake --build {LIB_BUILD_PATH} --config Release'
+      ],
+  }
+
+def task_libtk205_tests():
+  '''Performs unit tests and example file validation tests'''
+  return {
+    'task_dep': ['libtk205'],
+    'actions': [
+      f'cd {LIB_BUILD_PATH} && ctest',
+      ],
   }
 
 def task_web():
