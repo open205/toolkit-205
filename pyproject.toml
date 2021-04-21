@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "tk205"
+version = "0.1.0"
+description = ""
+authors = ["Open205"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+click = "*"
+jsonschema = "*"
+cbor2 = "*"
+openpyxl = "*"
+pyyaml = "*"
+jinja2 = "*"
+schema205 = { path = "schema-205", develop = true }
+
+[tool.poetry.dev-dependencies]
+pylint = "*"
+pytest = "*"
+markdown = "*"
+doit = "*"
+gitpython = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

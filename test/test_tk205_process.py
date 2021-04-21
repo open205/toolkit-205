@@ -21,6 +21,8 @@ EXAMPLES_SOURCE_PATH = os.path.join("schema-205","examples")
 Process tests
 '''
 
+IGNORED_FILE_PATTERNS = [".DS_Store"]
+
 def collect_examples(example_dir):
     paths = []
     names = []
@@ -31,8 +33,9 @@ def collect_examples(example_dir):
             paths += collect_examples(example_path)[0]
             names += collect_examples(example_path)[1]
         else:
-            paths.append(os.path.join(example_dir,example))
-            names.append(example)
+            if all(pattern not in example for pattern in IGNORED_FILE_PATTERNS):
+                paths.append(os.path.join(example_dir,example))
+                names.append(example)
     return paths, names
 
 paths, names = collect_examples(CBOR_OUTPUT_PATH)
