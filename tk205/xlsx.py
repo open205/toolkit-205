@@ -6,7 +6,7 @@ import re
 import enum
 import string
 from schema205 import A205Schema
-from schema205 import process_grid_set, unique_name_with_index, get_rs_index
+from schema205 import process_grid_set, unique_name_with_index
 
 class SheetType(enum.Enum):
     FLAT = 0
@@ -71,7 +71,6 @@ class A205XLSXNode:
             self.lineage = self.parent.lineage + [name]  # List of parent node names (as strings)
             self.options = self.parent.options + [option]
             self.tree = self.parent.tree
-            self.inner_rs = self.parent.inner_rs
             self.sheet = self.parent.child_sheet
             self.sheet_type = self.parent.child_sheet_type
             self.beg = self.parent.next_child_beg
@@ -84,8 +83,7 @@ class A205XLSXNode:
             self.lineage = []
             self.options = []
             self.tree = tree
-            self.inner_rs = self.tree.rs
-            self.sheet = self.tree.rs
+            self.sheet = self.tree.schema_type
             self.sheet_type = SheetType.FLAT
             self.child_sheet_type = self.sheet_type
             self.beg = 3
@@ -201,7 +199,7 @@ class A205XLSXNode:
             else:
                 worksheet.cell(row=1, column=1).value = '.'.join(self.parent.lineage)
         else:
-            worksheet.cell(row=1, column=1).value = f"{self.tree.rs}: {self.tree.schema.get_rs_title(self.tree.rs)}"
+            worksheet.cell(row=1, column=1).value = f"{self.tree.schema_type}: {self.tree.schema.get_rs_title(self.tree.schema_type)}"
         if self.sheet_type == SheetType.FLAT:
             xlsx_headers = ['Data Group', 'Data Element', 'Value', 'Units', 'Required']
             for column, header in enumerate(xlsx_headers, start=1):
@@ -529,7 +527,7 @@ class A205XLSXNode:
 
                 if data_group:
                     lineage = data_group.split(".")
-                    if len(lineage) <= self.get_num_ancestors() + 1 and len(lineage) > 1:
+                    if len(lineage) <= self.get_num_ancestors() + 1 and self.parent is not None:
                         # if lineage the same or shorter, this is not going to be a child node
                         end_node = True
                     else:
@@ -591,10 +589,11 @@ class A205XLSXNode:
 
 class A205XLSXTree:
 
-    def __init__(self):
+    def __init__(self,schema_path=None):
         self.content = {}
-        self.rs = ""
-        schema_path = os.path.join(os.path.dirname(__file__),'..','schema-205',"build","schema","ASHRAE205.schema.json")
+        self.schema_type = ""
+        if schema_path is None:
+            schema_path = os.path.join(os.path.dirname(__file__),'..','schema-205',"build","schema","ASHRAE205.schema.json")
         self.schema = A205Schema(schema_path)
         self.root_node = None
         self.sheets = []
@@ -614,7 +613,11 @@ class A205XLSXTree:
         rs_pattern = re.compile("^RS(\\d{4})$")
         for ws in self.workbook:
             if rs_pattern.match(ws.title):
-                self.rs = ws.title
+                self.schema_type = ws.title
+
+        # Load appropriate schema
+        schema_path = os.path.join(os.path.dirname(__file__),'..','schema-205',"build","schema",f"{self.schema_type}.schema.json")
+        self.schema = A205Schema(schema_path)
 
         self.root_node = A205XLSXNode(None, tree=self)
         self.root_node.read_node()
@@ -639,15 +642,11 @@ class A205XLSXTree:
         else:
             for item in content:
                 if type(content[item]) == dict:
-                    schema_node = parent.get_schema_node()
-                    if 'rs_id' in schema_node:
-                        parent.inner_rs = schema_node['rs_id']
-
                     if "performance_map" in item:
                         sheet_ref = unique_name_with_index(item, self.sheets)
                     elif item[-len('_representation'):] == '_representation':
-                        # Embedded rep spec
-                        sheet_ref = item
+                        # Embedded rep
+                        sheet_ref = unique_name_with_index(item, self.sheets)
                     else:
                         sheet_ref = None
                     new_node = A205XLSXNode(item, parent=parent, sheet_ref=sheet_ref)
@@ -656,8 +655,9 @@ class A205XLSXTree:
                     self.create_tree_from_content(content[item], new_node)
                 elif type(content[item]) == list:
                     if len(content[item]) == 0:
-                        # effectively leave blank
-                        A205XLSXNode(item,parent=parent,value=content[item])
+                        # Create new sheet for array, but leave blank
+                        sheet_ref = unique_name_with_index(item, self.sheets)
+                        new_node = A205XLSXNode(item,parent=parent,sheet_ref=sheet_ref)
                     elif type(content[item][0]) == dict:
                         # Create new sheet for array
                         sheet_ref = unique_name_with_index(item, self.sheets)
@@ -679,10 +679,11 @@ class A205XLSXTree:
         Create tree from Python Dict content
         '''
         self.content = content
-        if "rs_id" in content:
-            self.rs = content["rs_id"]
-        else:
-            raise KeyError("Could not find 'rs_id' key.")
+        self.schema_type = content["metadata"]["schema"]
+
+        # Load appropriate schema
+        schema_path = os.path.join(os.path.dirname(__file__),'..','schema-205',"build","schema",f"{self.schema_type}.schema.json")
+        self.schema = A205Schema(schema_path)
 
         self.root_node = A205XLSXNode(None, tree=self)
         self.create_tree_from_content(content, self.root_node)
@@ -695,9 +696,16 @@ class A205XLSXTree:
         '''
         schema_node = node.get_schema_node()
 
-        # Handle nested RSs
-        if 'rs_id' in schema_node:
-            node.inner_rs = schema_node['rs_id']
+        # Handle alternative selectors
+        if 'allOf' in schema_node:
+            for alt in schema_node['allOf']:
+                for selector_var, selector in alt['if']['properties'].items():
+                    if selector_var in self.template_args:
+                        if selector['const'] == self.get_template_arg(selector_var):
+                            for property in alt['then']['properties']:
+                                schema_node['properties'][property].update(alt['then']['properties'][property])
+                    else:
+                        raise Exception(f"No keyword arguments provided to determine template for '{node.name}'.")
 
         # typical nodes
         if 'properties' in schema_node:
@@ -713,11 +721,7 @@ class A205XLSXTree:
                 # Special cases
                 if item == 'schema_version':
                     value = self.schema.get_schema_version()
-                elif item == 'rs_id':
-                    value = node.inner_rs
-                elif item == 'rs_instance':
-                    option = get_rs_index(node.inner_rs)
-                elif 'performance_map' == item[:len('performance_map')] and '_type' not in item:  # TODO: Something more robust than this...
+                elif 'performance_map' == item[:len('performance_map')]:
                     sheet_ref = unique_name_with_index(item, self.sheets)
                 elif 'items' in child_schema_node and node.sheet_type == SheetType.FLAT:
                     sheet_ref = unique_name_with_index(item, self.sheets)
@@ -739,21 +743,7 @@ class A205XLSXTree:
 
         # oneOf nodes
         if 'oneOf' in schema_node:
-            if node.inner_rs == 'RS0003' and node.name == 'performance_map' and 'performance_map_type' in self.template_args:
-                template_arg_value = self.get_template_arg('performance_map_type')
-                if template_arg_value == 'CONTINUOUS':
-                    schema_node = self.schema.resolve(schema_node['oneOf'][0],step_in=False)
-                    node.options[-1] = 0
-                elif template_arg_value == 'DISCRETE':
-                    schema_node = self.schema.resolve(schema_node['oneOf'][1],step_in=False)
-                    node.options[-1] = 1
-                else:
-                    raise Exception(f"Invalid 'performance_map_type': {template_arg_value}")
-
-                for item in schema_node['properties']:
-                    self.create_tree_from_schema(A205XLSXNode(item, parent=node))
-            else:
-                raise Exception(f"No keyword arguments provided to determine template for '{node.name}'.")
+            raise Exception(f"oneOf not yet handled for '{node.name}'.")
 
     def template_tree(self, repspec, **kwargs):
         '''
@@ -763,7 +753,7 @@ class A205XLSXTree:
         kwargs:
           any data element and value in the schema
         '''
-        self.rs = repspec
+        self.schema_type = repspec
         self.template_args = kwargs
         for arg in self.template_args:
             self.template_args_used[arg] = False
@@ -771,7 +761,7 @@ class A205XLSXTree:
         self.create_tree_from_schema(self.root_node)
         for arg in self.template_args_used:
             if not self.template_args_used[arg]:
-                raise Exception(f"Unused template argument: \"{arg}\".")
+                raise Exception(f"{self.schema_type} unused template argument: \"{arg}\". ")
 
     def template(self, repspec, output_path, **kwargs):
         '''
@@ -790,8 +780,8 @@ class A205XLSXTree:
         self.workbook = openpyxl.Workbook()
 
         # Write tree content
-        self.workbook.active.title = self.rs
-        self.root_node.write_header(self.workbook[self.rs])
+        self.workbook.active.title = self.schema_type
+        self.root_node.write_header(self.workbook[self.schema_type])
         self.root_node.write_node()
 
         self.workbook.save(file_name)
@@ -808,7 +798,9 @@ def template(repspec, output_path, **kwargs):
     '''
     Generate an XLSX template based on the schema for a specific RS
     '''
-    tree = A205XLSXTree()
+    # Load appropriate schema
+    schema_path = os.path.join(os.path.dirname(__file__),'..','schema-205',"build","schema",f"{repspec}.schema.json")
+    tree = A205XLSXTree(schema_path=schema_path)
     tree.template(repspec, output_path, **kwargs)
 
 def generate_templates(output_dir, config):

@@ -9,6 +9,8 @@ EXAMPLES_SOURCE_PATH = os.path.join("schema-205","examples")
 EXAMPLES_OUTPUT_PATH = os.path.join(BUILD_PATH,"examples")
 TEMPLATE_OUTPUT_PATH = os.path.join(BUILD_PATH,"templates")
 TEMPLATE_CONFIG = os.path.join('config','templates.json')
+TK205_SOURCE_PATH = 'tk205'
+SCHEMA205_SOURCE_PATH = os.path.join("schema-205","schema205")
 
 def task_build_schema():
   '''Build the schema'''
@@ -105,7 +107,7 @@ def task_translate_to_xlsx():
   '''Translate example files to XLSX'''
   return {
     'basename': 'xlsx',
-    'file_dep': source_examples,
+    'file_dep': source_examples + [os.path.join(TK205_SOURCE_PATH, 'xlsx.py')],
     'targets': xlsx_examples,
     'actions': [
       (create_folder, [XLSX_OUTPUT_PATH]),
@@ -122,7 +124,7 @@ def task_translate_to_json():
   '''Translate XLSX example files back to JSON'''
   return {
     'basename': 'json',
-    'file_dep': xlsx_examples,
+    'file_dep': xlsx_examples + [os.path.join(TK205_SOURCE_PATH, 'xlsx.py')],
     'targets': json_examples,
     'task_dep': ['xlsx'],
     'actions': [
@@ -139,7 +141,7 @@ def task_templates():
   '''Create XLSX templates based on the schema'''
   return {
     'task_dep': ['build_schema'],
-    'file_dep': [TEMPLATE_CONFIG] + collect_schema_files(),
+    'file_dep': [TEMPLATE_CONFIG] + collect_schema_files() + [os.path.join(TK205_SOURCE_PATH, 'xlsx.py')],
     'targets': template_files,
     'actions': [
       (create_folder, [TEMPLATE_OUTPUT_PATH]),
