@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <string>
+#include <nlohmann/json.hpp>
 
 namespace ASHRAE205_NS {
    enum class msg_severity : unsigned int {
@@ -16,6 +17,12 @@ namespace ASHRAE205_NS {
 
     void Set_error_handler(msg_handler handler);
     void Show_message(msg_severity severity, const std::string& message);
+
+	inline void A205_json_catch(nlohmann::json::out_of_range & ex)
+	{
+    	Show_message(msg_severity::WARN, ex.what());
+	}
+
 }
 
 
