@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.14.0)
 project(toolkit-205)
 
-set(CMAKE_CXX_CLANG_TIDY 
-  clang-tidy;
-  -checks=-*,clang-analyzer-*,cppcoreguidelines-*
-  )
+if (USE_CLANGTIDY_STATIC_ANALYSIS)
+   set(CMAKE_CXX_CLANG_TIDY 
+   clang-tidy;
+   -checks=-*,clang-analyzer-*,cppcoreguidelines-*
+   )
+endif()
 
 # Set a default build type if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

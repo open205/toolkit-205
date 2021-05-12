@@ -8,6 +8,8 @@
 #include <valijson/schema.hpp>
 #include <valijson/schema_parser.hpp>
 #include <valijson/validator.hpp>
+#include <curlpp/cURLpp.hpp>
+#include <curlpp/Options.hpp>
 
 namespace libtk205_NS {
 
@@ -17,6 +19,24 @@ namespace libtk205_NS {
     using valijson::SchemaParser;
     using valijson::Validator;
     using valijson::adapters::NlohmannJsonAdapter;
+
+    const json* fetchDocument(const std::string &uri)
+    {
+        std::cout << "Fetching " << uri << "..." << std::endl;
+        curlpp::Cleanup myCleanup;
+        std::ostringstream os;
+        os << curlpp::options::Url(uri);
+        std::cout << curlpp::options::Url(uri) << std::endl;
+        json *fetchedRoot = new json;
+        std::ifstream in(os.str().c_str());
+        in >> *fetchedRoot;
+        return fetchedRoot;
+    }
+
+    void freeDocument(const json *adapter)
+    {
+        delete adapter;
+    }
 
     bool A205_SDK::Validate_A205(const char* schema_file, const char* input_file)
     {
@@ -29,15 +49,18 @@ namespace libtk205_NS {
         Schema schema;
         SchemaParser parser;
         NlohmannJsonAdapter schema_adapter(schema_doc);
-        parser.populateSchema(schema_adapter, schema);
+        std::cout << "Populating schema.\n";
+        parser.populateSchema(schema_adapter, schema, fetchDocument, freeDocument);
 
         json input_doc;
+        std::cout << "Loading input.\n";
         if (!valijson::utils::loadDocument(input_file, input_doc))
         {
             throw std::runtime_error("Failed to load input document");
         }
 
         Validator validator;
+        std::cout << "Validation.\n";
         NlohmannJsonAdapter input_adapter(input_doc);
         if (!validator.validate(schema, input_adapter, NULL))
         {

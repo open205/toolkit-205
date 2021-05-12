@@ -16,8 +16,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/valijson/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/build/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/schema205/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/curlpp/include)
 
 add_subdirectory(vendor/btwxt)
+add_subdirectory(vendor/curlpp)
 
 add_custom_target(generate_cpp ALL 
                   COMMAND doit headers
@@ -25,8 +27,7 @@ add_custom_target(generate_cpp ALL
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../schema-205")
 
 set (SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/libtk205.cpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/error_handling_tk205.cpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/rs_instance_factory.cpp")
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/error_handling_tk205.cpp")
 
 message(STATUS "libtk205 sources: ${SOURCES}")
 
