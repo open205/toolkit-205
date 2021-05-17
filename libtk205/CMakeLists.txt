@@ -16,10 +16,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/valijson/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/build/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/schema205/src)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/curlpp/include)
 
 add_subdirectory(vendor/btwxt)
-add_subdirectory(vendor/curlpp)
 
 add_custom_target(generate_cpp ALL 
                   COMMAND doit headers

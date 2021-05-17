@@ -10,6 +10,7 @@
 
 using namespace libtk205_NS;
 
+#if 0
 TEST(RS_fixture, Validate_RSes)
 {
    EXPECT_TRUE(A205_SDK::Validate_A205(TEST205_INPUT_EXAMPLES_DIR"/schema-205/build/schema/RS0001.schema.json", 
@@ -19,6 +20,7 @@ TEST(RS_fixture, Validate_RSes)
    EXPECT_TRUE(A205_SDK::Validate_A205(TEST205_INPUT_EXAMPLES_DIR"/schema-205/build/schema/RS0003.schema.json", 
                                        TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0003/Fan-Continuous.RS0003.a205.json"));
 }
+#endif
 
 TEST_F(RS0001_fixture, Calculate_performance_cooling)
 {

@@ -13,3 +13,6 @@
 [submodule "libtk205/vendor/curlpp"]
 	path = libtk205/vendor/curlpp
 	url = https://github.com/jpbarrette/curlpp.git
+[submodule "libtk205/vendor/json-schema-validator"]
+	path = libtk205/vendor/json-schema-validator
+	url = https://github.com/pboettch/json-schema-validator.git
