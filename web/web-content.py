@@ -28,8 +28,8 @@ def get_title_and_description(json_path):
             title = input_json["title"]
             description = input_json["description"]
         else:
-            title = input_json["rs_id"]
-            description = input_json["description"]
+            title = input_json["metadata"]["schema"]
+            description = input_json["metadata"]["description"]
         return title, description
 
 
@@ -172,14 +172,15 @@ def generate(web_dir):
         for RS in sorted(examples_dictionary[file_type]):
             for file_name in examples_dictionary[file_type][RS]:
                 base_name = os.path.splitext(file_name)[0]
-                RS, description = get_title_and_description(os.path.join(examples_directory, "json", RS, base_name + '.json'))
-                if RS not in examples_page_data:
+                rs_id, description = get_title_and_description(os.path.join(examples_directory, "json", RS, base_name + '.json'))
+                if rs_id not in examples_page_data:
                     for title, schema_description in schema_title_description:
-                        if RS in schema_description:
-                            examples_page_data[RS] = {'title': title, 'files': {}}
-                if description not in examples_page_data[RS]['files']:
-                    examples_page_data[RS]['files'][description] = {}
-                examples_page_data[RS]['files'][description][file_type] = file_name
+                        if rs_id in schema_description:
+                            examples_page_data[rs_id] = {'title': title, 'files': {}}
+                print(examples_page_data[rs_id]['files'])
+                if description not in examples_page_data[rs_id]['files']:
+                    examples_page_data[rs_id]['files'][description] = {}
+                examples_page_data[rs_id]['files'][description][file_type] = file_name
 
     generate_page(env, 'examples_template.html', 'examples.html', web_dir, 'Example Files', markdown=markdown_html, content=examples_page_data)
 

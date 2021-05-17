@@ -6,5 +6,6 @@ from .util import objects_near_equal
 import os
 
 def validate(file_path):
-    a205schema = A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205','build','schema',"ASHRAE205.schema.json"))
-    a205schema.validate(load(file_path))
+    contents = load(file_path)
+    a205schema = A205Schema(os.path.join(os.path.dirname(__file__),'..','schema-205','build','schema',f"{contents['metadata']['schema']}.schema.json"))
+    a205schema.validate(contents)

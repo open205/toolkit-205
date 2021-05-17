@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "toolkit-205"
+name = "tk205"
 version = "0.1.0"
 description = ""
 authors = ["Open205"]
@@ -12,14 +12,11 @@ cbor2 = "*"
 openpyxl = "*"
 pyyaml = "*"
 jinja2 = "*"
-pytablewriter = "*"
 schema205 = { path = "schema-205", develop = true }
-#toolkit-205 = { path = ".", develop = true }
 
 [tool.poetry.dev-dependencies]
 pylint = "*"
 pytest = "*"
-atomicwrites = "*"
 markdown = "*"
 doit = "*"
 gitpython = "*"
