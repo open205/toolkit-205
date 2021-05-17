@@ -721,13 +721,10 @@ class A205XLSXTree:
                 # Special cases
                 if item == 'schema_version':
                     value = self.schema.get_schema_version()
-<<<<<<< HEAD
-=======
                 elif item == 'rs_id':
                     value = node.inner_rs
                 elif item == 'rs_instance':
                     option = get_rs_index(node.inner_rs)
->>>>>>> c0ce73421ed7dd8ab84c20c849d4785e4954f974
                 elif 'performance_map' == item[:len('performance_map')]:
                     sheet_ref = unique_name_with_index(item, self.sheets)
                 elif 'items' in child_schema_node and node.sheet_type == SheetType.FLAT:
@@ -750,9 +747,6 @@ class A205XLSXTree:
 
         # oneOf nodes
         if 'oneOf' in schema_node:
-<<<<<<< HEAD
-            raise Exception(f"oneOf not yet handled for '{node.name}'.")
-=======
             if node.inner_rs == 'RS0003' and node.name == 'performance_map' and 'operation_speed_control_type' in self.template_args:
                 template_arg_value = self.get_template_arg('operation_speed_control_type')
                 if template_arg_value == 'CONTINUOUS':
@@ -768,7 +762,6 @@ class A205XLSXTree:
                     self.create_tree_from_schema(A205XLSXNode(item, parent=node))
             else:
                 raise Exception(f"No keyword arguments provided to determine template for '{node.name}'.")
->>>>>>> c0ce73421ed7dd8ab84c20c849d4785e4954f974
 
     def template_tree(self, repspec, **kwargs):
         '''
@@ -784,15 +777,9 @@ class A205XLSXTree:
             self.template_args_used[arg] = False
         self.root_node = A205XLSXNode(None, tree=self)
         self.create_tree_from_schema(self.root_node)
-<<<<<<< HEAD
-        for arg in self.template_args_used:
-            if not self.template_args_used[arg]:
-                raise Exception(f"{self.schema_type} unused template argument: \"{arg}\". ")
-=======
         #for arg in self.template_args_used:
         #    if not self.template_args_used[arg]:
         #        raise Exception(f"Unused template argument: \"{arg}\".")
->>>>>>> c0ce73421ed7dd8ab84c20c849d4785e4954f974
 
     def template(self, repspec, output_path, **kwargs):
         '''
