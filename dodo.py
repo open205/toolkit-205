@@ -10,6 +10,8 @@ EXAMPLES_OUTPUT_PATH = os.path.join(BUILD_PATH,"examples")
 TEMPLATE_OUTPUT_PATH = os.path.join(BUILD_PATH,"templates")
 TEMPLATE_CONFIG = os.path.join('config','templates.json')
 LIB_BUILD_PATH = os.path.join(BUILD_PATH,"libtk205")
+TK205_SOURCE_PATH = 'tk205'
+SCHEMA205_SOURCE_PATH = os.path.join("schema-205","schema205")
 
 def task_build_schema():
   '''Build the schema'''
@@ -149,7 +151,7 @@ def task_templates():
     'clean': True
   }
 
-def task_python_tests():
+def task_test():
   '''Performs unit tests and example file validation tests'''
   return {
     'task_dep': ['build_schema','cbor','yaml','xlsx','json'],
