@@ -37,6 +37,4 @@ jobs:
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Build and test
-        run: |
-          source $VENV
-          poetry run doit
+        run: poetry run doit
