@@ -14,10 +14,10 @@ namespace ASHRAE205_NS {
     void Show_message(msg_severity severity, const std::string &message)
     {
         static std::map<msg_severity, std::string> severity_str {
-            {msg_severity::DEBUG, "DEBUG"},
-            {msg_severity::INFO, "INFO"},
-            {msg_severity::WARN, "WARN"},
-            {msg_severity::ERR, "ERR"}
+            {msg_severity::DEBUG_205, "DEBUG"},
+            {msg_severity::INFO_205, "INFO"},
+            {msg_severity::WARN_205, "WARN"},
+            {msg_severity::ERR_205, "ERR"}
         };
         if (!_error_handler)
         {

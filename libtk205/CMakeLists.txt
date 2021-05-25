@@ -35,8 +35,6 @@ set (SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/libtk205.cpp"
              "${RS_headers}"
              "${RS_src}")
 
-message(STATUS "libtk205 sources: ${SOURCES}")
-
 add_library(libtk205 ${SOURCES})
 
 add_subdirectory(vendor)

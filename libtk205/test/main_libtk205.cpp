@@ -41,12 +41,12 @@ void Display_message(ASHRAE205_NS::msg_severity severity, const std::string &mes
 {
    using namespace ASHRAE205_NS;
    static std::map<msg_severity, std::string> severity_str {
-      {msg_severity::DEBUG, "DEBUG"},
-      {msg_severity::INFO, "INFO"},
-      {msg_severity::WARN, "WARN"},
-      {msg_severity::ERR, "ERR"}
+      {msg_severity::DEBUG_205, "DEBUG"},
+      {msg_severity::INFO_205, "INFO"},
+      {msg_severity::WARN_205, "WARN"},
+      {msg_severity::ERR_205, "ERR"}
    };
-   if (severity <= msg_severity::WARN)
+   if (severity <= msg_severity::WARN_205)
    {
       std::cout << severity_str[severity] << ": " << message << std::endl;
    }
@@ -60,10 +60,10 @@ void Btwxt_message(const Btwxt::MsgLevel messageType, const std::string message,
                    void *)
 {
    static std::map<Btwxt::MsgLevel, ASHRAE205_NS::msg_severity> severity {
-      {Btwxt::MsgLevel::MSG_DEBUG, ASHRAE205_NS::msg_severity::DEBUG},
-      {Btwxt::MsgLevel::MSG_INFO, ASHRAE205_NS::msg_severity::INFO},
-      {Btwxt::MsgLevel::MSG_WARN, ASHRAE205_NS::msg_severity::WARN},
-      {Btwxt::MsgLevel::MSG_ERR, ASHRAE205_NS::msg_severity::ERR}
+      {Btwxt::MsgLevel::MSG_DEBUG, ASHRAE205_NS::msg_severity::DEBUG_205},
+      {Btwxt::MsgLevel::MSG_INFO, ASHRAE205_NS::msg_severity::INFO_205},
+      {Btwxt::MsgLevel::MSG_WARN, ASHRAE205_NS::msg_severity::WARN_205},
+      {Btwxt::MsgLevel::MSG_ERR, ASHRAE205_NS::msg_severity::ERR_205}
    };
    Display_message(severity[messageType], message, nullptr);
 }

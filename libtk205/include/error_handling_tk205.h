@@ -7,10 +7,10 @@
 
 namespace ASHRAE205_NS {
    enum class msg_severity : unsigned int {
-       DEBUG, 
-       INFO, 
-       WARN, 
-       ERR
+       DEBUG_205, 
+       INFO_205, 
+       WARN_205, 
+       ERR_205
    };
 
     using msg_handler = std::function<void(msg_severity, const std::string &, void *)>;
@@ -20,7 +20,7 @@ namespace ASHRAE205_NS {
 
 	inline void A205_json_catch(nlohmann::json::out_of_range & ex)
 	{
-    	Show_message(msg_severity::WARN, ex.what());
+    	Show_message(msg_severity::WARN_205, ex.what());
 	}
 
 }
