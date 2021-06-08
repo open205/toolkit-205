@@ -4,6 +4,7 @@
 #include <functional>
 #include <string>
 #include <nlohmann/json.hpp>
+#include <iostream>
 
 namespace ASHRAE205_NS {
    enum class msg_severity : unsigned int {
@@ -17,6 +18,22 @@ namespace ASHRAE205_NS {
 
     void Set_error_handler(msg_handler handler);
     void Show_message(msg_severity severity, const std::string& message);
+
+    template<class T>
+    void A205_json_get(nlohmann::json j, const char *subnode, T& a205_object, bool required = false)
+    {
+		try 
+        {
+            a205_object = j.at(subnode).get<T>();
+        }
+		catch (nlohmann::json::out_of_range & ex)
+        {
+            if (required)
+            {
+                Show_message(msg_severity::WARN_205, ex.what());
+            }
+        }
+    }
 
 	inline void A205_json_catch(nlohmann::json::out_of_range & ex)
 	{
