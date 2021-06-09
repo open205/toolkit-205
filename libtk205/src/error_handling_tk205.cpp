@@ -21,7 +21,7 @@ namespace ASHRAE205_NS {
         };
         if (!_error_handler)
         {
-            std::cout << severity_str[severity] << ": " << message << std::endl;
+            //std::cout << severity_str[severity] << ": " << message << std::endl;
         }
         else
         {
