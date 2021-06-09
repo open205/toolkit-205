@@ -28,13 +28,20 @@ TEST_F(RS0001_fixture, Calculate_performance_cooling)
    auto result = _rs.performance.performance_map_cooling.Calculate_performance(target);
    EXPECT_EQ(result.size(), 9u);
    //EXPECT_THAT(result, testing::ElementsAre(testing::DoubleEq(3.189), testing::DoubleEq(6.378), ...));
-   }
+}
 
 TEST_F(RS0005_fixture, Calculate_embedded_RS_performance)
 {
     std::vector<double> target {5550.0, 10.0}; //NOLINT
     auto result = _rs.performance.drive_representation.performance.performance_map.Calculate_performance(target);
     EXPECT_THAT(result, testing::ElementsAre(testing::DoubleEq(0.985)));
+}
+
+TEST_F(RS0003_fixture, Verify_grid_variable_index)
+{
+    auto pm = dynamic_cast<ASHRAE205_NS::RS0003_NS::PerformanceMapContinuous *>(_rs.performance.performance_map.get());
+    auto result = pm->grid_variables.static_pressure_difference_index;
+    EXPECT_EQ(result, 1u);
 }
 
 void Display_message(ASHRAE205_NS::msg_severity severity, const std::string &message, void *)
