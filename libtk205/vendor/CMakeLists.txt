@@ -1,4 +1,6 @@
-add_subdirectory(btwxt)
+if (NOT TARGET btwxt)
+    add_subdirectory(btwxt)
+endif()
 
 if (BUILD_TK205_TESTING AND NOT TARGET gtest)
 
