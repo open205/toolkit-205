@@ -8,7 +8,7 @@
 #include "libtk205.h"
 #include <stdexcept>
 
-using namespace libtk205_NS;
+using namespace ASHRAE205_NS;
 
 #if 0
 TEST(RS_fixture, Validate_RSes)

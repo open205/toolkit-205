@@ -7,7 +7,7 @@
 #include "gtest/gtest.h"
 #include "libtk205.h"
 
-using namespace libtk205_NS;
+using namespace ASHRAE205_NS;
 
 class RS_fixture : public testing::Test
 {
