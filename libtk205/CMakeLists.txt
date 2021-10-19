@@ -26,15 +26,15 @@ foreach(schema IN LISTS RS_schemas)
 endforeach()
 
 add_custom_command(OUTPUT ${RS_headers} ${RS_src}
-                  COMMAND poetry run doit headers cpp
+                  COMMAND poetry run doit cpp
                   DEPENDS ${RS_schemas}
                   COMMENT "Generate libtk205 files from YAML schema"
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../schema-205")
 
-set (SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/libtk205.cpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/error_handling_tk205.cpp"
+set (SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/error_handling_tk205.cpp"
              "${RS_headers}"
-             "${RS_src}")
+             "${RS_src}"
+             "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/libtk205.cpp")
 
 add_library(libtk205 ${SOURCES})
 
