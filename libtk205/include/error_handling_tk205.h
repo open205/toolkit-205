@@ -10,9 +10,9 @@ namespace ASHRAE205_NS {
 
     struct enum_info
     { 
-        std::string enum_name; 
-        std::string display_text; 
-        std::string description;
+        std::string_view enumerant_name; 
+        std::string_view display_text; 
+        std::string_view description;
     };
 
     enum class msg_severity : unsigned int {
