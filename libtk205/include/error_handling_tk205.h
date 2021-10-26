@@ -7,12 +7,20 @@
 #include <iostream>
 
 namespace ASHRAE205_NS {
-   enum class msg_severity : unsigned int {
-       DEBUG_205, 
-       INFO_205, 
-       WARN_205, 
-       ERR_205
-   };
+
+    struct enum_info
+    { 
+        std::string enum_name; 
+        std::string display_text; 
+        std::string description;
+    };
+
+    enum class msg_severity : unsigned int {
+        DEBUG_205, 
+        INFO_205, 
+        WARN_205, 
+        ERR_205
+    };
 
     using msg_handler = std::function<void(msg_severity, const std::string &, void *)>;
 

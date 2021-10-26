@@ -44,6 +44,12 @@ TEST_F(RS0003_fixture, Verify_grid_variable_index)
     EXPECT_EQ(result, 1u);
 }
 
+TEST_F(RS0006_fixture, Verify_enum_description)
+{
+    auto result = RS0006_NS::CoolingMethod_info[RS0006_NS::CoolingMethod::ACTIVE_AIR_COOLED].description;
+    EXPECT_THAT(result, "Drive is cooled using forced air convection within the surrounding environment");
+}
+
 void Display_message(ASHRAE205_NS::msg_severity severity, const std::string &message, void *)
 {
    using namespace ASHRAE205_NS;
