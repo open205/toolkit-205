@@ -22,6 +22,12 @@ TEST(RS_fixture, Validate_RSes)
 }
 #endif
 
+TEST_F(RS0001_fixture, Check_is_set)
+{
+    EXPECT_FALSE(_rs.metadata.data_source_is_set);
+    EXPECT_TRUE(_rs.metadata.description_is_set);
+}
+
 TEST_F(RS0001_fixture, Calculate_performance_cooling)
 {
    std::vector<double> target {0.0755, 280.0, 0.0957, 295.0, 0.5}; //NOLINT : Of course you need magic numbers; it's a numerical test

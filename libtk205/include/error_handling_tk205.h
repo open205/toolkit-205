@@ -28,26 +28,22 @@ namespace ASHRAE205_NS {
     void Show_message(msg_severity severity, const std::string& message);
 
     template<class T>
-    void A205_json_get(nlohmann::json j, const char *subnode, T& a205_object, bool required = false)
+    void A205_json_get(nlohmann::json j, const char *subnode, T& a205_object, bool& object_is_set, bool required = false)
     {
 		try 
         {
             a205_object = j.at(subnode).get<T>();
+            object_is_set = true;
         }
 		catch (nlohmann::json::out_of_range & ex)
         {
+            object_is_set = false;
             if (required)
             {
                 Show_message(msg_severity::WARN_205, ex.what());
             }
         }
     }
-
-	inline void A205_json_catch(nlohmann::json::out_of_range & ex)
-	{
-    	Show_message(msg_severity::WARN_205, ex.what());
-	}
-
 }
 
 
