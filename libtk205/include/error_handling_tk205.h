@@ -8,13 +8,6 @@
 
 namespace ASHRAE205_NS {
 
-    struct enum_info
-    { 
-        std::string_view enumerant_name; 
-        std::string_view display_text; 
-        std::string_view description;
-    };
-
     enum class msg_severity : unsigned int {
         DEBUG_205, 
         INFO_205, 
@@ -26,24 +19,6 @@ namespace ASHRAE205_NS {
 
     void Set_error_handler(msg_handler handler);
     void Show_message(msg_severity severity, const std::string& message);
-
-    template<class T>
-    void A205_json_get(nlohmann::json j, const char *subnode, T& a205_object, bool& object_is_set, bool required = false)
-    {
-		try 
-        {
-            a205_object = j.at(subnode).get<T>();
-            object_is_set = true;
-        }
-		catch (nlohmann::json::out_of_range & ex)
-        {
-            object_is_set = false;
-            if (required)
-            {
-                Show_message(msg_severity::WARN_205, ex.what());
-            }
-        }
-    }
 }
 
 

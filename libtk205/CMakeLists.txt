@@ -25,7 +25,9 @@ foreach(schema IN LISTS RS_schemas)
   list(APPEND RS_src "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/${schema_name}.cpp")
 endforeach()
 
-list(APPEND lib_headers "${PROJECT_SOURCE_DIR}/../schema-205/build/include/libtk205.h")
+list(APPEND lib_headers "${PROJECT_SOURCE_DIR}/../schema-205/build/include/libtk205.h"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/include/typeinfo_205.h"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/include/loadobject_205.h")
 list(APPEND lib_src "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/libtk205.cpp")
 
 add_custom_command(OUTPUT ${RS_headers} ${RS_src} ${lib_headers} ${lib_src}
