@@ -52,7 +52,7 @@ TEST_F(RS0003_fixture, Verify_grid_variable_index)
 
 TEST_F(RS0006_fixture, Verify_enum_description)
 {
-    auto result = RS0006_NS::CoolingMethod_info[RS0006_NS::CoolingMethod::ACTIVE_AIR_COOLED].description;
+    auto result = RS0006_NS::CoolingMethod_info.at(RS0006_NS::CoolingMethod::ACTIVE_AIR_COOLED).description;
     EXPECT_THAT(result, "Drive is cooled using forced air convection within the surrounding environment");
 }
 
