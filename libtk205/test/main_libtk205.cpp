@@ -30,10 +30,23 @@ TEST_F(RS0001_fixture, Check_is_set)
 
 TEST_F(RS0001_fixture, Calculate_performance_cooling)
 {
-   std::vector<double> target {0.0755, 280.0, 0.0957, 295.0, 0.5}; //NOLINT : Of course you need magic numbers; it's a numerical test
+   std::vector<double> target {0.0755, 280.0, 0.0957, 295.0, 0.5}; //NOLINT : Magic numbers necessary!
    auto result = _rs.performance.performance_map_cooling.Calculate_performance(target);
    EXPECT_EQ(result.size(), 9u);
-   //EXPECT_THAT(result, testing::ElementsAre(testing::DoubleEq(3.189), testing::DoubleEq(6.378), ...));
+}
+
+TEST_F(RS0001_fixture, Calculate_performance_cooling_2)
+{
+   std::vector<double> target {0.0755, 280.0, 0.0957, 295.0, 0.5}; //NOLINT : Magic numbers necessary!
+   auto result = _rs.performance.performance_map_cooling.Calculate_performance(target, _rs.performance.performance_map_cooling.lookup_variables.condenser_liquid_leaving_temperature_index);
+   // 59593.2,351600,411193,281.11,296.03,74400,23600,0,0
+   EXPECT_NEAR(result, 296.03, 0.001);
+}
+
+TEST_F(RS0001_fixture, Calculate_performance_cooling_3)
+{
+   auto result = _rs.performance.performance_map_cooling.Calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5).condenser_liquid_leaving_temperature;
+   EXPECT_NEAR(result, 296.03, 0.001);
 }
 
 TEST_F(RS0005_fixture, Calculate_embedded_RS_performance)
