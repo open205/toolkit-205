@@ -45,7 +45,7 @@ TEST_F(RS0001_fixture, Calculate_performance_cooling_2)
 
 TEST_F(RS0001_fixture, Calculate_performance_cooling_3)
 {
-   auto result = _rs.performance.performance_map_cooling.Calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5).condenser_liquid_leaving_temperature;
+   auto result = _rs.performance.performance_map_cooling.Calculate_performance(0.0755, 280.0, 0.0957, 295.0, 1).condenser_liquid_leaving_temperature;
    EXPECT_NEAR(result, 296.03, 0.001);
 }
 
@@ -67,6 +67,14 @@ TEST_F(RS0006_fixture, Verify_enum_description)
 {
     auto result = RS0006_NS::CoolingMethod_info.at(RS0006_NS::CoolingMethod::ACTIVE_AIR_COOLED).description;
     EXPECT_THAT(result, "Drive is cooled using forced air convection within the surrounding environment");
+}
+
+TEST_F(RS0001_fixture, Verify_element_metadata)
+{
+    auto result = RS0001_NS::RatingAHRI550590PartLoadPoint::evaporator_liquid_volumetric_flow_rate_name;
+    EXPECT_THAT(result, "evaporator_liquid_volumetric_flow_rate");
+    result = RS0001_NS::RatingAHRI550590PartLoadPoint::evaporator_liquid_volumetric_flow_rate_units;
+    EXPECT_THAT(result, "gpm");
 }
 
 void Display_message(ASHRAE205_NS::msg_severity severity, const std::string &message, void *)
