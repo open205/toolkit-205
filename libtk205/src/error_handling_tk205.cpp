@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string_view>
 
-namespace ASHRAE205_NS {
+namespace tk205 {
 
     msg_handler _error_handler;
 

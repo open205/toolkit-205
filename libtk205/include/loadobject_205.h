@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <error_handling_tk205.h>
 
-namespace ASHRAE205_NS {
+namespace tk205 {
 
     template<class T>
     void A205_json_get(nlohmann::json j, const char *subnode, T& a205_object, bool& object_is_set, bool required = false)

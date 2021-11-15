@@ -8,7 +8,7 @@
 #include "libtk205.h"
 #include <stdexcept>
 
-using namespace ASHRAE205_NS;
+using namespace tk205;
 
 #if 0
 TEST(RS_fixture, Validate_RSes)
@@ -58,7 +58,7 @@ TEST_F(RS0005_fixture, Calculate_embedded_RS_performance)
 
 TEST_F(RS0003_fixture, Verify_grid_variable_index)
 {
-    auto pm = dynamic_cast<ASHRAE205_NS::RS0003_NS::PerformanceMapContinuous *>(_rs.performance.performance_map.get());
+    auto pm = dynamic_cast<RS0003_NS::PerformanceMapContinuous *>(_rs.performance.performance_map.get());
     auto result = pm->grid_variables.static_pressure_difference_index;
     EXPECT_EQ(result, 1u);
 }
@@ -77,9 +77,8 @@ TEST_F(RS0001_fixture, Verify_element_metadata)
     EXPECT_THAT(result, "gpm");
 }
 
-void Display_message(ASHRAE205_NS::msg_severity severity, const std::string &message, void *)
+void Display_message(msg_severity severity, const std::string &message, void *)
 {
-   using namespace ASHRAE205_NS;
    static std::map<msg_severity, std::string> severity_str {
       {msg_severity::DEBUG_205, "DEBUG"},
       {msg_severity::INFO_205, "INFO"},
@@ -99,11 +98,11 @@ void Display_message(ASHRAE205_NS::msg_severity severity, const std::string &mes
 void Btwxt_message(const Btwxt::MsgLevel messageType, const std::string message,
                    void *)
 {
-   static std::map<Btwxt::MsgLevel, ASHRAE205_NS::msg_severity> severity {
-      {Btwxt::MsgLevel::MSG_DEBUG, ASHRAE205_NS::msg_severity::DEBUG_205},
-      {Btwxt::MsgLevel::MSG_INFO, ASHRAE205_NS::msg_severity::INFO_205},
-      {Btwxt::MsgLevel::MSG_WARN, ASHRAE205_NS::msg_severity::WARN_205},
-      {Btwxt::MsgLevel::MSG_ERR, ASHRAE205_NS::msg_severity::ERR_205}
+   static std::map<Btwxt::MsgLevel, msg_severity> severity {
+      {Btwxt::MsgLevel::MSG_DEBUG, msg_severity::DEBUG_205},
+      {Btwxt::MsgLevel::MSG_INFO, msg_severity::INFO_205},
+      {Btwxt::MsgLevel::MSG_WARN, msg_severity::WARN_205},
+      {Btwxt::MsgLevel::MSG_ERR, msg_severity::ERR_205}
    };
    Display_message(severity[messageType], message, nullptr);
 }
@@ -111,7 +110,7 @@ void Btwxt_message(const Btwxt::MsgLevel messageType, const std::string message,
 int main(int argc, char **argv)
 {
    ::testing::InitGoogleTest(&argc, argv);
-   ASHRAE205_NS::Set_error_handler(Display_message);
+   tk205::Set_error_handler(Display_message);
    Btwxt::setMessageCallback(Btwxt_message, nullptr);
    return RUN_ALL_TESTS();
 }

@@ -3,7 +3,7 @@
 
 #include <string_view>
 
-namespace ASHRAE205_NS {
+namespace tk205 {
 
     struct enum_info
     { 

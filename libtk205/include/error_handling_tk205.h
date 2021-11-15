@@ -6,7 +6,7 @@
 #include <nlohmann/json.hpp>
 #include <iostream>
 
-namespace ASHRAE205_NS {
+namespace tk205 {
 
     enum class msg_severity : unsigned int {
         DEBUG_205, 
