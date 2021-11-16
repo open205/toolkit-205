@@ -45,7 +45,7 @@ TEST_F(RS0001_fixture, Calculate_performance_cooling_2)
 
 TEST_F(RS0001_fixture, Calculate_performance_cooling_3)
 {
-   auto result = _rs.performance.performance_map_cooling.Calculate_performance(0.0755, 280.0, 0.0957, 295.0, 1).condenser_liquid_leaving_temperature;
+   auto result = _rs.performance.performance_map_cooling.Calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5).condenser_liquid_leaving_temperature;
    EXPECT_NEAR(result, 296.03, 0.001);
 }
 
