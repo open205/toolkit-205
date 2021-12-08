@@ -41,5 +41,5 @@ jobs:
       - name: Build and test
         run: poetry run doit
       - name: Export libtk205 source
-        run: cmake "-DPA_TOKEN="${PATOKEN} -DPROJECT_SOURCE_DIR=${{github.workspace}}/libtk205" -P "${{github.workspace}}/libtk205/cmake/update_lib_repo.cmake" 
+        run: cmake "-DPA_TOKEN=${PATOKEN} -DPROJECT_SOURCE_DIR=${{github.workspace}}/libtk205" -P "${{github.workspace}}/libtk205/cmake/update_lib_repo.cmake" 
 
