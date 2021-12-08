@@ -2,6 +2,8 @@ name: Build and Test
 
 on: push
 
+env:
+  PATOKEN: ${{ secrets.CI_PA_TOKEN }}
 jobs:
   build:
     name: Build
@@ -38,3 +40,6 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Build and test
         run: poetry run doit
+      - name: Export libtk205 source
+        run: cmake "-DPA_TOKEN="${PATOKEN} -DPROJECT_SOURCE_DIR=${{github.workspace}}/libtk205" -P "${{github.workspace}}/libtk205/cmake/update_lib_repo.cmake" 
+

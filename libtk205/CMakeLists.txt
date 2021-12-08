@@ -44,6 +44,11 @@ set (SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/error_handling_tk205.cpp"
 
 add_library(libtk205 ${SOURCES})
 
+# add_custom_target(update_lib_repo ALL
+#                   COMMAND ${CMAKE_COMMAND} "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}" -P "${PROJECT_SOURCE_DIR}/cmake/update_lib_repo.cmake"
+#                   VERBATIM)
+# add_dependencies(update_lib_repo libtk205)
+
 add_subdirectory(vendor)
 
 if (BUILD_TK205_TESTING)
