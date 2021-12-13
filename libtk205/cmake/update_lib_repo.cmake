@@ -60,7 +60,7 @@ else()
    )
 endif()
 
-set(include_dest_dir "${clone_dir}/include/${clone_dir}")
+set(include_dest_dir "${clone_dir}/include/${repo_name}")
 set(src_dest_dir "${clone_dir}/src")
 
 file(MAKE_DIRECTORY "${include_dest_dir}")
