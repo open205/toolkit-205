@@ -98,7 +98,7 @@ execute_process(COMMAND ${GIT_EXECUTABLE} config user.email "ci.bigladdersoftwar
                 WORKING_DIRECTORY ${clone_dir}
 )
 # git add
-execute_process(COMMAND ${GIT_EXECUTABLE} add include src test
+execute_process(COMMAND ${GIT_EXECUTABLE} add include src test examples
                 WORKING_DIRECTORY ${clone_dir}
 )
 # git commit
