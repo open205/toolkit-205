@@ -38,7 +38,7 @@ execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --pretty=%B
                 OUTPUT_VARIABLE last_commit_msg
                 OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-message(STATUS "Last commit message on local branch was "${last_commit_msg}"")
+message(STATUS "Last commit message on local branch was \"${last_commit_msg}\"")
 
 execute_process(COMMAND ${GIT_EXECUTABLE} ls-remote --heads --exit-code ${authenticated_repo} ${current_git_branch}
                 WORKING_DIRECTORY ${clone_dir}
