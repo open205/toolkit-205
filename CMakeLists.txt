@@ -21,7 +21,7 @@ option( BUILD_TK205_TESTING "Build libtk205 testing targets" ON )
 
 # Set up testing/coverage
 if (BUILD_TK205_TESTING)
-  set(TEST205_INPUT_EXAMPLES_DIR ${PROJECT_SOURCE_DIR}) # TODO Upgrade to configure_file method?
+  set(TEST205_INPUT_EXAMPLES_DIR "${PROJECT_SOURCE_DIR}/schema-205") 
   enable_testing()
 endif()
 

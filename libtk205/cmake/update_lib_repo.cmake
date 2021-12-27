@@ -87,6 +87,9 @@ file(COPY "${PROJECT_SOURCE_DIR}/src/"
 file(COPY "${PROJECT_SOURCE_DIR}/test"
      DESTINATION "${clone_dir}")
 
+file(COPY "${PROJECT_SOURCE_DIR}/../schema-205/examples"
+     DESTINATION "${clone_dir}")
+
 # git config
 execute_process(COMMAND ${GIT_EXECUTABLE} config user.name "Actions CI"
                 WORKING_DIRECTORY ${clone_dir}
