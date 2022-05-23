@@ -10,9 +10,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/btwxt/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/single_include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include)
 # Two "deeper" include directories necessary bc Valijson doesn't scope includes the same as everyone else
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/single_include/nlohmann)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include/nlohmann)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/valijson/include)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/single_include/nlohmann)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include/nlohmann)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/valijson/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/build/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/schema205/src)
@@ -23,12 +23,16 @@ foreach(schema IN LISTS RS_schemas)
   string(REGEX REPLACE "${PROJECT_SOURCE_DIR}/../schema-205/schema-source/(.*).schema.yaml" "\\1" schema_name "${schema}")
   list(APPEND RS_headers "${PROJECT_SOURCE_DIR}/../schema-205/build/include/${schema_name}.h")
   list(APPEND RS_src "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/${schema_name}.cpp")
+  if (schema_name MATCHES "RS.*")
+    list(APPEND factory_headers "${PROJECT_SOURCE_DIR}/../schema-205/build/include/${schema_name}_factory.h")
+    list(APPEND factory_src "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/${schema_name}_factory.cpp")
+  endif()
 endforeach()
 
-list(APPEND lib_headers "${PROJECT_SOURCE_DIR}/../schema-205/build/include/libtk205.h"
-                        "${CMAKE_CURRENT_SOURCE_DIR}/include/typeinfo_205.h"
-                        "${CMAKE_CURRENT_SOURCE_DIR}/include/loadobject_205.h")
-list(APPEND lib_src "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/libtk205.cpp")
+list(APPEND lib_headers "${CMAKE_CURRENT_SOURCE_DIR}/include/typeinfo_205.h"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/include/loadobject_205.h"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/include/error_handling_tk205.h")
+#list(APPEND lib_src "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/libtk205.cpp")
 
 add_custom_command(OUTPUT ${RS_headers} ${RS_src} ${lib_headers} ${lib_src}
                   COMMAND poetry run doit cpp
@@ -39,6 +43,8 @@ add_custom_command(OUTPUT ${RS_headers} ${RS_src} ${lib_headers} ${lib_src}
 set (SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/error_handling_tk205.cpp"
              "${RS_headers}"
              "${RS_src}"
+             "${factory_headers}"
+             "${factory_src}"
              "${lib_headers}"
              "${lib_src}")
 

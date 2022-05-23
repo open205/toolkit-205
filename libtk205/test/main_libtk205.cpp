@@ -5,10 +5,10 @@
 #include "gmock/gmock.h"
 
 #include "fixtures_libtk205.hpp"
-#include "libtk205.h"
+//#include "libtk205.h"
 #include <stdexcept>
 
-using namespace tk205;
+//using namespace tk205;
 
 #if 0
 TEST(RS_fixture, Validate_RSes)
@@ -24,41 +24,47 @@ TEST(RS_fixture, Validate_RSes)
 
 TEST_F(RS0001_fixture, Check_is_set)
 {
-    EXPECT_FALSE(_rs.metadata.data_source_is_set);
-    EXPECT_TRUE(_rs.metadata.description_is_set);
+    auto rs = dynamic_cast<RS0001_NS::RS0001 *>(_rs.get());
+    EXPECT_FALSE(rs->metadata.data_source_is_set);
+    EXPECT_TRUE(rs->metadata.description_is_set);
 }
 
 TEST_F(RS0001_fixture, Calculate_performance_cooling)
 {
+   auto rs = dynamic_cast<RS0001_NS::RS0001 *>(_rs.get());
    std::vector<double> target {0.0755, 280.0, 0.0957, 295.0, 0.5}; //NOLINT : Magic numbers necessary!
-   auto result = _rs.performance.performance_map_cooling.Calculate_performance(target);
+   auto result = rs->performance.performance_map_cooling.Calculate_performance(target);
    EXPECT_EQ(result.size(), 9u);
 }
 
 TEST_F(RS0001_fixture, Calculate_performance_cooling_2)
 {
+   auto rs = dynamic_cast<RS0001_NS::RS0001 *>(_rs.get());
    std::vector<double> target {0.0755, 280.0, 0.0957, 295.0, 0.5}; //NOLINT : Magic numbers necessary!
-   auto result = _rs.performance.performance_map_cooling.Calculate_performance(target, _rs.performance.performance_map_cooling.lookup_variables.condenser_liquid_leaving_temperature_index);
+   auto result = rs->performance.performance_map_cooling.Calculate_performance(target, rs->performance.performance_map_cooling.lookup_variables.condenser_liquid_leaving_temperature_index);
    // 59593.2,351600,411193,281.11,296.03,74400,23600,0,0
    EXPECT_NEAR(result, 296.03, 0.001);
 }
 
 TEST_F(RS0001_fixture, Calculate_performance_cooling_3)
 {
-   auto result = _rs.performance.performance_map_cooling.Calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5).condenser_liquid_leaving_temperature;
+   auto rs = dynamic_cast<RS0001_NS::RS0001 *>(_rs.get());
+   auto result = rs->performance.performance_map_cooling.Calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5).condenser_liquid_leaving_temperature;
    EXPECT_NEAR(result, 296.03, 0.001);
 }
 
 TEST_F(RS0005_fixture, Calculate_embedded_RS_performance)
 {
+    auto rs = dynamic_cast<RS0005_NS::RS0005 *>(_rs.get());
     std::vector<double> target {5550.0, 10.0}; //NOLINT
-    auto result = _rs.performance.drive_representation.performance.performance_map.Calculate_performance(target);
+    auto result = rs->performance.drive_representation.performance.performance_map.Calculate_performance(target);
     EXPECT_THAT(result, testing::ElementsAre(testing::DoubleEq(0.985)));
 }
 
 TEST_F(RS0003_fixture, Verify_grid_variable_index)
 {
-    auto pm = dynamic_cast<RS0003_NS::PerformanceMapContinuous *>(_rs.performance.performance_map.get());
+    auto rs = dynamic_cast<RS0003_NS::RS0003 *>(_rs.get());
+    auto pm = dynamic_cast<RS0003_NS::PerformanceMapContinuous *>(rs->performance.performance_map.get());
     auto result = pm->grid_variables.static_pressure_difference_index;
     EXPECT_EQ(result, 1u);
 }
