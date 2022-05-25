@@ -5,6 +5,7 @@
 #define FIXTURE_LIBTK205_HPP_
 
 #include "gtest/gtest.h"
+// The following headers are necessary to Create an RS instance
 #include "RS0001.h"
 #include "RS0002.h"
 #include "RS0003.h"
@@ -12,6 +13,8 @@
 #include "RS0005.h"
 #include "RS0006.h"
 #include "RS0007.h"
+// The following headers are required wherever we register necessary factories;
+// it's not required that it be in the same place that RS instances are Created.
 #include "RS0001_factory.h"
 #include "RS0002_factory.h"
 #include "RS0003_factory.h"

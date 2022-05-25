@@ -5,7 +5,6 @@
 #include "gmock/gmock.h"
 
 #include "fixtures_libtk205.hpp"
-//#include "libtk205.h"
 #include <stdexcept>
 
 //using namespace tk205;
