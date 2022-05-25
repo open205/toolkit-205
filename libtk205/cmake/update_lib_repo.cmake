@@ -83,6 +83,9 @@ file(COPY "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/"
 file(COPY "${PROJECT_SOURCE_DIR}/src/"
      DESTINATION "${src_dest_dir}"
      FILES_MATCHING PATTERN *.cpp)
+file(COPY "${PROJECT_SOURCE_DIR}/../schema-205/schema205/src/"
+     DESTINATION "${src_dest_dir}"
+     FILES_MATCHING PATTERN *.cpp)
 
 file(COPY "${PROJECT_SOURCE_DIR}/test"
      DESTINATION "${clone_dir}")
