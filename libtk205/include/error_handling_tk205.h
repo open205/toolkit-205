@@ -17,8 +17,8 @@ namespace tk205 {
 
     using msg_handler = std::function<void(msg_severity, const std::string &, void *)>;
 
-    void Set_error_handler(msg_handler handler);
-    void Show_message(msg_severity severity, const std::string& message);
+    void set_error_handler(msg_handler handler);
+    void show_message(msg_severity severity, const std::string& message);
 }
 
 

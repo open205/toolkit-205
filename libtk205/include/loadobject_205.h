@@ -19,7 +19,7 @@ namespace tk205 {
             object_is_set = false;
             if (required)
             {
-                Show_message(msg_severity::WARN_205, ex.what());
+                show_message(msg_severity::WARN_205, ex.what());
             }
         }
     }

@@ -7,12 +7,12 @@ namespace tk205 {
 
     msg_handler _error_handler;
 
-    void Set_error_handler(msg_handler handler)
+    void set_error_handler(msg_handler handler)
     {
         _error_handler = std::move(handler);
     }
 
-    void Show_message(msg_severity severity, const std::string &message)
+    void show_message(msg_severity severity, const std::string &message)
     {
         static std::map<msg_severity, std::string_view> severity_str {
             {msg_severity::DEBUG_205, "DEBUG"},

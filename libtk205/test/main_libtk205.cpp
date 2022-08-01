@@ -10,7 +10,7 @@
 //using namespace tk205;
 
 #if 0
-TEST(RS_fixture, Validate_RSes)
+TEST(RSFixture, Validate_RSes)
 {
    EXPECT_TRUE(A205_SDK::Validate_A205(TEST205_INPUT_EXAMPLES_DIR"/schema-205/build/schema/RS0001.schema.json", 
                                        TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0001/Chiller-Constant-Efficiency.RS0001.a205.json"));
@@ -21,64 +21,64 @@ TEST(RS_fixture, Validate_RSes)
 }
 #endif
 
-TEST_F(RS0001_fixture, Check_is_set)
+TEST_F(RS0001Fixture, Check_is_set)
 {
-    auto rs = dynamic_cast<RS0001_NS::RS0001 *>(_rs.get());
+    auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
     EXPECT_FALSE(rs->metadata.data_source_is_set);
     EXPECT_TRUE(rs->metadata.description_is_set);
 }
 
-TEST_F(RS0001_fixture, Calculate_performance_cooling)
+TEST_F(RS0001Fixture, Calculate_performance_cooling)
 {
-   auto rs = dynamic_cast<RS0001_NS::RS0001 *>(_rs.get());
+   auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
    std::vector<double> target {0.0755, 280.0, 0.0957, 295.0, 0.5}; //NOLINT : Magic numbers necessary!
-   auto result = rs->performance.performance_map_cooling.Calculate_performance(target);
+   auto result = rs->performance.performance_map_cooling.calculate_performance(target);
    EXPECT_EQ(result.size(), 9u);
 }
 
-TEST_F(RS0001_fixture, Calculate_performance_cooling_2)
+TEST_F(RS0001Fixture, Calculate_performance_cooling_2)
 {
-   auto rs = dynamic_cast<RS0001_NS::RS0001 *>(_rs.get());
+   auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
    std::vector<double> target {0.0755, 280.0, 0.0957, 295.0, 0.5}; //NOLINT : Magic numbers necessary!
-   auto result = rs->performance.performance_map_cooling.Calculate_performance(target, rs->performance.performance_map_cooling.lookup_variables.condenser_liquid_leaving_temperature_index);
+   auto result = rs->performance.performance_map_cooling.calculate_performance(target, rs->performance.performance_map_cooling.lookup_variables.condenser_liquid_leaving_temperature_index);
    // 59593.2,351600,411193,281.11,296.03,74400,23600,0,0
    EXPECT_NEAR(result, 296.03, 0.001);
 }
 
-TEST_F(RS0001_fixture, Calculate_performance_cooling_3)
+TEST_F(RS0001Fixture, Calculate_performance_cooling_3)
 {
-   auto rs = dynamic_cast<RS0001_NS::RS0001 *>(_rs.get());
-   auto result = rs->performance.performance_map_cooling.Calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5).condenser_liquid_leaving_temperature;
+   auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
+   auto result = rs->performance.performance_map_cooling.calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5).condenser_liquid_leaving_temperature;
    EXPECT_NEAR(result, 296.03, 0.001);
 }
 
-TEST_F(RS0005_fixture, Calculate_embedded_RS_performance)
+TEST_F(RS0005Fixture, Calculate_embedded_RS_performance)
 {
-    auto rs = dynamic_cast<RS0005_NS::RS0005 *>(_rs.get());
+    auto rs = dynamic_cast<rs0005_ns::RS0005 *>(rs_.get());
     std::vector<double> target {5550.0, 10.0}; //NOLINT
-    auto result = rs->performance.drive_representation.performance.performance_map.Calculate_performance(target);
+    auto result = rs->performance.drive_representation.performance.performance_map.calculate_performance(target);
     EXPECT_THAT(result, testing::ElementsAre(testing::DoubleEq(0.985)));
 }
 
-TEST_F(RS0003_fixture, Verify_grid_variable_index)
+TEST_F(RS0003Fixture, Verify_grid_variable_index)
 {
-    auto rs = dynamic_cast<RS0003_NS::RS0003 *>(_rs.get());
-    auto pm = dynamic_cast<RS0003_NS::PerformanceMapContinuous *>(rs->performance.performance_map.get());
+    auto rs = dynamic_cast<rs0003_ns::RS0003 *>(rs_.get());
+    auto pm = dynamic_cast<rs0003_ns::PerformanceMapContinuous *>(rs->performance.performance_map.get());
     auto result = pm->grid_variables.static_pressure_difference_index;
     EXPECT_EQ(result, 1u);
 }
 
-TEST_F(RS0006_fixture, Verify_enum_description)
+TEST_F(RS0006Fixture, Verify_enum_description)
 {
-    auto result = RS0006_NS::CoolingMethod_info.at(RS0006_NS::CoolingMethod::ACTIVE_AIR_COOLED).description;
+    auto result = rs0006_ns::CoolingMethod_info.at(rs0006_ns::CoolingMethod::ACTIVE_AIR_COOLED).description;
     EXPECT_THAT(result, "Drive is cooled using forced air convection within the surrounding environment");
 }
 
-TEST_F(RS0001_fixture, Verify_element_metadata)
+TEST_F(RS0001Fixture, Verify_element_metadata)
 {
-    auto result = RS0001_NS::RatingAHRI550590PartLoadPoint::evaporator_liquid_volumetric_flow_rate_name;
+    auto result = rs0001_ns::RatingAHRI550590PartLoadPoint::evaporator_liquid_volumetric_flow_rate_name;
     EXPECT_THAT(result, "evaporator_liquid_volumetric_flow_rate");
-    result = RS0001_NS::RatingAHRI550590PartLoadPoint::evaporator_liquid_volumetric_flow_rate_units;
+    result = rs0001_ns::RatingAHRI550590PartLoadPoint::evaporator_liquid_volumetric_flow_rate_units;
     EXPECT_THAT(result, "gpm");
 }
 
@@ -115,7 +115,7 @@ void Btwxt_message(const Btwxt::MsgLevel messageType, const std::string message,
 int main(int argc, char **argv)
 {
    ::testing::InitGoogleTest(&argc, argv);
-   tk205::Set_error_handler(Display_message);
+   tk205::set_error_handler(Display_message);
    Btwxt::setMessageCallback(Btwxt_message, nullptr);
    return RUN_ALL_TESTS();
 }
