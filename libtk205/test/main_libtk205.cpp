@@ -7,20 +7,6 @@
 #include "fixtures_libtk205.hpp"
 #include <stdexcept>
 
-//using namespace tk205;
-
-#if 0
-TEST(RSFixture, Validate_RSes)
-{
-   EXPECT_TRUE(A205_SDK::Validate_A205(TEST205_INPUT_EXAMPLES_DIR"/schema-205/build/schema/RS0001.schema.json", 
-                                       TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0001/Chiller-Constant-Efficiency.RS0001.a205.json"));
-   EXPECT_TRUE(A205_SDK::Validate_A205(TEST205_INPUT_EXAMPLES_DIR"/schema-205/build/schema/RS0002.schema.json", 
-                                       TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json"));
-   EXPECT_TRUE(A205_SDK::Validate_A205(TEST205_INPUT_EXAMPLES_DIR"/schema-205/build/schema/RS0003.schema.json", 
-                                       TEST205_INPUT_EXAMPLES_DIR"/schema-205/examples/RS0003/Fan-Continuous.RS0003.a205.json"));
-}
-#endif
-
 TEST_F(RS0001Fixture, Check_is_set)
 {
     auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());

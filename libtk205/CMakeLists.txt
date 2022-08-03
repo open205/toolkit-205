@@ -9,10 +9,6 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/btwxt/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/single_include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include)
-# Two "deeper" include directories necessary bc Valijson doesn't scope includes the same as everyone else
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/single_include/nlohmann)
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include/nlohmann)
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/valijson/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/build/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/schema205/src)
@@ -33,7 +29,6 @@ endforeach()
 list(APPEND lib_headers "${CMAKE_CURRENT_SOURCE_DIR}/include/typeinfo_205.h"
                         "${CMAKE_CURRENT_SOURCE_DIR}/include/loadobject_205.h"
                         "${CMAKE_CURRENT_SOURCE_DIR}/include/error_handling_tk205.h")
-#list(APPEND lib_src "${PROJECT_SOURCE_DIR}/../schema-205/build/cpp/libtk205.cpp")
 
 add_custom_command(OUTPUT ${rs_headers} ${rs_src} ${lib_headers} ${lib_src}
                   COMMAND poetry run doit cpp
