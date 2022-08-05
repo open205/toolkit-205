@@ -29,7 +29,7 @@ class RSFixture : public testing::Test
 {
 protected:
     RSFixture() {}
-    std::unique_ptr<RSInstanceBase> rs_;
+    std::shared_ptr<RSInstanceBase> rs_;
 };
 
 class RS0001Fixture : public RSFixture
