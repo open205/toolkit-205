@@ -32,6 +32,16 @@ protected:
     std::shared_ptr<RSInstanceBase> rs_;
 };
 
+class RS0001BadFixture : public RSFixture
+{
+protected:
+    RS0001BadFixture() : RSFixture()
+    {
+        RSInstanceFactory::register_factory("RS0001", std::make_shared<tk205::RS0001Factory>());
+        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json");
+    }
+};
+
 class RS0001Fixture : public RSFixture
 {
 protected:
