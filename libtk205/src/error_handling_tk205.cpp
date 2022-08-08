@@ -5,28 +5,30 @@
 
 namespace tk205 {
 
-    msg_handler _error_handler;
+    msg_handler error_handler_;
+    void *caller_info_;
 
-    void set_error_handler(msg_handler handler)
+    void set_error_handler(msg_handler handler, void *caller_info)
     {
-        _error_handler = std::move(handler);
+        error_handler_ = std::move(handler);
+        caller_info_ = caller_info;
     }
 
-    void show_message(msg_severity severity, const std::string &message)
+    void show_message(MsgSeverity severity, const std::string &message)
     {
-        static std::map<msg_severity, std::string_view> severity_str {
-            {msg_severity::DEBUG_205, "DEBUG"},
-            {msg_severity::INFO_205, "INFO"},
-            {msg_severity::WARN_205, "WARN"},
-            {msg_severity::ERR_205, "ERR"}
+        static std::map<MsgSeverity, std::string_view> severity_str {
+            {MsgSeverity::DEBUG_205, "DEBUG"},
+            {MsgSeverity::INFO_205, "INFO"},
+            {MsgSeverity::WARN_205, "WARN"},
+            {MsgSeverity::ERR_205, "ERR"}
         };
-        if (!_error_handler)
+        if (!error_handler_)
         {
             //std::cout << severity_str[severity] << ": " << message << std::endl;
         }
         else
         {
-            _error_handler(severity, message, nullptr);
+            error_handler_(severity, message, nullptr);
         }
     }
 }
