@@ -28,7 +28,7 @@ namespace tk205 {
         }
         else
         {
-            error_handler_(severity, message, nullptr);
+            error_handler_(severity, message, caller_info_);
         }
     }
 }
