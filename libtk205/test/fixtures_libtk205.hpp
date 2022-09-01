@@ -52,6 +52,16 @@ protected:
     }
 };
 
+class ASHRAEChillerFixture : public RSFixture
+{
+protected:
+    ASHRAEChillerFixture() : RSFixture()
+    {
+        RSInstanceFactory::register_factory("RS0001", std::make_shared<tk205::RS0001Factory>());
+        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0001/ASHRAE90-1-2019-bd-Curve-Set-C.RS0001.a205.json");
+    }
+};
+
 class RS0002Fixture : public RSFixture
 {
 protected:

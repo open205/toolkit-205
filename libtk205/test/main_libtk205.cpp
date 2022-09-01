@@ -48,6 +48,16 @@ TEST_F(RS0001Fixture, Calculate_performance_cooling_3)
     EXPECT_NEAR(result, 296.03, 0.001);
 }
 
+TEST_F(ASHRAEChillerFixture, Calculate_performance_cubic)
+{
+    auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
+    EXPECT_TRUE(rs != nullptr);
+    std::vector<double> target {0.00565, 280.0, 0.00845, 297.0, 1.5}; //NOLINT : Magic numbers necessary!
+    auto result1 = rs->performance.performance_map_cooling.calculate_performance(target, Btwxt::Method::LINEAR);
+    auto result2 = rs->performance.performance_map_cooling.calculate_performance(target, Btwxt::Method::CUBIC);
+    EXPECT_NE(result1, result2);
+}
+
 TEST_F(RS0005Fixture, Calculate_embedded_RS_performance)
 {
     auto rs = dynamic_cast<rs0005_ns::RS0005 *>(rs_.get());
@@ -88,14 +98,7 @@ void Display_message(MsgSeverity severity, const std::string &message, void *)
         {MsgSeverity::WARN_205, "WARN"},
         {MsgSeverity::ERR_205, "ERR"}
     };
-    if (severity <= MsgSeverity::WARN_205)
-    {
-        std::cout << severity_str[severity] << ": " << message << std::endl;
-    }
-    else
-    {
-        throw std::invalid_argument(message);
-    }   
+    std::cout << severity_str[severity] << ": " << message << std::endl;
 }
 
 void Btwxt_message(const Btwxt::MsgLevel messageType, const std::string message,
