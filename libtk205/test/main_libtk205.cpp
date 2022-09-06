@@ -44,7 +44,7 @@ TEST_F(RS0001Fixture, Calculate_performance_cooling_3)
 {
     auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
     EXPECT_TRUE(rs != nullptr);
-    auto result = rs->performance.performance_map_cooling.calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5).condenser_liquid_leaving_temperature;
+    auto result = rs->performance.performance_map_cooling.calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5, Btwxt::Method::LINEAR).condenser_liquid_leaving_temperature;
     EXPECT_NEAR(result, 296.03, 0.001);
 }
 
