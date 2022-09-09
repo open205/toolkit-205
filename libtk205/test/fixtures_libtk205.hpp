@@ -42,6 +42,16 @@ protected:
     }
 };
 
+class RS0001UnsupportedFixture : public RSFixture
+{
+protected:
+    RS0001UnsupportedFixture() : RSFixture()
+    {
+        RSInstanceFactory::register_factory("RS0001", std::make_shared<tk205::RS0001Factory>());
+        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0001/Chiller-Unsupported.RS0001.a205.json");
+    }
+};
+
 class RS0001Fixture : public RSFixture
 {
 protected:

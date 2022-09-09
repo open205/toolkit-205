@@ -13,6 +13,12 @@ TEST_F(RS0001BadFixture, Verify_RS_object)
     EXPECT_TRUE(rs == nullptr);
 }
 
+TEST_F(RS0001UnsupportedFixture, Verify_schema_version)
+{
+    auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
+    EXPECT_TRUE(rs == nullptr);
+}
+
 TEST_F(RS0001Fixture, Check_is_set)
 {
     auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
