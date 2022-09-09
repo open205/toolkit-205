@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .venv
-          key: poetry-cache-v0-${{ matrix.os }}-py${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: poetry-cache-v1-${{ matrix.os }}-py${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies if cache does not exist
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
