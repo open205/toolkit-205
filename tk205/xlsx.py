@@ -699,13 +699,14 @@ class A205XLSXTree:
         # Handle alternative selectors
         if 'allOf' in schema_node:
             for alt in schema_node['allOf']:
-                for selector_var, selector in alt['if']['properties'].items():
-                    if selector_var in self.template_args:
-                        if selector['const'] == self.get_template_arg(selector_var):
-                            for property in alt['then']['properties']:
-                                schema_node['properties'][property].update(alt['then']['properties'][property])
-                    else:
-                        raise Exception(f"No keyword arguments provided to determine template for '{node.name}'.")
+                if "required" not in alt["then"]: # Make sure it's not a conditional requirement
+                    for selector_var, selector in alt['if']['properties'].items():
+                        if selector_var in self.template_args:
+                            if selector['const'] == self.get_template_arg(selector_var):
+                                for property in alt['then']['properties']:
+                                    schema_node['properties'][property].update(alt['then']['properties'][property])
+                        else:
+                            raise Exception(f"No keyword arguments provided to determine template for '{node.name}'.")
 
         # typical nodes
         if 'properties' in schema_node:
