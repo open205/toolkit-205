@@ -23,7 +23,7 @@ def load(input_file_path):
         with open(input_file_path, 'r') as input_file:
             return yaml.load(input_file, Loader=yaml.FullLoader)
     else:
-        raise Exception(f"Unsupported input \"{ext}\".")
+        raise Exception(f"Unsupported input \"{ext}\" for \"{input_file_path}\".")
 
 def dump(content, output_file_path):
     ext = get_extension(output_file_path).lower()
@@ -42,7 +42,7 @@ def dump(content, output_file_path):
             yaml.dump(content, out_file, sort_keys=False)
 
     else:
-        raise Exception(f"Unsupported output \"{ext}\".")
+        raise Exception(f"Unsupported output \"{ext}\" for \"{output_file_path}\".")
 
 def clear_directory(directory_path):
     '''
