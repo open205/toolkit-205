@@ -1,4 +1,4 @@
-Examples provided here are for illustrative purposes only. While CBOR is the official representation format defined by ASHRAE Standard 205P, it is sometime convenient to view and edit representation data in other formats. All other file formats must be translated to CBOR for use in application software. Routines for converting between the file formats are included in [Toolkit 205](tk205.html).
+Examples provided here are for illustrative purposes only. While CBOR is the official representation format defined by ASHRAE Standard 205, it is sometime convenient to view and edit representation data in other formats. All other file formats must be translated to CBOR for use in application software. Routines for converting between the file formats are included in [Toolkit 205](tk205.html).
 
 Each example represntation is provided in four formats:
 

@@ -1,4 +1,4 @@
-# ASHRAE Standard 205P: Representation of Performance Data for HVAC&R and Other Facility Equipment
+# ASHRAE Standard 205: Representation of Performance Data for HVAC&R and Other Facility Equipment
 
 ## Purpose
 
@@ -8,11 +8,11 @@ To facilitate automated sharing of equipment performance characteristics by defi
 
 This standard applies to performance data for any HVAC&R or other facility system, equipment, or component.
 
-## About ASHRAE Standard 205P
+## About ASHRAE Standard 205
 
-ASHRAE Standard 205P defines common data models and serialization formats for facility equipment performance data needed for engineering applications such as energy simulation.  The formats allow automated exchange among data sources (manufacturers), simulation models, and other engineering applications. The formats and procedures specified in the standard are developed by SPC (Standard Project Committee) 205 under ASHRAE and ANSI consensus processes. SPC-205 membership includes equipment manufacturers, application software developers, and engineering practitioners.
+ASHRAE Standard 205 defines common data models and serialization formats for facility equipment performance data needed for engineering applications such as energy simulation.  The formats allow automated exchange among data sources (manufacturers), simulation models, and other engineering applications. The formats and procedures specified in the standard are developed by SSPC (Standing Standard Project Committee) 205 under ASHRAE and ANSI consensus processes. SSPC-205 membership includes equipment manufacturers, application software developers, and engineering practitioners.
 
-Standard 205 defines the term *representation* to mean a Concise Binary Object Representation (CBOR) file conforming to a JSON schema defined by a human-readable (text) document called a *representation specification*.  Representation specifications are included in Standard 205P appended as an open-ended set.
+Standard 205 defines the term *representation* to mean a Concise Binary Object Representation (CBOR) file conforming to a JSON schema defined by a human-readable (text) document called a *representation specification*.  Representation specifications are included in Standard 205 appended as an open-ended set.
 
 Standard 205 structure and application can be visualized as follows:
 
@@ -28,4 +28,4 @@ This web site hosts supporting material for each representation specification, i
 
 All representations have common structures and elements.  An open source project, [open205](https://github.com/open205), is underway to provide software components for use by data publishers and application developers.
 
-SPC 205 is developing representation specifications for additional equipment types.  These will be published in future revisions of the standard.
+SSPC 205 is developing representation specifications for additional equipment types.  These will be published in future revisions of the standard.
