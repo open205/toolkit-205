@@ -3,33 +3,12 @@
 Toolkit 205
 ===========
 
-A toolkit to facilitate the adoption of the ASHRAE Standard 205P data exchange specification.
+A toolkit to facilitate the adoption of the ASHRAE Standard 205, "Representation of Performance Data for HVAC&R and Other Facility Equipment", data exchange specification. Learn more about ASHRAE Standard 205 at https://data.ashrae.org/standard205/.
 
 **Disclaimer:** While this toolkit is developed in conjunction with the ASHRAE Standard 205 project committee, it is not an official ASHRAE product or a part of the standard.
 
-**Warning!**  As the proposed ASHRAE Standard 205P has not yet been published, the content in this repository is subject to change and should be considered unstable for application development.
-
-About ASHRAE 205
-----------------
-
-ASHRAE Standard 205P is "Standard Representation of Performance Simulation Data for HVAC&R and Other Facility Equipment". While the standard is not yet published, public reviews are available at [ASHRAE's online review portal](https://osr.ashrae.org/default.aspx).
-
-The stated purpose of ASHRAE Standard 205 is:
-
-> To facilitate sharing of equipment characteristics for performance simulation by defining standard representations such as data models, data formats, and automation interfaces.
-
-The Standard is intended to support the following use cases:
-
-- **Data Publication** Data publishers (typically equipment manufacturers) use representation specifications to guide implementation of data writing and validity testing software that produces correctly-formed representation files.
-
-- **Application Development** Application developers use representation specifications to guide implementation of software that correctly reads representation data. Such implementations may include validity tests and developers may use representation specification example data for testing purposes.
-
-- **Data Application** Application users use representation specifications to understand and check representation data. Data exchange will generally be automated but the availability of representation specifications facilitates additional data checking when needed.
-
-Generally, a data publisher (e.g., manufacturer) provides an ASHRAE Standard 205 representation of a specific piece of equipment that the application user can load into compliant performance simulation software.
-
-Building
---------
+Building the Toolkit
+--------------------
 
 Toolkit 205 uses git submodules. To clone the submodules, you will either have to:
 
@@ -39,32 +18,37 @@ Toolkit 205 uses git submodules. To clone the submodules, you will either have t
 
     or
 
-2. do a recursive submodule update after cloneing this repository:
+2. do a recursive submodule update after cloning this repository:
 
     `git submodule update --init --recursive`
 
-We are currently supporting python 3.x.
+We are currently supporting python 3.7 and higher.
 
-In order to contribute to Toolkit 205, you will need to set up a consistent virtual environment for testing.
-This project uses `pipenv` to create a virtual python environment and install the required dependencies.
-Install `pipenv` through `pip`:
+This project uses [Poetry](https://python-poetry.org/docs/#installation) python package management tool. Once you have Poetry installed you can install the dependencies using:
 
-`pip install pipenv`
+`poetry install`
 
-With `pipenv` installed, you may now create the virtual environment (defined in the `Pipfile`) where you will install the project and developer dependencies:
+You can test your installation using:
 
-`pipenv install --dev`
-
-
-Finally, you can build (generate the schema, translate examples, generate templates, and generate web content) and test the toolkit:
-
-`pipenv run doit`
+`poetry run doit`
 
 ### Products
 
 tk205 is both a python module and a command line tool.
 
-Example Usage
--------------
+Building the Toolkit C++ library
+--------------------------------
 
-TODO
+The toolkit can additionally build a C++ library suitable for import into C++ modeling tools. The library (libtk205) uses elements of the schema-205 submodule to auto-generate source code for Representation Specifications, and includes other source files from this repository.
+
+To build the library, use
+
+`cmake -B build`
+
+to generate build files for an "out-of-source" build directory, then
+
+`cmake --build build --config [Debug/Release]`
+
+to build libtk205.
+
+**Note:** Because the tests for libtk205 automatically clean all auto-generated files after the build, the cmake generator must be run fresh each time. This ensures that no Representations are out of date.

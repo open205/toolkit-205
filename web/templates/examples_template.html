@@ -10,7 +10,7 @@
 			<hr>
 			<ul class="accordion">
 				{% for RS in content %}
-				<li class="is-active">
+				<li class>
 					<span id="RS" >{{RS}}: {{content[RS]['title']}}</span>
 					{% for file in content[RS]['files'] %}
 						<div class="accordion-content">

@@ -170,7 +170,7 @@ def generate(web_dir):
 
     for file_type in examples_dictionary:
         for RS in sorted(examples_dictionary[file_type]):
-            for file_name in examples_dictionary[file_type][RS]:
+            for file_name in sorted(examples_dictionary[file_type][RS]):
                 base_name = os.path.splitext(file_name)[0]
                 rs_id, description = get_title_and_description(os.path.join(examples_directory, "json", RS, base_name + '.json'))
                 if rs_id not in examples_page_data:
