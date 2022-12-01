@@ -1,1 +1,1 @@
-Templates set up in the XLSX format for users to generate 205 compliant data. These templates will need to be translated into CBOR, but can be validated directly using [Toolkit 205](tk205.html).
+Templates set up in the XLSX format for users to generate Standard 205 compliant data. These templates will need to be translated into CBOR, but can be validated directly using [Toolkit 205](tk205.html).
