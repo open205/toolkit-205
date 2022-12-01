@@ -161,6 +161,14 @@ def task_test():
       ]
   }
 
+def task_web():
+  '''Generates the web contents for data.ashrae.org'''
+  return {
+    'task_dep': ['build_schema','cbor','yaml','xlsx','json', 'templates'],
+    'file_dep': cbor_examples + yaml_examples + xlsx_examples + json_examples + template_files, # Add markdown content
+    'actions': ['python web/web-content.py']
+  }
+
 def task_libtk205():
   '''Build libtk205'''
   return {
@@ -179,12 +187,4 @@ def task_libtk205_tests():
     'actions': [
       f'cd {LIB_BUILD_PATH} && ctest',
       ],
-  }
-
-def task_web():
-  '''Generates the web contents for data.ashrae.org'''
-  return {
-    'task_dep': ['build_schema','cbor','yaml','xlsx','json', 'templates'],
-    'file_dep': cbor_examples + yaml_examples + xlsx_examples + json_examples + template_files, # Add markdown content
-    'actions': ['python web/web-content.py']
   }
