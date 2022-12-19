@@ -1,0 +1,18 @@
+{
+    "metadata": {
+        "data_model": "ASHRAE_205",
+        "schema": "RS0005",
+        "schema_version": "1.0.0",
+        "description": "Placeholder motor representation (performance characterized in parent RS0003 fan assembly)",
+        "id": "48511b7d-9a5b-4dcc-b021-16ae6bf99d87",
+        "data_timestamp": "2022-11-23T11:45Z",
+        "data_version": 1,
+        "data_source": "https://github.com/bigladder/resdx",
+        "disclaimer": "This data is synthetic and does not represent any physical products."
+    },
+    "performance": {
+        "maximum_power": 670.2202799999999,
+        "standby_power": 0.0,
+        "number_of_poles": 6
+    }
+}
