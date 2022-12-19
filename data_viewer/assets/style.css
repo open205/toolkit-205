@@ -1,0 +1,127 @@
+/* .header-description {
+    color: #CFCFCF;
+    margin: 4px auto;
+    text-align: center;
+    max-width: 600px;
+} */
+body {
+    font-family: "Lato", sans-serif;
+    margin: 0;
+    background-color: #F7F7F7;
+}
+
+.column-title {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    text-decoration: underline;
+}
+
+.center {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mapselect-label{
+    /* width: 300px; */
+}
+.mapselect-item{
+    /* width: 150px; */
+}
+.mapselect-box {
+    display: flex;
+    align-items: center;
+}
+.datafilter-dropdown-label {
+    width: 400px;
+}
+.datafilter-dropdown-item {
+    width: 150px
+}
+
+.datafilter-dropdown-row {
+    /* width: 350px; */
+    display: flex;
+    align-items: center;
+    margin: 5px;
+}
+
+.datafilters-column {
+    /* width: 350px; */
+    height: 300px;
+    margin: 0px 10px 10px 10px;
+}
+
+
+.axesselect-dropdown-label {
+    width: 120px;
+    display: flex;
+    /* align-items: center; */
+}
+
+.axesselect-dropdown-item {
+    width: 380px
+}
+
+.axesselect-dropdown-row {
+    width: 500x;
+    display: flex;
+    align-items:center;
+    margin: 5px;
+}
+
+.axesselect-column {
+    width: 500px;
+    height: 300px;
+    margin: 0px 10px 10px 10px;
+}
+
+.plotoptions-dropdown-label{
+    width: 50px;
+    display: flex;
+    /* align-items:center; */
+}
+.plotoptions-dropdown-item{
+    width: 200px
+}
+.plotoptions-dropdown-row{
+    /* width: 300px; */
+    display:flex;
+    align-items:center;
+}
+
+.plotoptions-radio-label{
+    /* width: 100px; */
+    display: flex;
+    /* align-items:center; */
+}
+.plotoptions-radio-buttons{
+    /* width: 200px; */
+
+}
+.plotoptions-radio-row{
+    /* width: 300 px; */
+    display: flex;
+    align-items:center;
+    height: 30px;
+}
+
+.plotoptions-column{
+    /* width: 300px; */
+    height: 300px;
+    margin: 0px 10px 10px 40px;
+}
+
+
+
+.allfilters-box {
+    display: flex;
+    flex-direction: row;
+}
+
+.plot-box{
+
+    height: 550px;
+
+}
