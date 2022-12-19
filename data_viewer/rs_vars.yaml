@@ -1,0 +1,169 @@
+RS0001:
+  performance_map_cooling:
+    grid_variables:
+      evaporator_liquid_volumetric_flow_rate:
+        units: m3/s
+        viewer_name: evaporator_liquid_volumetric_flow_rate
+      evaporator_liquid_leaving_temperature:
+        units: K
+        viewer_name: evaporator_liquid_leaving_temperature
+      condenser_liquid_volumetric_flow_rate:
+        units: m3/s
+        viewer_name: condenser_liquid_volumetric_flow_rate
+      condenser_liquid_entering_temperature:
+        units: K
+        viewer_name: condenser_liquid_entering_temperature
+      compressor_sequence_number:
+        units: '-'
+        viewer_name: compressor_sequence_number
+    lookup_variables:
+      input_power:
+        units: W
+        viewer_name: input_power
+      net_evaporator_capacity:
+        units: W
+        viewer_name: net_evaporator_capacity
+      net_condenser_capacity:
+        units: W
+        viewer_name: net_condenser_capacity
+      evaporator_liquid_entering_temperature:
+        units: K
+        viewer_name: evaporator_liquid_entering_temperature
+      condenser_liquid_leaving_temperature:
+        units: K
+        viewer_name: condenser_liquid_leaving_temperature
+      evaporator_liquid_differential_pressure:
+        units: Pa
+        viewer_name: evaporator_liquid_differential_pressure
+      condenser_liquid_differential_pressure:
+        units: Pa
+        viewer_name: condenser_liquid_differential_pressure
+      oil_cooler_heat:
+        units: W
+        viewer_name: oil_cooler_heat
+      auxiliary_heat:
+        units: W
+        viewer_name: auxiliary_heat
+  performance_map_standby:
+    grid_variables:
+      environment_dry_bulb_temperature:
+        units: K
+        viewer_name: environment_dry_bulb_temperature
+    lookup_variables:
+      input_power:
+        units: W
+        viewer_name: input_power
+RS0002: {}
+RS0003:
+  performance_map_continuous:
+    grid_variables:
+      standard_air_volumetric_flow_rate:
+        units: m3/s
+        viewer_name: standard_air_volumetric_flow_rate
+      static_pressure_difference:
+        units: Pa
+        viewer_name: static_pressure_difference
+    lookup_variables:
+      impeller_rotational_speed:
+        units: rev/s
+        viewer_name: impeller_rotational_speed
+      shaft_power:
+        units: W
+        viewer_name: shaft_power
+  performance_map_discrete:
+    grid_variables:
+      speed_number:
+        units: '-'
+        viewer_name: speed_number
+      static_pressure_difference:
+        units: Pa
+        viewer_name: static_pressure_difference
+    lookup_variables:
+      standard_air_volumetric_flow_rate:
+        units: m3/s
+        viewer_name: standard_air_volumetric_flow_rate
+      shaft_power:
+        units: W
+        viewer_name: shaft_power
+      impeller_rotational_speed:
+        units: rev/s
+        viewer_name: impeller_rotational_speed
+RS0004:
+  performance_map_cooling:
+    grid_variables:
+      outdoor_coil_entering_dry_bulb_temperature:
+        units: K
+        viewer_name: outdoor_coil_entering_dry_bulb_temperature
+      indoor_coil_entering_relative_humidity:
+        units: '-'
+        viewer_name: indoor_coil_entering_relative_humidity
+      indoor_coil_entering_dry_bulb_temperature:
+        units: K
+        viewer_name: indoor_coil_entering_dry_bulb_temperature
+      indoor_coil_air_mass_flow_rate:
+        units: kg/s
+        viewer_name: indoor_coil_air_mass_flow_rate
+      compressor_sequence_number:
+        units: '-'
+        viewer_name: compressor_sequence_number
+      ambient_absolute_air_pressure:
+        units: Pa
+        viewer_name: ambient_absolute_air_pressure
+    lookup_variables:
+      gross_total_capacity:
+        units: W
+        viewer_name: gross_total_capacity
+      gross_sensible_capacity:
+        units: W
+        viewer_name: gross_sensible_capacity
+      gross_power:
+        units: W
+        viewer_name: gross_power
+  performance_map_standby:
+    grid_variables:
+      outdoor_coil_environment_dry_bulb_temperature:
+        units: K
+        viewer_name: outdoor_coil_environment_dry_bulb_temperature
+    lookup_variables:
+      gross_power:
+        units: W
+        viewer_name: gross_power
+RS0005:
+  performance_map:
+    grid_variables:
+      shaft_power:
+        units: W
+        viewer_name: shaft_power
+      shaft_rotational_speed:
+        units: rev/s
+        viewer_name: shaft_rotational_speed
+    lookup_variables:
+      efficiency:
+        units: '-'
+        viewer_name: efficiency
+      power_factor:
+        units: '-'
+        viewer_name: power_factor
+RS0006:
+  performance_map:
+    grid_variables:
+      output_power:
+        units: W
+        viewer_name: output_power
+      output_frequency:
+        units: Hz
+        viewer_name: output_frequency
+    lookup_variables:
+      efficiency:
+        units: '-'
+        viewer_name: efficiency
+RS0007:
+  performance_map:
+    grid_variables:
+      output_power:
+        units: W
+        viewer_name: output_power
+    lookup_variables:
+      efficiency:
+        units: '-'
+        viewer_name: efficiency
