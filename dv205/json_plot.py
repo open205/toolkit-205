@@ -10,10 +10,16 @@ from dash import Dash, dcc, html, Input, Output, MATCH, ALL
 import argparse
 
 # adding ..\tk205  subfolder to the system path to import file.io
-from sys import path as syspath
-syspath.insert(1, '../tk205/')
 
-import file_io
+# the following is a kludge needed if the toolkit-205 is not installed as a module
+# and throws an exception
+try:
+    import file_io
+except:
+    from sys import path as syspath
+    syspath.insert(1, '../')
+    syspath.insert(1, "../schema-205/")
+    from tk205 import file_io
 
 
 def set_ranges(df, axes, plot_opts, frac=0.5):
