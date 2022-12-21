@@ -1,6 +1,6 @@
 {
     "metadata": {
-        "schema_version": "1.0.0",
+        "schema_version": "0.2.0",
         "data_model": "ASHRAE_205",
         "schema": "RS0004",
         "description": "DX System with Constant Efficiency",
