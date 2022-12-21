@@ -141,12 +141,31 @@ with st.sidebar:
     reverse_lookup_dict =  {lookup_var_names[i]: lookup_variables[i] for i in range(len(lookup_variables))}
 
     # st.write(grid_variables)
-    st.write(grid_var_names)
-    st.write(lookup_var_names)
-
-
+    # st.write(grid_var_names)
+    # st.write(lookup_var_names)
+    axis_vars=all_var_dict.keys()
+    grid_choices=[]
     for var, name in zip(grid_variables, grid_var_names):
-        values = perf_maps[selected_map]["grid_variables"][var] + ["*"]
+        values = ["*"] + perf_maps[selected_map]["grid_variables"][var]
+        grid_choices.append(st.selectbox(f"Choose {name}: ", values))
+
+    x_choice=st.selectbox("Choose X Axis Variable", axis_vars,index=0)
+    if len(axis_vars)>1:
+        default=1
+    else:
+        default = 0
+    y_choice=st.selectbox("Choose Y Axis Variable", axis_vars, index=default)
+    if len(axis_vars)>2:
+        default = 2
+    else:
+        default = 0
+    z_choice=st.selectbox("Choose Z Axis Variable", axis_vars, index=default)
+
+
+st.write(grid_choices)
+st.write(x_choice)
+st.write(y_choice)
+st.write(z_choice)
     
 #     grid_filter_menu.append(
 #         html.Div([
