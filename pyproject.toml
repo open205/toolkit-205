@@ -20,7 +20,7 @@ pytest = "^7.1.3"
 markdown = "*"
 doit = "*"
 tomli = "2.0.1"
-gitpython = "*"
+pygit2 = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
