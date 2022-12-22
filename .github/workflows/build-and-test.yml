@@ -4,7 +4,6 @@ on: push
 
 jobs:
   build:
-    name: Build
     strategy:
       fail-fast: false
       matrix:
@@ -13,6 +12,7 @@ jobs:
     defaults:
       run:
         shell: bash
+    name: ${{ matrix.os }} with py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
