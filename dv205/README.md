@@ -10,10 +10,12 @@ conda activate dash
 
 # install the latest pandas, plotly, and dash in your new environment
 conda install pandas
+conda install matplotlib
 conda install plotly
 conda install -c conda-forge dash  # use conda-forge to get dash 2.x rather than 1.x
 conda install pyyaml
 conda install openpyxl
+
 
 pip install cbor2
 
