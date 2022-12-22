@@ -1,4 +1,4 @@
-import git
+import pygit2
 import os
 import json
 import datetime
@@ -12,10 +12,9 @@ from tk205.file_io import set_dir
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
 def is_git_repo(path):
-    try:
-        _ = git.Repo(path).git_dir
+    if pygit2.discover_repository(path) is not None:
         return True
-    except git.InvalidGitRepositoryError:
+    else:
         return False
 
 def get_title_and_description(json_path):
@@ -117,9 +116,9 @@ def clone():
         print("Working folder found. Continuing without git repository...")
     else:
         try:
-            git.Repo.clone_from("https://github.com/open205/open205.github.io.git", web_dir, branch='master')
-        except git.GitError as e:
-            print(f"GitPython Error: {e}")
+            pygit2.clone_repository("https://github.com/open205/open205.github.io.git", web_dir, checkout_branch='master')
+        except pygit2.GitError as e:
+            print(f"pygit2 Error: {e}")
             print("Continuing without git repository...")
             set_dir(web_dir)
     return web_dir
