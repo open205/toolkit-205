@@ -70,22 +70,6 @@ def load_data(filename):
     return data
 
 
-# hack the  css 
-# https://www.youtube.com/watch?v=OVgPJEMDkak
-# st.markdown(
-#     """
-#     <style> 
-#     .stSelectbox{
-#     display:flex;
-#     align-items: center;
-#     width: 400px;
-#     },
-    
-#     </style>
-#     """,
-#     unsafe_allow_html=True
-# )
-
 ###  MAIN CODE STARTS HERE  ###
 
 
@@ -136,10 +120,10 @@ vprint(f"Performance Maps = {perf_map_list}")
 
 
 
-
 # create the sidebar for data filtering and selecting plot
 with st.sidebar:
-    st.title("Data Filter")
+    st.title(f"File: {args.rs_filename}")
+    st.header("Data Filter")
     selected_map = st.sidebar.selectbox("Choose Performance Map: ", perf_map_list)
     # st.sidebar.write("Selected Map is: ", selected_map)
 
@@ -218,51 +202,36 @@ df_filt["size"] = 1
 symbol_map = {True:"circle", False:"x"}
 color_map = ["blue", "red"]
 
-# set up gui for selecting x,y,z plotting variables are on which axes
-# note none is first item in list
-# use 2nd item as default x and 3rd as default 7 and first ("none") as default z
-st.header(f"File: {args.rs_filename}")
-col1, col2, col3 = st.columns(3) 
-x_choice=col1.selectbox("X Axis Variable", axis_vars,index=1)
-y_choice=col2.selectbox("Y Axis Variable", axis_vars, index=2)
-z_choice=col3.selectbox("Z Axis Variable", axis_vars, index=0)
-axes_choices = [x_choice, y_choice, z_choice]
-
-# set up gui for choosing x, y and z scaling
-x_scale = col1.radio("X Scale", ["Auto","Full"],horizontal=True)
-y_scale = col2.radio("Y Scale", ["Auto","Full"],horizontal=True)
-z_scale = col3.radio("Z Scale", ["Auto","Full"],horizontal=True)
-scale_choices = [x_scale, y_scale, z_scale]
-
-[xrange, yrange, zrange] = set_ranges(df, axes_choices, scale_choices)
-
-
 tab1, tab2 = st.tabs(["Table", "Plot"])
 with tab1:
 
-    st.dataframe(df_filt.drop(columns=["True","size"]))
+    st.dataframe(df_filt.drop(columns=["True","size"]), height=600)
 
 with tab2:
+    # set up gui for selecting x,y,z plotting variables are on which axes
+    # note none is first item in list
+    # use 2nd item as default x and 3rd as default 7 and first ("none") as default z
+    col1, col2, col3 = st.columns(3) 
+    x_choice=col1.selectbox("X Axis Variable", axis_vars,index=1)
+    y_choice=col2.selectbox("Y Axis Variable", axis_vars, index=2)
+    z_choice=col3.selectbox("Z Axis Variable", axis_vars, index=0)
+    axes_choices = [x_choice, y_choice, z_choice]
+
+    # set up gui for choosing x, y and z scaling
+    x_scale = col1.radio("X Scale", ["Auto","Full"],horizontal=True)
+    y_scale = col2.radio("Y Scale", ["Auto","Full"],horizontal=True)
+    z_scale = col3.radio("Z Scale", ["Auto","Full"],horizontal=True)
+    scale_choices = [x_scale, y_scale, z_scale]
+    [xrange, yrange, zrange] = set_ranges(df, axes_choices, scale_choices)
 
     line_choice = "None"
-    if z_choice == "None":
-        if line_choice == "None":
-            fig = px.scatter(df_filt, x=x_choice, y=y_choice,
-                            symbol="Valid", symbol_map=symbol_map,
-                            color="Valid", color_discrete_sequence=color_map,
-                            size="size", size_max=6,
-                            hover_data = grid_var_names,
-            )
-            # ax1 = df_filt.plot.scatter(x=x_choice, y=y_choice)
-        # else:
-        #     fig = px.line(df_filt, x=x_choice, y=y_choice,
-        #                     # line_group = plot_opts[0],
-        #                     # symbol="Valid", symbol_map=symbol_map,
-        #                     # color="Valid", color_discrete_sequence=color_map,
-        #                     # # #  size="size", size_max=6,
-        #                     # hover_data = grid_var_names,
-        #     )
-
+    if z_choice == "None":     
+        fig = px.scatter(df_filt, x=x_choice, y=y_choice,
+                        symbol="Valid", symbol_map=symbol_map,
+                        color="Valid", color_discrete_sequence=color_map,
+                        size="size", size_max=6,
+                        hover_data = grid_var_names,
+        )
 
         fig.update_xaxes(range=xrange)
         fig.update_yaxes(range=yrange)
@@ -280,26 +249,6 @@ with tab2:
                                         )
         )
     st.plotly_chart(fig, theme=None, use_container_width=True)
-
-
-# # common plot formatting that is the same between 2d and 3d plots
-# fig.update_layout(title_text = t_string,
-#                     template = "seaborn",
-#                     )
-
-
-
-# # # Create the Dash app
-# external_stylesheets = [
-#     {
-#         "href": "https://fonts.googleapis.com/css2?"
-#         "family=Lato:wght@400;700&display=swap",
-#         "rel": "stylesheet",
-#     },
-# ]
-# app = Dash(__name__, external_stylesheets=external_stylesheets)
-# app.title ="205 Data Investigator"
-# # # Set up the app layout
 
 
 
