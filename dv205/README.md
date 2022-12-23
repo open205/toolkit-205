@@ -14,18 +14,20 @@ conda install matplotlib
 conda install plotly
 conda install -c conda-forge dash  # use conda-forge to get dash 2.x rather than 1.x
 conda install pyyaml
-conda install openpyxl
+conda install openpyxl  
 
 
-pip install cbor2
+pip install cbor2  # no cbor2 on anaconda or conda forge
 
 
-# added 
+# added streamlit
 
 conda install -c conda-forge streamlit  --> this didn't work - I got permission errors when trying to run
-instead use pip install streamlit
+instead I used 
+pip install streamlit
+But, read below.  The conda install likely would have worked with the fix below
 
-Still got errors.  Turns out the default port wasn't working
+Still got the same errors with pip as conda.  Turns out the default port wasn't working
 do the following to change the default port
 create a file ./.streamlit/config.toml
 add the following:
@@ -34,7 +36,15 @@ port = XXXX
 
 I suggest you try 8080
 
-alternatively run 
+With streamlit installed you need to run the script in one of two ways:
+python -m streamlit run script.py 
+  or
+streamlit run script.py
+
+If you don't configure a port as above and have a problem with socket permissions
+try giving a port on the command line (below for port 8080)
+streamlit run script.py --server.port 8080
+
 
 
 Full config info at
@@ -47,11 +57,3 @@ conda install pylint
 conda install flake8
 
 
-With streamlit installed you need to run the script in one of two ways:
-python -m streamlit run script.py 
-  or
-streamlit run script.py
-
-If you don't configure a port as above and have a problem with socket permissions
-try giving a port on the command line (below for port 8080)
-streamlit run script.py --server.port 8080
