@@ -24,7 +24,7 @@ except:
     from tk205 import file_io
 
 
-def set_ranges(df, axes, plot_opts, frac=0.5):
+def set_ranges(df, axes, scales, frac=0.5):
     """
         read the dropdown outputs from the gui related to ranges
         and generate x, y, and z ranges 
@@ -33,8 +33,9 @@ def set_ranges(df, axes, plot_opts, frac=0.5):
         plot_opts: list with columns 1 - 3 being the options for range of "full" or "auto"
         output: list of ranges for x, y, and z, in form [min, max] or None for autorange 
     """
+
     [x, y, z ] = axes[0:3]
-    [x_opt, y_opt, z_opt]  = plot_opts[0:3]
+    [x_opt, y_opt, z_opt]  = scales[0:3]
 
     frac = 0.05
 
@@ -50,13 +51,15 @@ def set_ranges(df, axes, plot_opts, frac=0.5):
         ymin = df[y].min() - frac*abs(df[y].min())
         ymax = df[y].max() + frac*abs(df[y].max())
         yrange = [ymin, ymax]
-
-    if z_opt == "Auto":
-        zrange = None
+    if z != "None":
+        if z_opt == "Auto":
+            zrange = None
+        else:
+            zmin = df[z].min() - frac*abs(df[z].min())
+            zmax = df[z].max() + frac*abs(df[z].max())
+            zrange = [zmin, zmax]
     else:
-        zmin = df[z].min() - frac*abs(df[z].min())
-        zmax = df[z].max() + frac*abs(df[z].max())
-        zrange = [zmin, zmax]
+        zrange = None
     
     return [xrange, yrange, zrange]
 
@@ -215,17 +218,24 @@ df_filt["size"] = 1
 symbol_map = {True:"circle", False:"x"}
 color_map = ["blue", "red"]
 
-# select performance map with streamlit
+# set up gui for selecting x,y,z plotting variables are on which axes
+# note none is first item in list
+# use 2nd item as default x and 3rd as default 7 and first ("none") as default z
 st.header(f"File: {args.rs_filename}")
 col1, col2, col3 = st.columns(3) 
 x_choice=col1.selectbox("X Axis Variable", axis_vars,index=1)
 y_choice=col2.selectbox("Y Axis Variable", axis_vars, index=2)
 z_choice=col3.selectbox("Z Axis Variable", axis_vars, index=0)
-  
+axes_choices = [x_choice, y_choice, z_choice]
 
+# set up gui for choosing x, y and z scaling
 x_scale = col1.radio("X Scale", ["Auto","Full"],horizontal=True)
 y_scale = col2.radio("Y Scale", ["Auto","Full"],horizontal=True)
 z_scale = col3.radio("Z Scale", ["Auto","Full"],horizontal=True)
+scale_choices = [x_scale, y_scale, z_scale]
+
+[xrange, yrange, zrange] = set_ranges(df, axes_choices, scale_choices)
+
 
 tab1, tab2 = st.tabs(["Table", "Plot"])
 with tab1:
@@ -233,6 +243,7 @@ with tab1:
     st.dataframe(df_filt.drop(columns=["True","size"]))
 
 with tab2:
+
     line_choice = "None"
     if z_choice == "None":
         if line_choice == "None":
@@ -253,22 +264,23 @@ with tab2:
         #     )
 
 
-        # fig.update_xaxes(range=xrange)
-        # fig.update_yaxes(range=yrange)
+        fig.update_xaxes(range=xrange)
+        fig.update_yaxes(range=yrange)
 
     else:
         fig = px.scatter_3d(df_filt, x=x_choice,  y=y_choice, z=z_choice,
-                            # symbol="Valid", symbol_map=symbol_map,
-                            # color="Valid", color_discrete_sequence=color_map,
-                            # size="size", size_max=10,
-                            # hover_data = grid_var_names,
+                            symbol="Valid", symbol_map=symbol_map,
+                            color="Valid", color_discrete_sequence=color_map,
+                            size="size", size_max=10,
+                            hover_data = grid_var_names,
+        ) 
+        fig.update_layout(scene = dict( xaxis = dict(range=xrange), 
+                                        yaxis = dict(range=yrange),
+                                        zaxis = dict(range=zrange)
+                                        )
         )
     st.plotly_chart(fig, theme=None, use_container_width=True)
-        # fig.update_layout(scene = dict( xaxis = dict(range=xrange), 
-        #                                 yaxis = dict(range=zrange),
-        #                                 zaxis = dict(range=yrange)
-        #                                 )
-        # )
+
 
 # # common plot formatting that is the same between 2d and 3d plots
 # fig.update_layout(title_text = t_string,
