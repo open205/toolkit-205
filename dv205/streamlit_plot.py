@@ -184,43 +184,36 @@ for var in lookup_variables:
     y.append(perf_maps[selected_map]["lookup_variables"][var])
 
 df2 = pd.DataFrame(np.array(y).T, columns=lookup_variables)
-df4 = pd.concat([df, df2], axis=1)
+df = pd.concat([df, df2], axis=1)
 
 # create a Valid column and set it equal to True until we have a valid flag in the RS datafile
-df4["Valid"] = True
+df["Valid"] = True
 
 # rename the columns to match the short names we are displaying everywhere
-df4.rename(columns=all_var_dict, inplace=True)
+df.rename(columns=all_var_dict, inplace=True)
 
 # create a new column of Trues 
 # then use that same column of Trues as the starting point for the filter
-df4["True"] = True
-data_filter = df4["True"]
+df["True"] = True
+data_filter = df["True"]
 
 # # the filter was derived from grid_var_names so it must be the same size and we can iterate
 # # through both with zip
 for (var, filter) in zip(grid_var_names, grid_choices):
     if filter != "*":
-        data_filter = data_filter & (df4[var] == float(filter))
+        data_filter = data_filter & (df[var] == float(filter))
 
-df4_filt = df4[data_filter].copy()
+df_filt = df[data_filter].copy()
 
 # sort by valid so that we always have the order of all False and then all True 
 # which means that symbols and colors will be in the order of False then True
-df4_filt = df4_filt.sort_values(by = "Valid")
+df_filt = df_filt.sort_values(by = "Valid")
 # create a dummy column of a single value 1 to use in sizing markers.
-df4_filt["size"] = 1
+df_filt["size"] = 1
 
 # set symbols and colors for valid and invalid 
 symbol_map = {True:"circle", False:"x"}
 color_map = ["blue", "red"]
-
-
-# print(axes_choice)
-# p set the axes ranges from dropdowns
-# [xrange, yrange, zrange] = set_ranges(df4, axes_choice, plot_opts)
-
-#print(xrange,yrange,zrange)
 
 # select performance map with streamlit
 st.header(f"File: {args.rs_filename}")
@@ -234,24 +227,24 @@ x_scale = col1.radio("X Scale", ["Auto","Full"],horizontal=True)
 y_scale = col2.radio("Y Scale", ["Auto","Full"],horizontal=True)
 z_scale = col3.radio("Z Scale", ["Auto","Full"],horizontal=True)
 
-
 tab1, tab2 = st.tabs(["Table", "Plot"])
 with tab1:
-    st.dataframe(df4_filt)
+
+    st.dataframe(df_filt.drop(columns=["True","size"]))
 
 with tab2:
     line_choice = "None"
     if z_choice == "None":
         if line_choice == "None":
-            fig = px.scatter(df4_filt, x=x_choice, y=y_choice,
+            fig = px.scatter(df_filt, x=x_choice, y=y_choice,
                             symbol="Valid", symbol_map=symbol_map,
                             color="Valid", color_discrete_sequence=color_map,
                             size="size", size_max=6,
                             hover_data = grid_var_names,
             )
-            # ax1 = df4_filt.plot.scatter(x=x_choice, y=y_choice)
+            # ax1 = df_filt.plot.scatter(x=x_choice, y=y_choice)
         # else:
-        #     fig = px.line(df4_filt, x=x_choice, y=y_choice,
+        #     fig = px.line(df_filt, x=x_choice, y=y_choice,
         #                     # line_group = plot_opts[0],
         #                     # symbol="Valid", symbol_map=symbol_map,
         #                     # color="Valid", color_discrete_sequence=color_map,
@@ -264,7 +257,7 @@ with tab2:
         # fig.update_yaxes(range=yrange)
 
     else:
-        fig = px.scatter_3d(df4_filt, x=x_choice,  y=y_choice, z=z_choice,
+        fig = px.scatter_3d(df_filt, x=x_choice,  y=y_choice, z=z_choice,
                             # symbol="Valid", symbol_map=symbol_map,
                             # color="Valid", color_discrete_sequence=color_map,
                             # size="size", size_max=10,
@@ -395,26 +388,26 @@ with tab2:
 #         y.append(perf_maps[selected_map]["lookup_variables"][var])
 
 #     df2 = pd.DataFrame(np.array(y).T, columns=lookup_variables)
-#     df4 = pd.concat([df, df2], axis=1)
+#     df = pd.concat([df, df2], axis=1)
 
 #     # create a Valid column and set it equal to True until we have a valid flag in the RS datafile
-#     df4["Valid"] = True
+#     df["Valid"] = True
 
 #     # rename the columns to match the short names we are displaying everywhere
-#     df4.rename(columns=all_var_dict, inplace=True)
+#     df.rename(columns=all_var_dict, inplace=True)
 
 #     # create a new column of Trues 
 #     # then use that same column of Trues as the starting point for the filter
-#     df4["True"] = True
-#     data_filter = df4["True"]
+#     df["True"] = True
+#     data_filter = df["True"]
 
 #     # the filter was derived from grid_var_names so it must be the same size and we can iterate
 #     # through both with zip
 #     for (var, filter) in zip(grid_var_names, filters):
 #         if filter != "*":
-#             data_filter = data_filter & (df4[var] == float(filter))
+#             data_filter = data_filter & (df[var] == float(filter))
 
-#     df4_filt = df4[data_filter].copy()
+#     df_filt = df[data_filter].copy()
 
 #     # t_string = "HPDM data with "
 #     # for (name, filter) in zip(shortnames, filters):
@@ -425,11 +418,11 @@ with tab2:
 
 #     # sort by valid so that we always have the order of all False and then all True 
 #     # which means that symbols and colors will be in the order of False then True
-#     df4_filt = df4_filt.sort_values(by = "Valid")
+#     df_filt = df_filt.sort_values(by = "Valid")
 #     # create a dummy column of a single value 1 to use in sizing markers.
-#     df4_filt["size"] = 1
+#     df_filt["size"] = 1
     
-#     # print(df4_filt)
+#     # print(df_filt)
 #     # set symbols and colors for valid and invalid 
 #     symbol_map = {True:"circle", False:"x"}
 #     color_map = ["blue", "red"]
@@ -437,22 +430,22 @@ with tab2:
 
 #     # print(axes_choice)
 #     # p set the axes ranges from dropdowns
-#     [xrange, yrange, zrange] = set_ranges(df4, axes_choice, plot_opts)
+#     [xrange, yrange, zrange] = set_ranges(df, axes_choice, plot_opts)
 
 #     #print(xrange,yrange,zrange)
-#     # print(df4_filt)
+#     # print(df_filt)
 
 #     line_choice = plot_opts[0]
 #     if axes_choice[2] == "None":
 #         if line_choice == "None":
-#             fig = px.scatter(df4_filt, x=axes_choice[0], y=axes_choice[1],
+#             fig = px.scatter(df_filt, x=axes_choice[0], y=axes_choice[1],
 #                             symbol="Valid", symbol_map=symbol_map,
 #                             color="Valid", color_discrete_sequence=color_map,
 #                             size="size", size_max=6,
 #                             hover_data = grid_var_names,
 #             )
 #         else:
-#             fig = px.line(df4_filt, x=axes_choice[0], y=axes_choice[1],
+#             fig = px.line(df_filt, x=axes_choice[0], y=axes_choice[1],
 #                             line_group = plot_opts[0],
 #                             symbol="Valid", symbol_map=symbol_map,
 #                             color="Valid", color_discrete_sequence=color_map,
@@ -465,7 +458,7 @@ with tab2:
 #         fig.update_yaxes(range=yrange)
 
 #     else:
-#         fig = px.scatter_3d(df4_filt, x=axes_choice[0],  y=axes_choice[2], z=axes_choice[1],
+#         fig = px.scatter_3d(df_filt, x=axes_choice[0],  y=axes_choice[2], z=axes_choice[1],
 #                             symbol="Valid", symbol_map=symbol_map,
 #                             color="Valid", color_discrete_sequence=color_map,
 #                             size="size", size_max=10,
