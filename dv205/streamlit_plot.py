@@ -4,6 +4,7 @@ import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 import streamlit as st
 
@@ -88,194 +89,212 @@ def load_data(filename):
 
 parser = argparse.ArgumentParser(description="Plot 205 RS data file")
 
-parser.add_argument("rs_filename",  type=str,  help="rs file to plot")
+parser.add_argument("rs_filename", nargs='?', type=str,  help="rs file to plot")  # nargs='?' makes it optional to give an argument
 parser.add_argument("-y", "--yaml", default="rs_vars.yaml",
                     help="select another yaml file of rs variables")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="provide verbose output = each variable")
 
 args = parser.parse_args()
-
+#:wq
+#print(args)
 # yaml_config_file = args.config
 
 verbose = args.verbose
-rs_filename = args.rs_filename
-yaml_vars_filename = args.yaml
-
 vprint = print if verbose else lambda *a, **k: None
 
 
-vprint(f"RS Filename = {rs_filename}")
-vprint(f"YAML Vars Filename = {yaml_vars_filename}")
+
+# if args.rs_filename is not None:
+#     rs_filename = args.rs_filename
+# else:
+#     upload_name = st.file_uploader("Choose a file")
+#     if upload_name is not None:
+#         rs_filename = upload_name.name
+TEMP_DIR = Path('tmp/extracted')
+
+uploaded_file = st.file_uploader("Choose a file")
+
+if uploaded_file is not None:
+
+    
+    rs_filename = str(TEMP_DIR / uploaded_file.name)
+    
+    print(rs_filename)
+    vprint(rs_filename)
+    yaml_vars_filename = args.yaml
+
+    vprint(f"RS Filename = {rs_filename}")
+    vprint(f"YAML Vars Filename = {yaml_vars_filename}")
 
 
-vprint("loaded RS file")
-# load up the actual rs file to plot and the variable dictionary
+    vprint("loaded RS file")
+    # load up the actual rs file to plot and the variable dictionary
 
-# rs_in = file_io.load(args.rs_filename)
-var_dict = file_io.load(yaml_vars_filename)
-# rs_in = load_data(args.rs_filename)
-rs_in = file_io.load(args.rs_filename)
+    # rs_in = file_io.load(args.rs_filename)
+    var_dict = file_io.load(yaml_vars_filename)
+    # rs_in = load_data(args.rs_filename)
+    rs_in = file_io.load(args.rs_filename)
 
-metadata = rs_in["metadata"]
-description = rs_in["description"]
-perf_elements = rs_in["performance"].keys()
-rs = metadata["schema"]
+    metadata = rs_in["metadata"]
+    description = rs_in["description"]
+    perf_elements = rs_in["performance"].keys()
+    rs = metadata["schema"]
 
-perf_maps={}
-for elem in perf_elements:
-    if "performance_map_" in elem:
-        perf_maps[elem[16::]] = rs_in["performance"][elem]
+    perf_maps={}
+    for elem in perf_elements:
+        if "performance_map_" in elem:
+            perf_maps[elem[16::]] = rs_in["performance"][elem]
 
-# print(perf_maps)
-perf_map_list = list(perf_maps.keys())
-vprint(f"Performance Maps = {perf_map_list}")
-
-
+    # print(perf_maps)
+    perf_map_list = list(perf_maps.keys())
+    vprint(f"Performance Maps = {perf_map_list}")
 
 
-# create the sidebar for data filtering and selecting plot
-with st.sidebar:
-    st.title("Data Filter")
-    selected_map = st.sidebar.selectbox("Choose Performance Map: ", perf_map_list)
-    # st.sidebar.write("Selected Map is: ", selected_map)
-
-    # selected_map = "cooling"
-    # selected_perf_map = "performance_map_cooling"
-
-    # get the names of all the grid and lookup variables
-    grid_variables = list(perf_maps[selected_map]["grid_variables"].keys())
-    lookup_variables = list(perf_maps[selected_map]["lookup_variables"].keys())
-
-    # create lists of the short names + units
-    grid_var_names= [ var_dict[rs]["performance_map_" +selected_map]["grid_variables"][var]["viewer_name"] + \
-                    " [" + var_dict[rs]["performance_map_" +selected_map]["grid_variables"][var]["units"] + "]" for var in grid_variables]
-
-    lookup_var_names = [ var_dict[rs]["performance_map_" +selected_map]["lookup_variables"][var]["viewer_name"] + \
-                    " [" + var_dict[rs]["performance_map_" +selected_map]["lookup_variables"][var]["units"] + "]" for var in lookup_variables]
-
-    # create a dictionary of mappings
-    grid_var_dict = {grid_variables[i]: grid_var_names[i] for i in range(len(grid_variables))}
-    lookup_var_dict = {lookup_variables[i]: lookup_var_names[i] for i in range(len(lookup_variables))}
-    all_var_dict = {**grid_var_dict, **lookup_var_dict}
-
-    # create reverse lookup dictionaries between short names and full variable names
-    reverse_grid_dict =  {grid_var_names[i]: grid_variables[i] for i in range(len(grid_variables))}
-    reverse_lookup_dict =  {lookup_var_names[i]: lookup_variables[i] for i in range(len(lookup_variables))}
-    reverse_all_dict = {**reverse_grid_dict, **reverse_lookup_dict}
-
-    axis_vars=["None"] + list(reverse_all_dict.keys())
-    grid_choices=[]
-    for var, name in zip(grid_variables, grid_var_names):
-        values = ["*"] + perf_maps[selected_map]["grid_variables"][var]
-        grid_choices.append(st.selectbox(f'Select {name} values:', values))
 
 
-# now expand grid variables and lookup variables into a 2d data frame with 
-# columns of grid and lookup variablesmuch like the xlsx representation of the performance map
-y=[]
-for var in grid_variables:
-    # print(selected_map, var)
-    # print(perf_maps[selected_map]["grid_variables"][var])
-    y.append(perf_maps[selected_map]["grid_variables"][var])
-df = pd.DataFrame(np.array(np.meshgrid(*y)).reshape(len(grid_variables), -1).T, columns = grid_variables)
-y=[]
-for var in lookup_variables:
-    y.append(perf_maps[selected_map]["lookup_variables"][var])
+    # create the sidebar for data filtering and selecting plot
+    with st.sidebar:
+        st.title("Data Filter")
+        selected_map = st.sidebar.selectbox("Choose Performance Map: ", perf_map_list)
+        # st.sidebar.write("Selected Map is: ", selected_map)
 
-df2 = pd.DataFrame(np.array(y).T, columns=lookup_variables)
-df4 = pd.concat([df, df2], axis=1)
+        # selected_map = "cooling"
+        # selected_perf_map = "performance_map_cooling"
 
-# create a Valid column and set it equal to True until we have a valid flag in the RS datafile
-df4["Valid"] = True
+        # get the names of all the grid and lookup variables
+        grid_variables = list(perf_maps[selected_map]["grid_variables"].keys())
+        lookup_variables = list(perf_maps[selected_map]["lookup_variables"].keys())
 
-# rename the columns to match the short names we are displaying everywhere
-df4.rename(columns=all_var_dict, inplace=True)
+        # create lists of the short names + units
+        grid_var_names= [ var_dict[rs]["performance_map_" +selected_map]["grid_variables"][var]["viewer_name"] + \
+                        " [" + var_dict[rs]["performance_map_" +selected_map]["grid_variables"][var]["units"] + "]" for var in grid_variables]
 
-# create a new column of Trues 
-# then use that same column of Trues as the starting point for the filter
-df4["True"] = True
-data_filter = df4["True"]
+        lookup_var_names = [ var_dict[rs]["performance_map_" +selected_map]["lookup_variables"][var]["viewer_name"] + \
+                        " [" + var_dict[rs]["performance_map_" +selected_map]["lookup_variables"][var]["units"] + "]" for var in lookup_variables]
 
-# # the filter was derived from grid_var_names so it must be the same size and we can iterate
-# # through both with zip
-for (var, filter) in zip(grid_var_names, grid_choices):
-    if filter != "*":
-        data_filter = data_filter & (df4[var] == float(filter))
+        # create a dictionary of mappings
+        grid_var_dict = {grid_variables[i]: grid_var_names[i] for i in range(len(grid_variables))}
+        lookup_var_dict = {lookup_variables[i]: lookup_var_names[i] for i in range(len(lookup_variables))}
+        all_var_dict = {**grid_var_dict, **lookup_var_dict}
 
-df4_filt = df4[data_filter].copy()
+        # create reverse lookup dictionaries between short names and full variable names
+        reverse_grid_dict =  {grid_var_names[i]: grid_variables[i] for i in range(len(grid_variables))}
+        reverse_lookup_dict =  {lookup_var_names[i]: lookup_variables[i] for i in range(len(lookup_variables))}
+        reverse_all_dict = {**reverse_grid_dict, **reverse_lookup_dict}
 
-# sort by valid so that we always have the order of all False and then all True 
-# which means that symbols and colors will be in the order of False then True
-df4_filt = df4_filt.sort_values(by = "Valid")
-# create a dummy column of a single value 1 to use in sizing markers.
-df4_filt["size"] = 1
-
-# set symbols and colors for valid and invalid 
-symbol_map = {True:"circle", False:"x"}
-color_map = ["blue", "red"]
+        axis_vars=["None"] + list(reverse_all_dict.keys())
+        grid_choices=[]
+        for var, name in zip(grid_variables, grid_var_names):
+            values = ["*"] + perf_maps[selected_map]["grid_variables"][var]
+            grid_choices.append(st.selectbox(f'Select {name} values:', values))
 
 
-# print(axes_choice)
-# p set the axes ranges from dropdowns
-# [xrange, yrange, zrange] = set_ranges(df4, axes_choice, plot_opts)
+    # now expand grid variables and lookup variables into a 2d data frame with 
+    # columns of grid and lookup variablesmuch like the xlsx representation of the performance map
+    y=[]
+    for var in grid_variables:
+        # print(selected_map, var)
+        # print(perf_maps[selected_map]["grid_variables"][var])
+        y.append(perf_maps[selected_map]["grid_variables"][var])
+    df = pd.DataFrame(np.array(np.meshgrid(*y)).reshape(len(grid_variables), -1).T, columns = grid_variables)
+    y=[]
+    for var in lookup_variables:
+        y.append(perf_maps[selected_map]["lookup_variables"][var])
 
-#print(xrange,yrange,zrange)
+    df2 = pd.DataFrame(np.array(y).T, columns=lookup_variables)
+    df4 = pd.concat([df, df2], axis=1)
 
-# select performance map with streamlit
-st.header(f"File: {args.rs_filename}")
-col1, col2, col3 = st.columns(3) 
-x_choice=col1.selectbox("X Axis Variable", axis_vars,index=1)
-y_choice=col2.selectbox("Y Axis Variable", axis_vars, index=2)
-z_choice=col3.selectbox("Z Axis Variable", axis_vars, index=0)
-  
+    # create a Valid column and set it equal to True until we have a valid flag in the RS datafile
+    df4["Valid"] = True
 
-x_scale = col1.radio("X Scale", ["Auto","Full"],horizontal=True)
-y_scale = col2.radio("Y Scale", ["Auto","Full"],horizontal=True)
-z_scale = col3.radio("Z Scale", ["Auto","Full"],horizontal=True)
+    # rename the columns to match the short names we are displaying everywhere
+    df4.rename(columns=all_var_dict, inplace=True)
+
+    # create a new column of Trues 
+    # then use that same column of Trues as the starting point for the filter
+    df4["True"] = True
+    data_filter = df4["True"]
+
+    # # the filter was derived from grid_var_names so it must be the same size and we can iterate
+    # # through both with zip
+    for (var, filter) in zip(grid_var_names, grid_choices):
+        if filter != "*":
+            data_filter = data_filter & (df4[var] == float(filter))
+
+    df4_filt = df4[data_filter].copy()
+
+    # sort by valid so that we always have the order of all False and then all True 
+    # which means that symbols and colors will be in the order of False then True
+    df4_filt = df4_filt.sort_values(by = "Valid")
+    # create a dummy column of a single value 1 to use in sizing markers.
+    df4_filt["size"] = 1
+
+    # set symbols and colors for valid and invalid 
+    symbol_map = {True:"circle", False:"x"}
+    color_map = ["blue", "red"]
 
 
-tab1, tab2 = st.tabs(["Table", "Plot"])
-with tab1:
-    st.dataframe(df4_filt)
+    # print(axes_choice)
+    # p set the axes ranges from dropdowns
+    # [xrange, yrange, zrange] = set_ranges(df4, axes_choice, plot_opts)
 
-with tab2:
-    line_choice = "None"
-    if z_choice == "None":
-        if line_choice == "None":
-            fig = px.scatter(df4_filt, x=x_choice, y=y_choice,
-                            symbol="Valid", symbol_map=symbol_map,
-                            color="Valid", color_discrete_sequence=color_map,
-                            size="size", size_max=6,
-                            hover_data = grid_var_names,
+    #print(xrange,yrange,zrange)
+
+    # select performance map with streamlit
+    st.header(f"File: {args.rs_filename}")
+    col1, col2, col3 = st.columns(3) 
+    x_choice=col1.selectbox("X Axis Variable", axis_vars,index=1)
+    y_choice=col2.selectbox("Y Axis Variable", axis_vars, index=2)
+    z_choice=col3.selectbox("Z Axis Variable", axis_vars, index=0)
+    
+
+    x_scale = col1.radio("X Scale", ["Auto","Full"],horizontal=True)
+    y_scale = col2.radio("Y Scale", ["Auto","Full"],horizontal=True)
+    z_scale = col3.radio("Z Scale", ["Auto","Full"],horizontal=True)
+
+
+    tab1, tab2 = st.tabs(["Table", "Plot"])
+    with tab1:
+        st.dataframe(df4_filt)
+
+    with tab2:
+        line_choice = "None"
+        if z_choice == "None":
+            if line_choice == "None":
+                fig = px.scatter(df4_filt, x=x_choice, y=y_choice,
+                                symbol="Valid", symbol_map=symbol_map,
+                                color="Valid", color_discrete_sequence=color_map,
+                                size="size", size_max=6,
+                                hover_data = grid_var_names,
+                )
+                # ax1 = df4_filt.plot.scatter(x=x_choice, y=y_choice)
+            # else:
+            #     fig = px.line(df4_filt, x=x_choice, y=y_choice,
+            #                     # line_group = plot_opts[0],
+            #                     # symbol="Valid", symbol_map=symbol_map,
+            #                     # color="Valid", color_discrete_sequence=color_map,
+            #                     # # #  size="size", size_max=6,
+            #                     # hover_data = grid_var_names,
+            #     )
+
+
+            # fig.update_xaxes(range=xrange)
+            # fig.update_yaxes(range=yrange)
+
+        else:
+            fig = px.scatter_3d(df4_filt, x=x_choice,  y=y_choice, z=z_choice,
+                                # symbol="Valid", symbol_map=symbol_map,
+                                # color="Valid", color_discrete_sequence=color_map,
+                                # size="size", size_max=10,
+                                # hover_data = grid_var_names,
             )
-            # ax1 = df4_filt.plot.scatter(x=x_choice, y=y_choice)
-        # else:
-        #     fig = px.line(df4_filt, x=x_choice, y=y_choice,
-        #                     # line_group = plot_opts[0],
-        #                     # symbol="Valid", symbol_map=symbol_map,
-        #                     # color="Valid", color_discrete_sequence=color_map,
-        #                     # # #  size="size", size_max=6,
-        #                     # hover_data = grid_var_names,
-        #     )
-
-
-        # fig.update_xaxes(range=xrange)
-        # fig.update_yaxes(range=yrange)
-
-    else:
-        fig = px.scatter_3d(df4_filt, x=x_choice,  y=y_choice, z=z_choice,
-                            # symbol="Valid", symbol_map=symbol_map,
-                            # color="Valid", color_discrete_sequence=color_map,
-                            # size="size", size_max=10,
-                            # hover_data = grid_var_names,
-        )
-    st.plotly_chart(fig, theme=None, use_container_width=True)
-        # fig.update_layout(scene = dict( xaxis = dict(range=xrange), 
-        #                                 yaxis = dict(range=zrange),
-        #                                 zaxis = dict(range=yrange)
-        #                                 )
-        # )
+        st.plotly_chart(fig, theme=None, use_container_width=True)
+            # fig.update_layout(scene = dict( xaxis = dict(range=xrange), 
+            #                                 yaxis = dict(range=zrange),
+            #                                 zaxis = dict(range=yrange)
+            #                                 )
+            # )
 
 # # common plot formatting that is the same between 2d and 3d plots
 # fig.update_layout(title_text = t_string,
