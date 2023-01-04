@@ -67,7 +67,7 @@ def load_data(filename):
     return data
 
 
-# hack the  css 
+# hack the  css for streamlit
 # https://www.youtube.com/watch?v=OVgPJEMDkak
 # st.markdown(
 #     """
