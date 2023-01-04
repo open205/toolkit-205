@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+from io imports BytesIO
 
 import streamlit as st
 
@@ -103,7 +104,8 @@ args = parser.parse_args()
 verbose = args.verbose
 vprint = print if verbose else lambda *a, **k: None
 
-
+yaml_vars_filename = args.yaml
+vprint(f"YAML Vars Filename = {yaml_vars_filename}")
 
 # if args.rs_filename is not None:
 #     rs_filename = args.rs_filename
@@ -111,21 +113,27 @@ vprint = print if verbose else lambda *a, **k: None
 #     upload_name = st.file_uploader("Choose a file")
 #     if upload_name is not None:
 #         rs_filename = upload_name.name
-TEMP_DIR = Path('tmp/extracted')
+
+
+#TEMP_DIR = Path('tmp/extracted')
 
 uploaded_file = st.file_uploader("Choose a file")
 
 if uploaded_file is not None:
+    print(uploaded_file.name)
+    temp_file_name = "temp" + uploaded_file.name
 
-    
-    rs_filename = str(TEMP_DIR / uploaded_file.name)
+    # dump the uploaded file in BytesIO buffer to disk
+    with open(temp_file_name, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+
+    rs_filename = temp_file_name
     
     print(rs_filename)
     vprint(rs_filename)
-    yaml_vars_filename = args.yaml
 
     vprint(f"RS Filename = {rs_filename}")
-    vprint(f"YAML Vars Filename = {yaml_vars_filename}")
+
 
 
     vprint("loaded RS file")
