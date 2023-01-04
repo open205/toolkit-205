@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
-from io imports BytesIO
+from io import BytesIO
 
 import streamlit as st
 
@@ -107,42 +107,29 @@ vprint = print if verbose else lambda *a, **k: None
 yaml_vars_filename = args.yaml
 vprint(f"YAML Vars Filename = {yaml_vars_filename}")
 
-# if args.rs_filename is not None:
-#     rs_filename = args.rs_filename
-# else:
-#     upload_name = st.file_uploader("Choose a file")
-#     if upload_name is not None:
-#         rs_filename = upload_name.name
 
-
-#TEMP_DIR = Path('tmp/extracted')
-
-uploaded_file = st.file_uploader("Choose a file")
+if args.rs_filename is not None:
+    rs_filename = args.rs_filename
+    uploaded_file = False
+else:
+    uploaded_file = st.file_uploader("Choose a file")
 
 if uploaded_file is not None:
-    print(uploaded_file.name)
-    temp_file_name = "temp" + uploaded_file.name
-
-    # dump the uploaded file in BytesIO buffer to disk
-    with open(temp_file_name, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-
-    rs_filename = temp_file_name
+    if args.rs_filename is None:
+        # if we got here we didn't give file name at command line
+        rs_filename = "temp" + uploaded_file.name
+        # dump the uploaded file in BytesIO buffer to disk
+        with open(rs_filename, "wb") as f:
+            f.write(uploaded_file.getbuffer())
     
-    print(rs_filename)
-    vprint(rs_filename)
-
     vprint(f"RS Filename = {rs_filename}")
-
-
-
     vprint("loaded RS file")
     # load up the actual rs file to plot and the variable dictionary
 
     # rs_in = file_io.load(args.rs_filename)
     var_dict = file_io.load(yaml_vars_filename)
     # rs_in = load_data(args.rs_filename)
-    rs_in = file_io.load(args.rs_filename)
+    rs_in = file_io.load(rs_filename)
 
     metadata = rs_in["metadata"]
     description = rs_in["description"]
