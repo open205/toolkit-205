@@ -4,8 +4,13 @@ import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from os import path
 from pathlib import Path
 from io import BytesIO
+
+import json
+import cbor2
+import yaml
 
 import streamlit as st
 
@@ -63,6 +68,23 @@ def set_ranges(df, axes, plot_opts, frac=0.5):
     return [xrange, yrange, zrange]
 
 
+def load(uploaded_file):
+    ext = path.splitext(uploaded_file.name)[1].lower()
+    if (ext == '.json'):
+        return json.load(uploaded_file)
+    elif (ext == '.cbor'):
+        return cbor2.load(uploaded_file)
+    # elif (ext == '.xlsx'):
+    #     tree = A205XLSXTree()
+    #     return tree.load_workbook(input_file_path).get_content()
+    elif (ext == '.yaml') or (ext == '.yml'):
+        # with open(input_file_path, 'r') as input_file:
+        #     return yaml.load(input_file, Loader=yaml.FullLoader)
+        return yaml.load(uploaded_file, Loader=yaml.FullLoader)
+    else:
+        raise Exception(f"Unsupported input \"{ext}\" for \"{uploaded_file.name}\".")
+
+
 @st.cache
 def load_data(filename):
     data = file_io.load(filename)
@@ -116,12 +138,13 @@ else:
 
 if uploaded_file is not None:
     if args.rs_filename is None:
-        # if we got here we didn't give file name at command line
-        rs_filename = "temp" + uploaded_file.name
-        # dump the uploaded file in BytesIO buffer to disk
-        with open(rs_filename, "wb") as f:
-            f.write(uploaded_file.getbuffer())
+        # if we got here we didn't give file name at command line and did an upload.
+        # we need to parse this separately from a command line load that uses file_io.load
+        rs_in = load(uploaded_file)
+    else: 
+        rs_in = file_io.load(rs_filename)
     
+    rs_filename = uploaded_file.name
     vprint(f"RS Filename = {rs_filename}")
     vprint("loaded RS file")
     # load up the actual rs file to plot and the variable dictionary
@@ -129,7 +152,7 @@ if uploaded_file is not None:
     # rs_in = file_io.load(args.rs_filename)
     var_dict = file_io.load(yaml_vars_filename)
     # rs_in = load_data(args.rs_filename)
-    rs_in = file_io.load(rs_filename)
+    print(rs_in)
 
     metadata = rs_in["metadata"]
     description = rs_in["description"]
