@@ -4,6 +4,7 @@
 #ifndef FIXTURE_LIBTK205_HPP_
 #define FIXTURE_LIBTK205_HPP_
 
+#include <courierr/courierr.h>
 #include "gtest/gtest.h"
 // The following headers are necessary to create an RS instance
 #include "rs0001.h"
@@ -38,7 +39,7 @@ protected:
     RS0001BadFixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0001", std::make_shared<tk205::RS0001Factory>());
-        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json");
+        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 
@@ -48,7 +49,7 @@ protected:
     RS0001UnsupportedFixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0001", std::make_shared<tk205::RS0001Factory>());
-        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0001/Chiller-Unsupported.RS0001.a205.json");
+        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0001/Chiller-Unsupported.RS0001.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 
@@ -58,7 +59,7 @@ protected:
     RS0001Fixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0001", std::make_shared<tk205::RS0001Factory>());
-        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0001/Chiller-Constant-Efficiency.RS0001.a205.json");
+        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0001/Chiller-Constant-Efficiency.RS0001.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 
@@ -68,7 +69,7 @@ protected:
     ASHRAEChillerFixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0001", std::make_shared<tk205::RS0001Factory>());
-        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0001/ASHRAE90-1-2019-bd-Curve-Set-C.RS0001.a205.json");
+        rs_ = RSInstanceFactory::create("RS0001", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0001/ASHRAE90-1-2019-bd-Curve-Set-C.RS0001.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 
@@ -78,7 +79,7 @@ protected:
     RS0002Fixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0002", std::make_shared<tk205::RS0002Factory>());
-        rs_ = RSInstanceFactory::create("RS0002", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json");
+        rs_ = RSInstanceFactory::create("RS0002", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0002/Unitary-Constant-Efficiency.RS0002.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 
@@ -88,7 +89,7 @@ protected:
     RS0003Fixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0003", std::make_shared<tk205::RS0003Factory>());
-        rs_= RSInstanceFactory::create("RS0003", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0003/Fan-Continuous.RS0003.a205.json");
+        rs_= RSInstanceFactory::create("RS0003", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0003/Fan-Continuous.RS0003.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 
@@ -98,7 +99,7 @@ protected:
     RS0004Fixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0004", std::make_shared<tk205::RS0004Factory>());
-        rs_= RSInstanceFactory::create("RS0004", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0004/DX-Constant-Efficiency.RS0004.a205.json");
+        rs_= RSInstanceFactory::create("RS0004", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0004/DX-Constant-Efficiency.RS0004.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 
@@ -108,7 +109,7 @@ protected:
     RS0005Fixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0005", std::make_shared<tk205::RS0005Factory>());
-        rs_= RSInstanceFactory::create("RS0005", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0005/Motor-Constant-Efficiency.RS0005.a205.json");
+        rs_= RSInstanceFactory::create("RS0005", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0005/Motor-Constant-Efficiency.RS0005.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 
@@ -118,7 +119,7 @@ protected:
     RS0006Fixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0006", std::make_shared<tk205::RS0006Factory>());
-        rs_ = RSInstanceFactory::create("RS0006", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0006/Drive-Constant-Efficiency.RS0006.a205.json");
+        rs_ = RSInstanceFactory::create("RS0006", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0006/Drive-Constant-Efficiency.RS0006.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 
@@ -128,7 +129,7 @@ protected:
     RS0007Fixture() : RSFixture()
     {
         RSInstanceFactory::register_factory("RS0007", std::make_shared<tk205::RS0007Factory>());
-        rs_ = RSInstanceFactory::create("RS0007", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0007/Belt-Drive-Constant-Efficiency.RS0007.a205.json");
+        rs_ = RSInstanceFactory::create("RS0007", TEST205_INPUT_EXAMPLES_DIR "/examples/RS0007/Belt-Drive-Constant-Efficiency.RS0007.a205.json", std::make_shared<Courierr::SimpleCourierr>());
     }
 };
 

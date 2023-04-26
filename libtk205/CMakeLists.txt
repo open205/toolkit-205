@@ -6,7 +6,7 @@ include(CTest)
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 
 # include_directories adds locations to the -I command line
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/btwxt/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/btwxt/include/btwxt)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/single_include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -52,6 +52,7 @@ add_library(libtk205 ${SOURCES})
 # add_dependencies(update_lib_repo libtk205)
 
 add_subdirectory(vendor)
+target_link_libraries(libtk205 PUBLIC courierr fmt)
 
 if (BUILD_TK205_TESTING)
   add_compile_definitions(TEST205_INPUT_EXAMPLES_DIR="${TEST205_INPUT_EXAMPLES_DIR}")

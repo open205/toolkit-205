@@ -50,7 +50,7 @@ TEST_F(RS0001Fixture, Calculate_performance_cooling_3)
 {
     auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
     EXPECT_TRUE(rs != nullptr);
-    auto result = rs->performance.performance_map_cooling.calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5, Btwxt::Method::LINEAR).condenser_liquid_leaving_temperature;
+    auto result = rs->performance.performance_map_cooling.calculate_performance(0.0755, 280.0, 0.0957, 295.0, 0.5, Btwxt::Method::linear).condenser_liquid_leaving_temperature;
     EXPECT_NEAR(result, 296.03, 0.001);
 }
 
@@ -59,8 +59,8 @@ TEST_F(ASHRAEChillerFixture, Calculate_performance_cubic)
     auto rs = dynamic_cast<rs0001_ns::RS0001 *>(rs_.get());
     EXPECT_TRUE(rs != nullptr);
     std::vector<double> target {0.00565, 280.0, 0.00845, 297.0, 1.5}; //NOLINT : Magic numbers necessary!
-    auto result1 = rs->performance.performance_map_cooling.calculate_performance(target, Btwxt::Method::LINEAR);
-    auto result2 = rs->performance.performance_map_cooling.calculate_performance(target, Btwxt::Method::CUBIC);
+    auto result1 = rs->performance.performance_map_cooling.calculate_performance(target, Btwxt::Method::linear);
+    auto result2 = rs->performance.performance_map_cooling.calculate_performance(target, Btwxt::Method::cubic);
     EXPECT_NE(result1, result2);
 }
 
@@ -78,6 +78,7 @@ TEST_F(RS0003Fixture, Verify_grid_variable_index)
     auto rs = dynamic_cast<rs0003_ns::RS0003 *>(rs_.get());
     EXPECT_TRUE(rs != nullptr);
     auto pm = dynamic_cast<rs0003_ns::PerformanceMapContinuous *>(rs->performance.performance_map.get());
+    EXPECT_TRUE(pm != nullptr);
     auto result = pm->grid_variables.static_pressure_difference_index;
     EXPECT_EQ(result, 1u);
 }
@@ -96,33 +97,8 @@ TEST_F(RS0001Fixture, Verify_element_metadata)
     EXPECT_THAT(result, "gpm");
 }
 
-void Display_message(MsgSeverity severity, const std::string &message, void *)
-{
-    static std::map<MsgSeverity, std::string> severity_str {
-        {MsgSeverity::DEBUG_205, "DEBUG"},
-        {MsgSeverity::INFO_205, "INFO"},
-        {MsgSeverity::WARN_205, "WARN"},
-        {MsgSeverity::ERR_205, "ERR"}
-    };
-    std::cout << severity_str[severity] << ": " << message << std::endl;
-}
-
-void Btwxt_message(const Btwxt::MsgLevel messageType, const std::string message,
-                   void *)
-{
-    static std::map<Btwxt::MsgLevel, MsgSeverity> severity {
-        {Btwxt::MsgLevel::MSG_DEBUG, MsgSeverity::DEBUG_205},
-        {Btwxt::MsgLevel::MSG_INFO, MsgSeverity::INFO_205},
-        {Btwxt::MsgLevel::MSG_WARN, MsgSeverity::WARN_205},
-        {Btwxt::MsgLevel::MSG_ERR, MsgSeverity::ERR_205}
-    };
-    Display_message(severity[messageType], message, nullptr);
-}
-
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
-    tk205::set_error_handler(Display_message, nullptr);
-    Btwxt::setMessageCallback(Btwxt_message, nullptr);
     return RUN_ALL_TESTS();
 }
