@@ -99,6 +99,7 @@ file(COPY "${PROJECT_SOURCE_DIR}/../schema-205/examples"
 # git status (see if files changed)
 execute_process(COMMAND ${GIT_EXECUTABLE} status
         WORKING_DIRECTORY ${clone_dir}
+)
 
 # git config
 execute_process(COMMAND ${GIT_EXECUTABLE} config user.name "Actions CI"
