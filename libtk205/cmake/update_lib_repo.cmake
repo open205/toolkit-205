@@ -96,6 +96,10 @@ file(COPY "${PROJECT_SOURCE_DIR}/test/"
 file(COPY "${PROJECT_SOURCE_DIR}/../schema-205/examples"
      DESTINATION "${clone_dir}")
 
+# git status (see if files changed)
+execute_process(COMMAND ${GIT_EXECUTABLE} status
+        WORKING_DIRECTORY ${clone_dir}
+
 # git config
 execute_process(COMMAND ${GIT_EXECUTABLE} config user.name "Actions CI"
                 WORKING_DIRECTORY ${clone_dir}
