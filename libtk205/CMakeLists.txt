@@ -14,6 +14,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/build/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../schema-205/schema205/src)
 
 file(GLOB RS_schemas "${PROJECT_SOURCE_DIR}/../schema-205/schema-source/*.schema.yaml")
+file(GLOB base_classes
+        "${PROJECT_SOURCE_DIR}/../schema-205/schema205/src/*.h"
+        "${PROJECT_SOURCE_DIR}/../schema-205/schema205/src/*.cpp")
 
 foreach(schema IN LISTS RS_schemas)
   string(REGEX REPLACE "${PROJECT_SOURCE_DIR}/../schema-205/schema-source/(.*).schema.yaml" "\\1" schema_name "${schema}")
@@ -32,7 +35,7 @@ list(APPEND lib_headers "${CMAKE_CURRENT_SOURCE_DIR}/include/typeinfo_205.h"
 
 add_custom_command(OUTPUT ${rs_headers} ${rs_src} ${lib_headers} ${lib_src}
                   COMMAND poetry run doit cpp
-                  DEPENDS ${RS_schemas}
+                  DEPENDS ${RS_schemas} ${base_classes}
                   COMMENT "Generate libtk205 files from YAML schema"
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../schema-205")
 
