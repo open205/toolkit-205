@@ -30,22 +30,22 @@ foreach(schema IN LISTS RS_schemas)
 endforeach()
 
 list(APPEND lib_headers "${CMAKE_CURRENT_SOURCE_DIR}/include/typeinfo_205.h"
-                        "${CMAKE_CURRENT_SOURCE_DIR}/include/loadobject_205.h"
-                        "${CMAKE_CURRENT_SOURCE_DIR}/include/error_handling_tk205.h")
+                        "${CMAKE_CURRENT_SOURCE_DIR}/include/loadobject_205.h")
 
-add_custom_command(OUTPUT ${rs_headers} ${rs_src} ${lib_headers} ${lib_src}
+# Runs if OUTPUT is missing, or if OUTPUT exists BUT file DEPENDencies have changed
+# If OUTPUT exists and DEPENDS files haven't changed, the command is not run (?)
+add_custom_command(OUTPUT ${rs_headers} ${rs_src} ${lib_headers} ${base_classes}
                   COMMAND poetry run doit cpp
-                  DEPENDS ${RS_schemas} ${base_classes}
+                  DEPENDS ${RS_schemas}
                   COMMENT "Generate libtk205 files from YAML schema"
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../schema-205")
 
-set (SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/error_handling_tk205.cpp"
+set (SOURCES "${lib_headers}"
              "${rs_headers}"
              "${rs_src}"
              "${factory_headers}"
              "${factory_src}"
-             "${lib_headers}"
-             "${lib_src}")
+             "${base_classes}")
 
 add_library(libtk205 ${SOURCES})
 

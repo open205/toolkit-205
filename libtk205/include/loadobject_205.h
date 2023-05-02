@@ -3,7 +3,6 @@
 
 #include <nlohmann/json.hpp>
 #include <courierr/courierr.h>
-#include <error_handling_tk205.h>
 
 namespace tk205 {
 
