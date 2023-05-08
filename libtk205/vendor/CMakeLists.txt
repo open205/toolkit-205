@@ -2,6 +2,10 @@ if (NOT TARGET btwxt)
     add_subdirectory(btwxt)
 endif()
 
+if (NOT TARGET nlohmann_json) #TODO: check if used
+    add_subdirectory(json)
+endif()
+
 if (BUILD_TK205_TESTING AND NOT TARGET gtest)
 
     # Prevent GoogleTest from overriding our compiler/linker options
