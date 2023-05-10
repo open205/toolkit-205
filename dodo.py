@@ -178,6 +178,7 @@ def task_libtk205():
       f'cmake -B {LIB_BUILD_PATH}',
       f'cmake --build {LIB_BUILD_PATH} --config Release'
       ],
+    'clean': ['doit -d schema-205 clean cpp'],
   }
 
 def task_libtk205_tests():
