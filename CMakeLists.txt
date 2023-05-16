@@ -33,7 +33,7 @@ foreach(schema IN LISTS RS_schemas)
 endforeach()
 
 execute_process(
-  COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "../cmake/get_lib_repo_local.cmake"
+  COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "cmake/get_lib_repo_local.cmake"
 )
 
 # Runs if OUTPUT is missing, or if OUTPUT exists BUT file DEPENDencies have changed
@@ -48,6 +48,7 @@ add_custom_command(OUTPUT ${rs_headers} ${rs_src} ${factory_headers} ${factory_s
 add_custom_target(libtk205_generator ALL
                   DEPENDS ${rs_headers} ${rs_src} ${factory_headers} ${factory_src})
                   
+
 # option( BUILD_TK205_TESTING "Build libtk205 testing targets" ON )
 
 # # Set up testing/coverage
