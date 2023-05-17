@@ -9,7 +9,7 @@ EXAMPLES_SOURCE_PATH = os.path.join("schema-205","examples")
 EXAMPLES_OUTPUT_PATH = os.path.join(BUILD_PATH,"examples")
 TEMPLATE_OUTPUT_PATH = os.path.join(BUILD_PATH,"templates")
 TEMPLATE_CONFIG = os.path.join('config','templates.json')
-LIB_BUILD_PATH = os.path.join(BUILD_PATH,"libtk205")
+LIB_BUILD_PATH = BUILD_PATH
 TK205_SOURCE_PATH = 'tk205'
 SCHEMA205_SOURCE_PATH = os.path.join("schema-205","schema205")
 
@@ -175,7 +175,7 @@ def task_libtk205():
     'task_dep': ['build_schema'],
     'actions': [
       (create_folder, [LIB_BUILD_PATH]),
-      f'cmake -B {LIB_BUILD_PATH}',
+      f'cmake -B {LIB_BUILD_PATH} -DBUILD_LIBTK205=ON',
       f'cmake --build {LIB_BUILD_PATH} --config Release'
       ],
     'clean': ['doit -d schema-205 clean cpp'],
@@ -186,6 +186,6 @@ def task_libtk205_tests():
   return {
     'task_dep': ['libtk205'],
     'actions': [
-      f'cd {LIB_BUILD_PATH} && ctest',
+      f'cd {LIB_BUILD_PATH}/libtk205 && ctest',
       ],
   }

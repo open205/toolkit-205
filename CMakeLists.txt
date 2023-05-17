@@ -32,22 +32,22 @@ foreach(schema IN LISTS RS_schemas)
   endif()
 endforeach()
 
-execute_process(
-  COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "cmake/get_lib_repo_local.cmake"
-)
+if(BUILD_LIBTK205)
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "cmake/get_lib_repo_local.cmake"
+  )
+  add_subdirectory(libtk205)
 
-add_custom_target(libtk205_generator ALL
-                  DEPENDS ${rs_headers} ${rs_src} ${factory_headers} ${factory_src})
-                  
-# Runs if OUTPUT is missing, or if OUTPUT exists BUT file DEPENDencies have changed
-# If OUTPUT exists and DEPENDS files haven't changed, the command is not run.
-# If no target depends on its outputs, the command is not run (see libtk205_generator custom target)
-add_custom_command(OUTPUT ${rs_headers} ${rs_src} ${factory_headers} ${factory_src}
-                   COMMAND poetry run doit cpp
-                   COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "../cmake/update_lib_repo_local.cmake"
-                   DEPENDS ${RS_schemas}
-                   COMMENT "Generate libtk205 files from YAML schema"
-                   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/schema-205")
-
-add_subdirectory(libtk205)
-
+  add_custom_target(libtk205_generator ALL
+                    DEPENDS ${rs_headers} ${rs_src} ${factory_headers} ${factory_src})
+                    
+  # Runs if OUTPUT is missing, or if OUTPUT exists BUT file DEPENDencies have changed
+  # If OUTPUT exists and DEPENDS files haven't changed, the command is not run.
+  # If no target depends on its outputs, the command is not run (see libtk205_generator custom target)
+  add_custom_command(OUTPUT ${rs_headers} ${rs_src} ${factory_headers} ${factory_src}
+                    COMMAND poetry run doit cpp
+                    COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "../cmake/update_lib_repo_local.cmake"
+                    DEPENDS ${RS_schemas}
+                    COMMENT "Generate libtk205 files from YAML schema"
+                    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/schema-205")
+endif()
