@@ -37,16 +37,3 @@ file(COPY "${PROJECT_SOURCE_DIR}/schema-205/examples"
 execute_process(COMMAND ${GIT_EXECUTABLE} status
         WORKING_DIRECTORY ${clone_dir}
 )
-
-# # git add
-# execute_process(COMMAND ${GIT_EXECUTABLE} add include src test examples
-#                 WORKING_DIRECTORY ${clone_dir}
-# )
-# # git commit
-# execute_process(COMMAND ${GIT_EXECUTABLE} commit -m "\"${last_commit_msg}\""
-#                 WORKING_DIRECTORY ${clone_dir}
-# )
-# # git push
-# execute_process(COMMAND ${GIT_EXECUTABLE} push
-#                 WORKING_DIRECTORY ${clone_dir}
-# )

@@ -53,7 +53,7 @@ else()
    execute_process(COMMAND ${GIT_EXECUTABLE} checkout -b ${current_git_branch}
                    WORKING_DIRECTORY ${clone_dir}
    )
-#    execute_process(COMMAND ${GIT_EXECUTABLE} push -u origin ${current_git_branch}
-#                    WORKING_DIRECTORY ${clone_dir}
-#    )
+   execute_process(COMMAND ${GIT_EXECUTABLE} push -u origin ${current_git_branch}
+                   WORKING_DIRECTORY ${clone_dir}
+   )
 endif()
