@@ -6,7 +6,7 @@ set(clone_dir "${PROJECT_SOURCE_DIR}/${repo_name}")
 
 # Collect relevant info from toolkit-205:
 execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --pretty=%B
-                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                 OUTPUT_VARIABLE last_commit_msg
                 OUTPUT_STRIP_TRAILING_WHITESPACE
 )
