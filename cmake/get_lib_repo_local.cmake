@@ -43,12 +43,12 @@ execute_process(COMMAND ${GIT_EXECUTABLE} ls-remote --heads --exit-code ${authen
                 RESULT_VARIABLE exit_code
                 OUTPUT_VARIABLE output_repo_branches
 )
-if(exit_code EQUAL "0")
-   message(STATUS "Branch ${current_git_branch} exists in upload remote.")
+if(exit_code EQUAL "0") # Successful communication with remote (but matching refs status unknown)
+   message(STATUS "Checking out branch ${current_git_branch} from ${repo_name} remote.")
    execute_process(COMMAND ${GIT_EXECUTABLE} checkout ${current_git_branch}
                    WORKING_DIRECTORY ${clone_dir}
    )
-else()
+elseif(exit_code EQUAL "2") # No matching refs in remote
    message(STATUS "Branch ${current_git_branch} must be created in upload remote.")
    execute_process(COMMAND ${GIT_EXECUTABLE} checkout -b ${current_git_branch}
                    WORKING_DIRECTORY ${clone_dir}
