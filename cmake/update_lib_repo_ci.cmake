@@ -4,6 +4,22 @@ set(upload_repo "github.com/open205/${repo_name}")
 set(authenticated_repo "https://${PA_TOKEN}:x-oauth-basic@${upload_repo}") # PA_TOKEN is set by GitHub Actions
 set(clone_dir "${PROJECT_SOURCE_DIR}/${repo_name}")
 
+find_package(Git QUIET)
+
+if(GIT_FOUND)
+   if(NOT EXISTS "${clone_dir}")
+      execute_process(COMMAND ${GIT_EXECUTABLE} clone ${authenticated_repo}
+                      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                      RESULT_VARIABLE GIT_SUBMOD_RESULT)
+      if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+         message(FATAL_ERROR "${GIT_EXECUTABLE} clone ${authenticated_repo} failed with ${GIT_SUBMOD_RESULT}.")
+      endif()
+   # else() pull or fetch?
+   endif()
+else()
+   message(FATAL_ERROR "git not found!")
+endif()
+
 message(STATUS "Working directory: ${PROJECT_SOURCE_DIR}.")
 # Collect relevant info from toolkit-205:
 # git branch name query
