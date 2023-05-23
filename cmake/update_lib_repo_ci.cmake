@@ -6,36 +6,18 @@ set(clone_dir "${PROJECT_SOURCE_DIR}/${repo_name}")
 
 find_package(Git QUIET)
 
-if(GIT_FOUND)
-   if(NOT EXISTS "${clone_dir}")
-      execute_process(COMMAND ${GIT_EXECUTABLE} clone ${authenticated_repo}
-                      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                      RESULT_VARIABLE GIT_SUBMOD_RESULT)
-      if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-         message(FATAL_ERROR "${GIT_EXECUTABLE} clone ${authenticated_repo} failed with ${GIT_SUBMOD_RESULT}.")
-      endif()
-   # else() pull or fetch?
-   endif()
-else()
+if(NOT GIT_FOUND)
    message(FATAL_ERROR "git not found!")
 endif()
 
 message(STATUS "Working directory: ${PROJECT_SOURCE_DIR}.")
 # Collect relevant info from toolkit-205:
-# git branch name query
-execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
-                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                OUTPUT_VARIABLE current_git_branch
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-message(STATUS "Current local branch is ${current_git_branch}.")
-
 execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --pretty=%B
                 WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                 OUTPUT_VARIABLE last_commit_msg
                 OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-message(STATUS "Last commit message on local branch was \"${last_commit_msg}\"")
+message(STATUS "Last commit message on ${PROJECT_NAME} branch was \"${last_commit_msg}\"")
 
 message(STATUS "Working directory: ${clone_dir}.")
 # libtk205 remote side:
@@ -52,7 +34,7 @@ execute_process(COMMAND ${GIT_EXECUTABLE} add include src test examples
 )
 # git status (see if files changed)
 execute_process(COMMAND ${GIT_EXECUTABLE} status
-        WORKING_DIRECTORY ${clone_dir}
+                WORKING_DIRECTORY ${clone_dir}
 )
 # git commit
 execute_process(COMMAND ${GIT_EXECUTABLE} commit -m "\"${last_commit_msg}\""

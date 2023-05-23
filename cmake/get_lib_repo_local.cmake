@@ -1,7 +1,11 @@
 # repo_name is unique to the project
 set(repo_name "libtk205")
 set(upload_repo "https://github.com/open205/${repo_name}")
-set(authenticated_repo ${upload_repo})
+if(${PA_TOKEN})
+   set(authenticated_repo "https://${PA_TOKEN}:x-oauth-basic@${upload_repo}") # PA_TOKEN is set by GitHub Actions
+else()
+   set(authenticated_repo ${upload_repo})
+endif()
 
 message(STATUS ${authenticated_repo})
 
