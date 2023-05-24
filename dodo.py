@@ -1,5 +1,6 @@
 import os
 import tk205
+import subprocess
 from doit.tools import create_folder
 
 BUILD_PATH = "build"
@@ -171,11 +172,16 @@ def task_web():
 
 def task_libtk205():
   '''Build libtk205'''
+  def configure_build(PAT):
+    subprocess.run(['cmake', f'-B {LIB_BUILD_PATH}', f'-DPA_TOKEN={PAT}', '-DBUILD_LIBTK205=ON'])
   return {
     'task_dep': ['build_schema'],
+    'params':[{'name':'PAT',
+               'long': 'PAT',
+               'default': ''}],
     'actions': [
       (create_folder, [LIB_BUILD_PATH]),
-      f'cmake -B {LIB_BUILD_PATH} -DBUILD_LIBTK205=ON',
+      (configure_build, ),
       f'cmake --build {LIB_BUILD_PATH} --config Release'
       ],
     'clean': ['doit -d schema-205 clean cpp'],
