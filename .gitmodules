@@ -1,9 +1,3 @@
 [submodule "schema-205"]
 	path = schema-205
 	url = https://github.com/open205/schema-205
-[submodule "libtk205/vendor/json"]
-	path = old_libtk205/vendor/json
-	url = https://github.com/nlohmann/json.git
-[submodule "libtk205/vendor/btwxt"]
-	path = old_libtk205/vendor/btwxt
-	url = https://github.com/bigladder/btwxt.git
