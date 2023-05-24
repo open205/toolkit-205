@@ -41,6 +41,6 @@ execute_process(COMMAND ${GIT_EXECUTABLE} commit -m "\"${last_commit_msg}\""
                 WORKING_DIRECTORY ${clone_dir}
 )
 # git push
-execute_process(COMMAND ${GIT_EXECUTABLE} push
+execute_process(COMMAND ${GIT_EXECUTABLE} push ${authenticated_repo}
                 WORKING_DIRECTORY ${clone_dir}
 )
