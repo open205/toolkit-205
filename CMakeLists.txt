@@ -34,7 +34,7 @@ endforeach()
 
 if(BUILD_LIBTK205)
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "cmake/get_lib_repo_local.cmake"
+    COMMAND ${CMAKE_COMMAND} -DPA_TOKEN=${PA_TOKEN} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "cmake/get_lib_repo_local.cmake"
   )
   add_subdirectory(libtk205)
 
