@@ -14,6 +14,8 @@ LIB_BUILD_PATH = BUILD_PATH
 TK205_SOURCE_PATH = 'tk205'
 SCHEMA205_SOURCE_PATH = os.path.join("schema-205","schema205")
 
+DOIT_CONFIG = {'default_tasks': ['build_schema', 'cbor', 'yaml', 'xlsx', 'json', 'templates', 'test', 'web']}
+
 def task_build_schema():
   '''Build the schema'''
   return {

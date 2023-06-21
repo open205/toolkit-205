@@ -25,9 +25,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Build and test
         run: |
-          poetry run doit ignore libtk205  
           poetry run doit
-          poetry run doit forget libtk205
           poetry run doit libtk205 --PAT "${{secrets.CI_PA_TOKEN}}"
           poetry run doit libtk205_tests
       - name: Export libtk205 source
