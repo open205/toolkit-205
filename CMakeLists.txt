@@ -34,7 +34,7 @@ endforeach()
 
 if(BUILD_LIBTK205)
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -DPA_TOKEN=${PA_TOKEN} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "cmake/get_lib_repo_local.cmake"
+    COMMAND ${CMAKE_COMMAND} -DPA_TOKEN=${PA_TOKEN} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -Drepo_name=libtk205 -Dupload_repo=https://github.com/open205/libtk205 -P "cmake/get_lib_repo_local.cmake"
   )
   add_subdirectory(libtk205)
 
@@ -46,7 +46,7 @@ if(BUILD_LIBTK205)
   # If no target depends on its outputs, the command is not run (see libtk205_generator custom target)
   add_custom_command(OUTPUT ${rs_headers} ${rs_src} ${factory_headers} ${factory_src}
                     COMMAND poetry run doit cpp
-                    COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -P "../cmake/update_lib_repo_local.cmake"
+                    COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -Drepo_name=libtk205 -P "../cmake/update_lib_repo_local.cmake"
                     DEPENDS ${RS_schemas}
                     COMMENT "Generate libtk205 files from YAML schema"
                     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/schema-205")

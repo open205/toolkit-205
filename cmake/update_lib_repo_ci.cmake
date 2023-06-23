@@ -1,6 +1,4 @@
 # repo_name is unique to the project
-set(repo_name "libtk205")
-set(upload_repo "github.com/open205/${repo_name}")
 set(authenticated_repo "https://${PA_TOKEN}:x-oauth-basic@${upload_repo}") # PA_TOKEN is set by GitHub Actions
 set(clone_dir "${PROJECT_SOURCE_DIR}/${repo_name}")
 

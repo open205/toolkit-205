@@ -1,4 +1,3 @@
-set(repo_name "libtk205")
 set(clone_dir "${PROJECT_SOURCE_DIR}/${repo_name}")
 
 set(include_dest_dir "${clone_dir}/include/${repo_name}")
