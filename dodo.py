@@ -1,5 +1,6 @@
 import os
 import tk205
+import subprocess
 from doit.tools import create_folder
 
 BUILD_PATH = "build"
@@ -9,9 +10,11 @@ EXAMPLES_SOURCE_PATH = os.path.join("schema-205","examples")
 EXAMPLES_OUTPUT_PATH = os.path.join(BUILD_PATH,"examples")
 TEMPLATE_OUTPUT_PATH = os.path.join(BUILD_PATH,"templates")
 TEMPLATE_CONFIG = os.path.join('config','templates.json')
-LIB_BUILD_PATH = os.path.join(BUILD_PATH,"libtk205")
+LIB_BUILD_PATH = BUILD_PATH
 TK205_SOURCE_PATH = 'tk205'
 SCHEMA205_SOURCE_PATH = os.path.join("schema-205","schema205")
+
+DOIT_CONFIG = {'default_tasks': ['build_schema', 'cbor', 'yaml', 'xlsx', 'json', 'templates', 'test', 'web']}
 
 def task_build_schema():
   '''Build the schema'''
@@ -171,13 +174,19 @@ def task_web():
 
 def task_libtk205():
   '''Build libtk205'''
+  def configure_build(PAT):
+    subprocess.run(['cmake', f'-B {LIB_BUILD_PATH}', f'-DPA_TOKEN={PAT}', '-DBUILD_LIBTK205=ON', '-Dlibtk205_BUILD_TESTING=ON'])
   return {
     'task_dep': ['build_schema'],
+    'params':[{'name':'PAT',
+               'long': 'PAT',
+               'default': ''}],
     'actions': [
       (create_folder, [LIB_BUILD_PATH]),
-      f'cmake -B {LIB_BUILD_PATH}',
-      f'cmake --build {LIB_BUILD_PATH} --config Release'
+      (configure_build, ),
+      'cmake --build build --config Release'
       ],
+    'clean': ['doit -d schema-205 clean cpp'],
   }
 
 def task_libtk205_tests():
@@ -185,6 +194,6 @@ def task_libtk205_tests():
   return {
     'task_dep': ['libtk205'],
     'actions': [
-      f'cd {LIB_BUILD_PATH} && ctest',
+      f'cd {LIB_BUILD_PATH}/libtk205 && ctest',
       ],
   }

@@ -11,3 +11,4 @@ env/
 .pytest_cache/
 sandbox/
 .doit.db*
+libtk205/

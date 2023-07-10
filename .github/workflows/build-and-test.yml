@@ -24,7 +24,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Build and test
-        run: poetry run doit
+        run: |
+          poetry run doit
+          poetry run doit libtk205 --PAT "${{secrets.CI_PA_TOKEN}}"
+          poetry run doit libtk205_tests
       - name: Export libtk205 source
-        run: cmake -DPA_TOKEN="${{secrets.CI_PA_TOKEN}}" -DPROJECT_SOURCE_DIR="${{github.workspace}}/libtk205" -P "${{github.workspace}}/libtk205/cmake/update_lib_repo.cmake"
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
+        run: cmake -DPA_TOKEN="${{secrets.CI_PA_TOKEN}}" -DPROJECT_SOURCE_DIR="${{github.workspace}}" -Drepo_name=libtk205 -Dupload_repo=https://github.com/open205/libtk205 -P "${{github.workspace}}/cmake/update_lib_repo_ci.cmake"
 
