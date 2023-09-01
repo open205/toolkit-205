@@ -172,10 +172,12 @@ def task_web():
     'actions': ['python web/web-content.py']
   }
 
+ 
 def task_libtk205():
   '''Build libtk205'''
   def configure_build(PAT):
-    subprocess.run(['cmake', f'-B {LIB_BUILD_PATH}', f'-DPA_TOKEN={PAT}', '-DBUILD_LIBTK205=ON', '-Dlibtk205_BUILD_TESTING=ON'])
+    subprocess.run(['cmake', f'-B {LIB_BUILD_PATH}', f'-DPA_TOKEN={PAT}', '-DBUILD_LIBTK205=ON', '-Dlibtk205_BUILD_TESTING=ON'], shell=True)
+    subprocess.run(f'cmake --build {LIB_BUILD_PATH} --config release', shell=True)
   return {
     'task_dep': ['build_schema'],
     'params':[{'name':'PAT',
@@ -184,7 +186,6 @@ def task_libtk205():
     'actions': [
       (create_folder, [LIB_BUILD_PATH]),
       (configure_build, ),
-      'cmake --build build --config Release'
       ],
     'clean': ['doit -d schema-205 clean cpp'],
   }
