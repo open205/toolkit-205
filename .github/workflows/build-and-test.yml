@@ -23,9 +23,11 @@ jobs:
         uses: bigladder/github-actions/setup-python-poetry@main
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Build and test
+      - name: Build and test toolkit
         run: |
           poetry run doit
+      - name: Build and test libtk205
+        run: |
           poetry run doit libtk205 --PAT "${{secrets.CI_PA_TOKEN}}"
           poetry run doit libtk205_tests
       - name: Export libtk205 source
