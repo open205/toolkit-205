@@ -178,6 +178,10 @@ def task_libtk205():
   def configure_build(PAT):
     subprocess.run(f'cmake -B {LIB_BUILD_PATH} -DPA_TOKEN={PAT} -DBUILD_LIBTK205=ON -Dlibtk205_BUILD_TESTING=ON', cwd='.', shell=True, check=True)
     subprocess.run(f'cmake --build {LIB_BUILD_PATH} --config Release', cwd='.', shell=True, check=True)
+
+  def run_tests(build_path: str):
+    subprocess.run('ctest', cwd=build_path, shell=True, check=True)
+
   return {
     'params':[{'name':'PAT',
                'long': 'PAT',
@@ -185,16 +189,7 @@ def task_libtk205():
     'actions': [
       (create_folder, [LIB_BUILD_PATH]),
       (configure_build, ),
-      f'cd {LIB_BUILD_PATH}/libtk205 && ctest',
+      (run_tests, [f'{LIB_BUILD_PATH}/libtk205']),
       ],
     'clean': ['doit -d schema-205 clean cpp'],
-  }
-
-def task_libtk205_tests():
-  '''Performs unit tests and example file validation tests'''
-  return {
-    'task_dep': ['libtk205'],
-    'actions': [
-      f'cd {LIB_BUILD_PATH}/libtk205 && ctest',
-      ],
   }
