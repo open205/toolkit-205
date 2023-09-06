@@ -185,6 +185,7 @@ def task_libtk205():
     'actions': [
       (create_folder, [LIB_BUILD_PATH]),
       (configure_build, ),
+      f'cd {LIB_BUILD_PATH}/libtk205 && ctest',
       ],
     'clean': ['doit -d schema-205 clean cpp'],
   }

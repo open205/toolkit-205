@@ -26,7 +26,6 @@ jobs:
       - name: Build and test libtk205
         run: |
           poetry run doit libtk205 --PAT "${{secrets.CI_PA_TOKEN}}"
-          poetry run doit libtk205_tests
       - name: Build and test toolkit
         run: |
           poetry run doit
