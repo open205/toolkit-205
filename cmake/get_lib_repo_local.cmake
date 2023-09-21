@@ -50,6 +50,9 @@ if(exit_code EQUAL "0") # Successful communication with remote (but matching ref
    execute_process(COMMAND ${GIT_EXECUTABLE} checkout ${current_git_branch}
                    WORKING_DIRECTORY ${clone_dir}
    )
+   execute_process(COMMAND ${GIT_EXECUTABLE} pull
+                   WORKING_DIRECTORY ${clone_dir}
+   )
 elseif(exit_code EQUAL "2") # No matching refs in remote
    message(STATUS "Branch ${current_git_branch} must be created in upload remote.")
    execute_process(COMMAND ${GIT_EXECUTABLE} checkout -b ${current_git_branch}
