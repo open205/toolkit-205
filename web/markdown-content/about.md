@@ -14,7 +14,7 @@ ASHRAE Standard 205 defines common data models and serialization formats for fac
 
 The initial published version of the standard is designated ASHRAE/ANSI Standard 205-2023.  Addenda a, b, and c, published in February, 2024, specify some updates to the standard.  The material available on this web site reflects those updates.
 
-Free preview (view only) access to Standard 205-2023 is available via https://www.ashrae.org/technical-resources/standards-and-guidelines.  On that page, find the section "Preview ASHRAE Standards and Guidelines" and the link to Standard 205-2023 within that section.  Standard 205-2023 may be purchased https://www.techstreet.com/standards/ashrae-205-2023?product_id=2522081.
+Free preview (view only) access to Standard 205-2023 is available via [ASHRAE's website](https://www.ashrae.org/technical-resources/standards-and-guidelines#preview).  On that page, find the section "Preview ASHRAE Standards and Guidelines" and the link to Standard 205-2023 within that section.  Standard 205-2023 may be purchased via [Techstreet<sup>TM</sup> Store](https://www.techstreet.com/standards/ashrae-205-2023?product_id=2522081).
 
 Standard 205 defines the term *representation* to mean a Concise Binary Object Representation (CBOR) file conforming to a JSON schema defined by a human-readable (text) document called a *representation specification*.  Representation specifications are included in Standard 205 appended as an open-ended set.
 
