@@ -28,7 +28,7 @@ This web site hosts supporting material for each representation specification, i
 
 - [***Examples files***](examples.html) provide illustrative examples of each representation.  Several file formats are provided.
 
-- [***XLSX templates***](templates.html) can be downloaded, populated by hand, and then process with [Toolkit 205](tk205.html) procedures to convert to a standard CBOR representation.
+- [***XLSX templates***](templates.html) can be downloaded, populated by hand, and then processed with [Toolkit 205](tk205.html) procedures to convert to a standard CBOR representation.
 
 All representations have common structures and elements.  An open source project, [open205](https://github.com/open205), is underway to provide software components for use by data publishers and application developers.
 
