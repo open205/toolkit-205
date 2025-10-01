@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14.0)
 project(toolkit-205)
 
 if (USE_CLANGTIDY_STATIC_ANALYSIS)
-   set(CMAKE_CXX_CLANG_TIDY 
+   set(CMAKE_CXX_CLANG_TIDY
    clang-tidy;
    -checks=-*,clang-analyzer-*,cppcoreguidelines-*
    )
@@ -40,12 +40,12 @@ if(BUILD_LIBTK205)
 
   add_custom_target(libtk205_generator ALL
                     DEPENDS ${rs_headers} ${rs_src} ${factory_headers} ${factory_src})
-                    
+
   # Runs if OUTPUT is missing, or if OUTPUT exists BUT file DEPENDencies have changed
   # If OUTPUT exists and DEPENDS files haven't changed, the command is not run.
   # If no target depends on its outputs, the command is not run (see libtk205_generator custom target)
   add_custom_command(OUTPUT ${rs_headers} ${rs_src} ${factory_headers} ${factory_src}
-                    COMMAND poetry run doit cpp
+                    COMMAND uv run doit cpp
                     COMMAND ${CMAKE_COMMAND} -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR} -Drepo_name=libtk205 -P "../cmake/update_lib_repo_local.cmake"
                     DEPENDS ${RS_schemas}
                     COMMENT "Generate libtk205 files from YAML schema"
