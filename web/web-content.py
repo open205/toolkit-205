@@ -3,7 +3,7 @@ import os
 import json
 import datetime
 from collections import OrderedDict
-from distutils.dir_util import copy_tree
+from shutil import copytree
 from jinja2 import Environment, FileSystemLoader
 import markdown
 import tk205
@@ -111,7 +111,9 @@ def create_files(web_dir):
 
     # schema
     schema_dir = set_dir(os.path.join(assets_dir, "schema"))
-    copy_tree(os.path.join("schema-205", "build", "schema"), schema_dir)
+    copytree(
+        os.path.join("schema-205", "build", "schema"), schema_dir, dirs_exist_ok=True
+    )
 
 
 def clone():
@@ -154,9 +156,7 @@ def generate(web_dir):
     examples_dictionary = get_directory_structure(examples_directory)
     templates_dictionary = get_directory_structure(templates_directory)
 
-    schema_title_description = (
-        []
-    )  # This is stored during the schema page data generation to be saved and used in the templates page
+    schema_title_description = []  # This is stored during the schema page data generation to be saved and used in the templates page
 
     # Create schema.html
     with open(os.path.join(root_dir, "markdown-content", "schema.md")) as md_file:
