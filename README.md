@@ -24,13 +24,13 @@ Toolkit 205 uses git submodules. To clone the submodules, you will either have t
 
 We are currently supporting python 3.7 and higher.
 
-This project uses [Poetry](https://python-poetry.org/docs/#installation) python package management tool. Once you have Poetry installed you can install the dependencies using:
+This project uses [uv](https://docs.astral.sh/uv/getting-started/installation/) python package management tool. Once you have uv installed you can install the dependencies using:
 
-`poetry install`
+`uv sync`
 
 You can test your installation using:
 
-`poetry run doit`
+`uv run doit`
 
 ### Products
 
