@@ -28,7 +28,7 @@ foreach(filepath ${generated_rs_src})
      message(STATUS "Moving ${filepath} to ${src_dest_dir}/${filename}.")
      file(RENAME ${filepath} ${src_dest_dir}/${filename})
 endforeach(filepath)
-     
+
 file(GLOB fixed_src "${PROJECT_SOURCE_DIR}/schema-205/schema205/libtk205_fixed_src/src/*.cpp")
 foreach(in_file IN LISTS fixed_src)
      # Get just the file name, w/o path
@@ -36,7 +36,7 @@ foreach(in_file IN LISTS fixed_src)
      message(STATUS "Copying ${in_file} to ${src_dest_dir}/${out_file}.")
      file(COPY_FILE ${in_file} "${src_dest_dir}/${out_file}")
 endforeach()
-     
+
 file(COPY "${PROJECT_SOURCE_DIR}/schema-205/examples"
      DESTINATION "${clone_dir}")
 
