@@ -1,57 +1,81 @@
 {
-    "RS0001" : [
+    "RS0001": [
         {
-            "keywords": {},
-            "file-name-suffix": null,
+            "keywords": {
+                "condenser_type": "LIQUID"
+            },
+            "file-name-suffix": "liquid-cooled",
             "description": "Liquid-Cooled Chiller"
+        },
+        {
+            "keywords": {
+                "condenser_type": "AIR"
+            },
+            "file-name-suffix": "air-cooled",
+            "description": "Air-Cooled Chiller"
+        },
+        {
+            "keywords": {
+                "condenser_type": "EVAPORATIVE"
+            },
+            "file-name-suffix": "evaporative-cooled",
+            "description": "Evaporative-Cooled Chiller"
         }
     ],
-    "RS0002" : [
+    "RS0002": [
         {
-            "keywords": {"operation_speed_control_type": "CONTINUOUS"},
+            "keywords": {
+                "operation_speed_control_type": "CONTINUOUS"
+            },
             "file-name-suffix": "continuous-fan",
             "description": "Unitary System with Continuous Fan"
         },
         {
-            "keywords": {"operation_speed_control_type": "DISCRETE"},
+            "keywords": {
+                "operation_speed_control_type": "DISCRETE"
+            },
             "file-name-suffix": "discrete-fan",
             "description": "Unitary System with Discrete Fan"
         }
     ],
-    "RS0003" : [
+    "RS0003": [
         {
-            "keywords": {"operation_speed_control_type": "CONTINUOUS"},
+            "keywords": {
+                "operation_speed_control_type": "CONTINUOUS"
+            },
             "file-name-suffix": "continuous",
             "description": "Continuous Fan Assembly"
         },
         {
-            "keywords": {"operation_speed_control_type": "DISCRETE"},
+            "keywords": {
+                "operation_speed_control_type": "DISCRETE"
+            },
             "file-name-suffix": "discrete",
             "description": "Discrete Fan Assembly"
         }
     ],
-    "RS0004" : [
+    "RS0004": [
         {
             "keywords": {},
             "file-name-suffix": null,
             "description": "Air-to-Air Direct Expansion Refrigerant Coil System"
         }
     ],
-    "RS0005" : [
+    "RS0005": [
         {
             "keywords": {},
             "file-name-suffix": null,
             "description": "Motor"
         }
     ],
-    "RS0006" : [
+    "RS0006": [
         {
             "keywords": {},
             "file-name-suffix": null,
             "description": "Electronic Motor Drive"
         }
     ],
-    "RS0007" : [
+    "RS0007": [
         {
             "keywords": {},
             "file-name-suffix": null,
